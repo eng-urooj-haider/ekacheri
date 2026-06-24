@@ -116,11 +116,30 @@ const DataTable = ({
                         ${canSort ? "cursor-pointer select-none hover:text-gray-300" : ""}`}
                     >
                       <span className="inline-flex items-center gap-1.5">
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                         {canSort && (
                           <span className="flex flex-col leading-none text-[8px]">
-                            <span className={sortDir === "asc" ? "text-[#fab421]" : "text-gray-600"}>▲</span>
-                            <span className={sortDir === "desc" ? "text-[#fab421]" : "text-gray-600"}>▼</span>
+                            <span
+                              className={
+                                sortDir === "asc"
+                                  ? "text-[#fab421]"
+                                  : "text-gray-600"
+                              }
+                            >
+                              ▲
+                            </span>
+                            <span
+                              className={
+                                sortDir === "desc"
+                                  ? "text-[#fab421]"
+                                  : "text-gray-600"
+                              }
+                            >
+                              ▼
+                            </span>
                           </span>
                         )}
                       </span>
@@ -149,7 +168,10 @@ const DataTable = ({
                 className="border-b border-white/[0.04] text-gray-300 transition-colors duration-150 hover:bg-white/[0.03]"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="min-w-0 max-w-0 truncate px-4 py-3">
+                  <td
+                    key={cell.id}
+                    className="min-w-0 max-w-0 truncate px-4 py-3"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -162,7 +184,9 @@ const DataTable = ({
       {/* Pagination footer */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-3.5">
         <span className="text-xs text-gray-500">
-          {totalRows === 0 ? "0 results" : `Showing ${from}–${to} of ${totalRows}`}
+          {totalRows === 0
+            ? "0 results"
+            : `Showing ${from}–${to} of ${totalRows}`}
         </span>
 
         <div className="flex items-center gap-1.5">

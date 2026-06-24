@@ -1,6 +1,6 @@
 import { Link } from "react-router";
-import DataTable from "./DataTable";
-import { users } from "../../data/users";
+import DataTable from "../DataTable";
+import { users } from "../../../data/users";
 
 const columns = [
   { accessorKey: "name", header: "Name", meta: { width: "22%" } },
@@ -49,11 +49,20 @@ const columns = [
 const Home = () => {
   return (
     <div className="w-full min-w-0">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-gray-900">Users</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          View and manage all registered users.
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900">Users</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            View and manage all registered users.
+          </p>
+        </div>
+
+        <Link
+          to="/cities/new"
+          className="rounded-lg bg-[#fab421] px-4 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"
+        >
+          + Add City
+        </Link>
       </div>
 
       <DataTable

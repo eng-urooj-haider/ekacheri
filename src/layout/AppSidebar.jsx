@@ -10,13 +10,18 @@ import { useSidebar } from "../context/SidebarContext";
 const navItems = [
   {
     icon: <GridIcon />,
-    name: "Dashboard",
-    path: "/",
+    name: "City",
+    path: "/cities",
   },
   {
     icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
+    name: "Location",
+    path: "/locations",
+  },
+   {
+    icon: <CalenderIcon />,
+    name: "Department Focal Person",
+    path: "/dfps",
   },
   {
     icon: <UserCircleIcon />,

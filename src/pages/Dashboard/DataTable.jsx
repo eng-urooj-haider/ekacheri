@@ -1,4 +1,6 @@
 import { useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   useReactTable,
   getCoreRowModel,
@@ -7,28 +9,8 @@ import {
   getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import * as XLSX from "xlsx";
 
-/**
- * Reusable data table — sorting, global search, pagination.
- * Styled to match the dark/amber dashboard theme.
- *
- * Usage:
- *   const columns = [
- *     { accessorKey: "name", header: "Name" },
- *     { accessorKey: "email", header: "Email" },
- *     {
- *       accessorKey: "status",
- *       header: "Status",
- *       cell: (info) => (
- *         <span className={info.getValue() === "active" ? "text-emerald-400" : "text-gray-500"}>
- *           {info.getValue()}
- *         </span>
- *       ),
- *     },
- *   ];
- *
- *   <DataTable columns={columns} data={users} />
- */
 const DataTable = ({
   columns,
   data,
@@ -51,12 +33,72 @@ const DataTable = ({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  // Normal paginated rows for on-screen display.
+  // PDF/Excel export pull from getFilteredRowModel() directly (all matching
+  // rows, ignoring pagination) — see handleExportPdf / handleExportExcel.
   const rows = table.getRowModel().rows;
+
   const totalRows = table.getFilteredRowModel().rows.length;
   const pageIndex = table.getState().pagination.pageIndex;
   const pageCount = table.getPageCount();
   const from = pageIndex * pageSize + 1;
   const to = Math.min(from + pageSize - 1, totalRows);
+
+  const handleExportExcel = () => {
+    // Export all searched & sorted rows (ignores pagination)
+    const exportRows = table.getFilteredRowModel().rows;
+    const exportData = exportRows.map((row) => {
+      const rowData = {};
+
+      row.getVisibleCells().forEach((cell) => {
+        // Skip Actions column
+        if (cell.column.id === "actions") return;
+        const header = cell.column.columnDef.header;
+        rowData[header] = cell.getValue();
+      });
+
+      return rowData;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+    XLSX.writeFile(workbook, "export.xlsx");
+  };
+
+  const handleExportPdf = () => {
+    const doc = new jsPDF();
+
+    // Title
+    doc.setFontSize(14);
+    doc.text("E-Kachehri", 14, 15);
+
+    // Pull all filtered rows (same approach as Excel export) — ignores
+    // pagination, respects current search/sort.
+    const exportRows = table.getFilteredRowModel().rows;
+
+    const tableData = exportRows.map((row) =>
+      row
+        .getVisibleCells()
+        .filter((cell) => cell.column.id !== "actions") // skip Actions column
+        .map((cell) => String(cell.getValue() ?? ""))
+    );
+
+    const tableHeaders = table
+      .getHeaderGroups()[0]
+      .headers.filter((h) => h.column.id !== "actions")
+      .map((h) => h.column.columnDef.header);
+
+    autoTable(doc, {
+      head: [tableHeaders],
+      body: tableData,
+      startY: 22,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [250, 180, 33] }, // amber, matches the theme
+    });
+
+    doc.save("ekachehri-report.pdf");
+  };
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl bg-[#0c0c0d] ring-1 ring-white/[0.07]">
@@ -86,9 +128,23 @@ const DataTable = ({
           />
         </div>
 
-        <span className="shrink-0 text-xs text-gray-500">
-          {totalRows} {totalRows === 1 ? "result" : "results"}
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleExportExcel}
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
+          >
+            Export Excel
+          </button>
+          <button
+            onClick={handleExportPdf}
+            className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-gray-200 ring-1 ring-white/[0.1] transition hover:bg-white/[0.1]"
+          >
+            Download PDF
+          </button>
+          <span className="shrink-0 text-xs text-gray-500">
+            {totalRows} {totalRows === 1 ? "result" : "results"}
+          </span>
+        </div>
       </div>
 
       {/* Table — scroll only inside this wrapper on small screens */}

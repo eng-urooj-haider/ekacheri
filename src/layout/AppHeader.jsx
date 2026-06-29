@@ -46,7 +46,7 @@ const AppHeader = () => {
   const marqueeText = ANNOUNCEMENTS.join("     •     ");
 
   return (
-    <header className="sticky top-0 z-99999 flex w-full min-w-0 max-w-full min-h-20 bg-[#0a0a0a] border-b border-white/[0.07]">
+    <header className="no-print sticky top-0 z-99999 flex w-full min-w-0 max-w-full min-h-20 bg-[#0a0a0a] border-b border-white/[0.07]">
       <div className="flex w-full min-w-0 max-w-full min-h-20 items-stretch">
         {/* Menu toggle — same row as announcement, flush left */}
         <button

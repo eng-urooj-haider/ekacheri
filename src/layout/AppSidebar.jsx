@@ -25,8 +25,8 @@ const navItems = [
   },
   {
     icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
+    name: "Ekacheri",
+    path: "/ekacheri/index",
   },
 ];
 

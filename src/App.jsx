@@ -13,7 +13,9 @@ import IndexDPF from "./pages/dfp/Index.jsx";
 import CreateDPF from "./pages/dfp/Create.jsx";
 import ShowDPF from "./pages/dfp/Show.jsx";
 import EditDPF from "./pages/dfp/Edit.jsx";
-
+import EkacheriCreate from './pages/ekacheri/Create.jsx';
+import EkacheriIndex from './pages/ekacheri/Index.jsx';
+import SignIn from "./pages/AuthPages/SignIn.jsx";
 export default function App() {
   return (
     <>
@@ -34,6 +36,9 @@ export default function App() {
             <Route path="dfps/create" element={<CreateDPF />} />
             <Route path="dfps/:id" element={<ShowDPF />} />
             <Route path="dfps/:id/edit" element={<EditDPF />} />
+            <Route path="ekacheri/create" element={<EkacheriCreate />} />
+            <Route path="ekacheri/index" element={<EkacheriIndex />} />
+            <Route path="/signin" element={<SignIn />} />
           </Route>
         </Routes>
       </Router>

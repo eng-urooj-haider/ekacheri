@@ -1,47 +1,97 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
+
 import AppLayout from "./layout/AppLayout";
-// import Home from "./pages/Dashboard/City.jsx";
-import IndexCity from "./pages/city/Index.jsx";
-import CreateCity from "./pages/city/Create.jsx";
-import ShowCity from "./pages/city/Show.jsx";
-import EditCity from "./pages/city/Edit.jsx";
-import IndexLocation from "./pages/location/Index.jsx";
-import CreateLocation from "./pages/location/Create.jsx";
-import ShowLocation from "./pages/location/Show.jsx";
-import EditLocation from "./pages/location/Edit.jsx";
-import IndexDPF from "./pages/dfp/Index.jsx";
-import CreateDPF from "./pages/dfp/Create.jsx";
-import ShowDPF from "./pages/dfp/Show.jsx";
-import EditDPF from "./pages/dfp/Edit.jsx";
-import EkacheriCreate from './pages/ekacheri/Create.jsx';
-import EkacheriIndex from './pages/ekacheri/Index.jsx';
-import SignIn from "./pages/AuthPages/SignIn.jsx";
+
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+// import GuestRoute from "./components/auth/GuestRoute";
+
+// import GlobalLoader from "./components/common/GlobalLoader";
+
+import Dashboard from "./pages/Dashboard/Dashboard";
+import SignIn from "./pages/AuthPages/SignIn";
+
+// City
+import IndexCity from "./pages/city/Index";
+import CreateCity from "./pages/city/Create";
+import ShowCity from "./pages/city/Show";
+import EditCity from "./pages/city/Edit";
+
+// Location
+import IndexLocation from "./pages/location/Index";
+import CreateLocation from "./pages/location/Create";
+import ShowLocation from "./pages/location/Show";
+import EditLocation from "./pages/location/Edit";
+
+// Department Focal Person
+import IndexDPF from "./pages/dfp/Index";
+import CreateDPF from "./pages/dfp/Create";
+import ShowDPF from "./pages/dfp/Show";
+import EditDPF from "./pages/dfp/Edit";
+
+// Ekacheri
+import EkacheriIndex from "./pages/ekacheri/Index";
+import EkacheriCreate from "./pages/ekacheri/Create";
+
 export default function App() {
   return (
-    <>
-      <Router>
-        <Routes>
-          {/* Dashboard Layout */}
+    <Router>
+      {/* <GlobalLoader /> */}
+
+      <Routes>
+
+        {/* Guest Routes */}
+        <Route
+          path="/login"
+          element={
+            // <GuestRoute>
+              <SignIn />
+            // </GuestRoute>
+          }
+        />
+
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
-            {/* <Route index path="/" element={<Home />} /> */}
-            <Route path="/cities" element={<IndexCity />} />
-            <Route path="cities/create" element={<CreateCity />} />
-            <Route path="cities/:id" element={<ShowCity />} />
-            <Route path="cities/:id/edit" element={<EditCity />} />
-            <Route path="/locations" element={<IndexLocation />} />
-            <Route path="locations/create" element={<CreateLocation />} />
-            <Route path="locations/:id" element={<ShowLocation />} />
-            <Route path="locations/:id/edit" element={<EditLocation />} />
-            <Route path="/dfps" element={<IndexDPF />} />
-            <Route path="dfps/create" element={<CreateDPF />} />
-            <Route path="dfps/:id" element={<ShowDPF />} />
-            <Route path="dfps/:id/edit" element={<EditDPF />} />
-            <Route path="ekacheri/create" element={<EkacheriCreate />} />
-            <Route path="ekacheri/index" element={<EkacheriIndex />} />
+
+            <Route index element={<Dashboard />} />
+
+            {/* Cities */}
+            <Route path="cities">
+              <Route index element={<IndexCity />} />
+              <Route path="create" element={<CreateCity />} />
+              <Route path=":id" element={<ShowCity />} />
+              <Route path=":id/edit" element={<EditCity />} />
+            </Route>
+
+            {/* Locations */}
+            <Route path="locations">
+              <Route index element={<IndexLocation />} />
+              <Route path="create" element={<CreateLocation />} />
+              <Route path=":id" element={<ShowLocation />} />
+              <Route path=":id/edit" element={<EditLocation />} />
+            </Route>
+
+            {/* Department Focal Persons */}
+            <Route path="dfps">
+              <Route index element={<IndexDPF />} />
+              <Route path="create" element={<CreateDPF />} />
+              <Route path=":id" element={<ShowDPF />} />
+              <Route path=":id/edit" element={<EditDPF />} />
+            </Route>
+
+            {/* Ekacheri */}
+            <Route path="ekacheries">
+              <Route index element={<EkacheriIndex />} />
+              <Route path="create" element={<EkacheriCreate />} />
+            </Route>
+
           </Route>
-            <Route path="/login" element={<SignIn />} />
-        </Routes>
-      </Router>
-    </>
+        </Route>
+
+        {/* 404 */}
+        <Route path="*" element={<h1>404 | Page Not Found</h1>} />
+
+      </Routes>
+    </Router>
   );
 }

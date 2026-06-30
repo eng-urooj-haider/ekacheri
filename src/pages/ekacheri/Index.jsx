@@ -53,7 +53,7 @@ const EkacheriIndex = () => {
         </div>
 
         <Link
-          to="/ekacheri/create"
+          to="/ekacheries/create"
           className="no-print rounded-lg bg-[#fab421] px-4 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"
         >
           + Add EKacheri

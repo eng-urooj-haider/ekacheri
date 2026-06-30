@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 // import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
+import LogoImage from "../components/common/LogoImage";
 
 // Replace with real announcements / news items as needed
 const ANNOUNCEMENTS = [
@@ -102,9 +103,10 @@ const AppHeader = () => {
 
         {/* Mobile logo */}
         <Link to="/" className="flex shrink-0 items-center px-4 lg:hidden">
-          <div className="flex items-center rounded-lg bg-white/[0.97] px-3 py-1.5 ring-1 ring-white/10">
+          {/* <div className="flex items-center rounded-lg bg-white/[0.97] px-3 py-1.5 ring-1 ring-white/10">
             <img className="h-8 w-auto object-contain" src="./images/logo/logo.png" alt="Logo" />
-          </div>
+          </div> */}
+          <LogoImage />
         </Link>
 
         {/* Mobile menu toggle */}

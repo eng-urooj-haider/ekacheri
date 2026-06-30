@@ -2,16 +2,15 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import api from "../../api/axios.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import LogoImage from "../../components/common/LogoImage.jsx";
 const inputClass =
   "w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-[#e5e7eb] ring-1 ring-white/[0.08] transition-all duration-200 placeholder:text-[#6b7280] focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/30";
 
-const errorInputClass =
-  "ring-red-500/50 focus:ring-red-500";
+const errorInputClass = "ring-red-500/50 focus:ring-red-500";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -55,7 +54,6 @@ const SignIn = () => {
       await api.post("/login", {
         email,
         password,
-        remember,
       });
 
       navigate("/");
@@ -63,7 +61,7 @@ const SignIn = () => {
       setError(
         err.response?.status === 401
           ? "Invalid email or password."
-          : "Something went wrong. Please try again."
+          : "Something went wrong. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -74,13 +72,14 @@ const SignIn = () => {
     <div className="flex min-h-screen flex-col items-center justify-center bg-[radial-gradient(ellipse_120%_60%_at_50%_-10%,rgba(250,180,33,0.06),transparent_60%),linear-gradient(180deg,#0c0c0d_0%,#080808_100%)] px-4 py-10">
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
-          <div className="flex items-center rounded-2xl bg-white/[0.97] px-4 py-2.5 ring-1 ring-white/10 shadow-[0_2px_12px_rgba(0,0,0,0.35)]">
+          {/* <div className="flex items-center rounded-2xl bg-white/[0.97] px-4 py-2.5 ring-1 ring-white/10 shadow-[0_2px_12px_rgba(0,0,0,0.35)]">
             <img
               src="/images/logo/logo.png"
               alt="Sui Southern Gas Company Limited"
               className="h-9 w-auto max-w-[170px] object-contain"
             />
-          </div>
+          </div> */}
+          <LogoImage />
         </div>
 
         <div className="overflow-hidden rounded-2xl bg-[#0c0c0d] ring-1 ring-white/[0.07] shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
@@ -119,14 +118,13 @@ const SignIn = () => {
                     }));
                   }}
                   placeholder="name@ssgc.com.pk"
-                  className={`${inputClass} ${errors.email ? errorInputClass : ""
-                    }`}
+                  className={`${inputClass} ${
+                    errors.email ? errorInputClass : ""
+                  }`}
                 />
 
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.email}
-                  </p>
+                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
                 )}
               </div>
 
@@ -162,8 +160,9 @@ const SignIn = () => {
                       }));
                     }}
                     placeholder="••••••••"
-                    className={`${inputClass} ${errors.password ? errorInputClass : ""
-                      } pr-11`}
+                    className={`${inputClass} ${
+                      errors.password ? errorInputClass : ""
+                    } pr-11`}
                   />
 
                   <button
@@ -180,9 +179,7 @@ const SignIn = () => {
                 </div>
 
                 {errors.password && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.password}
-                  </p>
+                  <p className="mt-1 text-sm text-red-500">{errors.password}</p>
                 )}
               </div>
 

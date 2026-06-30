@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router";
+import { Link, useNavigate , useLocation } from "react-router";
 import {
   GridIcon,
   CalenderIcon,
@@ -6,6 +6,8 @@ import {
   HorizontaLDots,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+import api from "../api/axios";
+import LogoImage from '../components/common/LogoImage.jsx' 
 
 const navItems = [
   {
@@ -18,7 +20,7 @@ const navItems = [
     name: "Location",
     path: "/locations",
   },
-   {
+  {
     icon: <CalenderIcon />,
     name: "Department Focal Person",
     path: "/dfps",
@@ -26,18 +28,31 @@ const navItems = [
   {
     icon: <UserCircleIcon />,
     name: "Ekacheri",
-    path: "/ekacheri/index",
+    path: "/ekacheries",
   },
 ];
 
 const AppSidebar = () => {
+const navigate = useNavigate();
+
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
 
   const location = useLocation();
   const isWide = isExpanded || isHovered || isMobileOpen;
 
   const isActive = (path) => location.pathname === path;
+  const handleLogout = async () => {
+    try {
+      await api.post("/logout");
 
+      localStorage.clear();
+      sessionStorage.clear();
+
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const renderMenuItems = (items) => (
     <ul className="flex flex-col gap-1.5">
       {items.map((nav) => {
@@ -97,8 +112,8 @@ const AppSidebar = () => {
           isExpanded || isMobileOpen
             ? "w-[272px]"
             : isHovered
-            ? "w-[272px]"
-            : "w-[84px]"
+              ? "w-[272px]"
+              : "w-[84px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
@@ -115,20 +130,21 @@ const AppSidebar = () => {
       >
         <Link to="/" className="flex items-center gap-3 min-w-0">
           {isWide ? (
-            <div className="flex items-center gap-3 rounded-2xl bg-white/[0.97] px-3.5 py-2.5 ring-1 ring-white/10 shadow-[0_2px_12px_rgba(0,0,0,0.35)]">
-              <img
+            <div className="flex items-center gap-3 rounded-2xl  px-3.5 py-2.5  shadow-[0_2px_12px_rgba(0,0,0,0.35)]">
+              {/* <img
                 src="/images/logo/logo.png"
                 alt="Sui Southern Gas Company Limited"
                 className="h-10 w-auto max-w-[190px] object-contain"
-              />
+              /> */}
+              <LogoImage  maxWidth="200px" />
             </div>
           ) : (
             <div className="flex size-12 items-center justify-center rounded-xl bg-white/[0.97] ring-1 ring-white/10 shadow-[0_2px_12px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:scale-105">
-              <img
+              {/* <img
                 src="/images/logo/logo.png"
                 alt="Sui Southern Gas Company Limited"
                 className="size-8 object-contain"
-              />
+              /> */}
             </div>
           )}
         </Link>
@@ -156,20 +172,18 @@ const AppSidebar = () => {
       </div>
 
       {/* Footer */}
-      {isWide && (
-        <div className="shrink-0 border-t border-white/[0.06] px-4 py-4">
-          <div className="relative overflow-hidden rounded-2xl bg-white/[0.025] px-4 py-3.5 ring-1 ring-white/[0.06]">
-            <div className="pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-[#fab421]/10 blur-2xl" />
-            <p className="relative text-xs font-semibold text-gray-200">
-              Need help?
-            </p>
-            <p className="relative mt-1 text-[11px] leading-relaxed text-gray-500">
-              Check our docs or reach out to support — we usually reply within
-              a few hours.
-            </p>
-          </div>
-        </div>
-      )}
+      <div className="px-3.5 pb-4">
+        <button
+          onClick={handleLogout}
+          className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 transition-all duration-300 hover:bg-red-500/10 hover:text-red-300"
+        >
+          <span className="flex size-8 items-center justify-center rounded-lg">
+            <UserCircleIcon />
+          </span>
+
+          {isWide && <span>Logout</span>}
+        </button>
+      </div>
     </aside>
   );
 };

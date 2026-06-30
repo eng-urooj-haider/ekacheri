@@ -38,8 +38,8 @@ export default function App() {
             <Route path="dfps/:id/edit" element={<EditDPF />} />
             <Route path="ekacheri/create" element={<EkacheriCreate />} />
             <Route path="ekacheri/index" element={<EkacheriIndex />} />
-            <Route path="/signin" element={<SignIn />} />
           </Route>
+            <Route path="/login" element={<SignIn />} />
         </Routes>
       </Router>
     </>

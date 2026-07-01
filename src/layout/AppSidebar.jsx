@@ -1,39 +1,39 @@
-import { Link, useNavigate , useLocation } from "react-router";
-import {
-  GridIcon,
-  CalenderIcon,
-  UserCircleIcon,
-  HorizontaLDots,
-} from "../icons";
+import { Link, useNavigate, useLocation } from "react-router";
+// import {
+//   GridIcon,
+//   CalenderIcon,
+//   UserCircleIcon,
+//   HorizontaLDots,
+// } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import api from "../api/axios";
-import LogoImage from '../components/common/LogoImage.jsx' 
+import LogoImage from '../components/common/LogoImage.jsx'
 
 const navItems = [
   {
-    icon: <GridIcon />,
+    // icon: <GridIcon />,
     name: "City",
     path: "/cities",
   },
   {
-    icon: <CalenderIcon />,
+    // icon: <CalenderIcon />,
     name: "Location",
     path: "/locations",
   },
   {
-    icon: <CalenderIcon />,
+    // icon: <CalenderIcon />,
     name: "Department Focal Person",
     path: "/dfps",
   },
   {
-    icon: <UserCircleIcon />,
+    // icon: <UserCircleIcon />,
     name: "Ekacheri",
     path: "/ekacheries",
   },
 ];
 
 const AppSidebar = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
 
@@ -62,10 +62,9 @@ const navigate = useNavigate();
             <Link
               to={nav.path}
               className={`group relative flex items-center w-full gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-300 ease-out
-                ${
-                  active
-                    ? "bg-gradient-to-r from-[#fab421]/[0.13] via-white/[0.05] to-transparent text-white"
-                    : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-200"
+                ${active
+                  ? "bg-gradient-to-r from-[#fab421]/[0.13] via-white/[0.05] to-transparent text-white"
+                  : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-200"
                 }
                 ${!isWide ? "lg:justify-center lg:px-0 lg:py-3" : ""}`}
             >
@@ -78,14 +77,13 @@ const navigate = useNavigate();
               {/* Icon */}
               <span
                 className={`relative flex shrink-0 items-center justify-center rounded-lg transition-all duration-300
-                  ${
-                    active
-                      ? "size-8 bg-[#fab421]/[0.12] text-[#fab421] ring-1 ring-[#fab421]/20"
-                      : "size-8 text-gray-500 group-hover:text-gray-200 group-hover:bg-white/[0.04]"
+                  ${active
+                    ? "size-8 bg-[#fab421]/[0.12] text-[#fab421] ring-1 ring-[#fab421]/20"
+                    : "size-8 text-gray-500 group-hover:text-gray-200 group-hover:bg-white/[0.04]"
                   }
                   [&_svg]:size-[18px]`}
               >
-                {nav.icon}
+                {/* {nav.icon} */}
               </span>
 
               {isWide && (
@@ -108,12 +106,11 @@ const navigate = useNavigate();
         bg-[radial-gradient(ellipse_120%_60%_at_50%_-10%,rgba(250,180,33,0.07),transparent_60%),linear-gradient(180deg,#0c0c0d_0%,#080808_100%)]
         border-r border-white/[0.07] shadow-[6px_0_40px_rgba(0,0,0,0.55)]
         lg:mt-0
-        ${
-          isExpanded || isMobileOpen
+        ${isExpanded || isMobileOpen
+          ? "w-[272px]"
+          : isHovered
             ? "w-[272px]"
-            : isHovered
-              ? "w-[272px]"
-              : "w-[84px]"
+            : "w-[84px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
@@ -130,21 +127,21 @@ const navigate = useNavigate();
       >
         <Link to="/" className="flex items-center gap-3 min-w-0">
           {isWide ? (
-            <div className="flex items-center gap-3 rounded-2xl  px-3.5 py-2.5  shadow-[0_2px_12px_rgba(0,0,0,0.35)]">
+            <div className="flex items-center gap-3 rounded-2xl  px-3.5 py-2.5">
               {/* <img
                 src="/images/logo/logo.png"
                 alt="Sui Southern Gas Company Limited"
                 className="h-10 w-auto max-w-[190px] object-contain"
               /> */}
-              <LogoImage  maxWidth="200px" />
+              <LogoImage maxWidth="200px" />
             </div>
           ) : (
-            <div className="flex size-12 items-center justify-center rounded-xl bg-white/[0.97] ring-1 ring-white/10 shadow-[0_2px_12px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:scale-105">
-              {/* <img
+            <div className="flex size-12 w-[90%] items-center justify-center rounded-xl  transition-transform duration-300 hover:scale-105">
+              <img
                 src="/images/logo/logo.png"
                 alt="Sui Southern Gas Company Limited"
-                className="size-8 object-contain"
-              /> */}
+                className="size-96 object-contain"
+              />
             </div>
           )}
         </Link>
@@ -163,7 +160,9 @@ const navigate = useNavigate();
                 <span className="h-px flex-1 bg-white/[0.07]" />
               </>
             ) : (
-              <HorizontaLDots className="size-5 text-gray-600" />
+              <svg className="size-5 text-gray-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fillRule="evenodd" clipRule="evenodd" d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" />
+              </svg>
             )}
           </h2>
 
@@ -178,7 +177,7 @@ const navigate = useNavigate();
           className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 transition-all duration-300 hover:bg-red-500/10 hover:text-red-300"
         >
           <span className="flex size-8 items-center justify-center rounded-lg">
-            <UserCircleIcon />
+            {/* <UserCircleIcon /> */}
           </span>
 
           {isWide && <span>Logout</span>}

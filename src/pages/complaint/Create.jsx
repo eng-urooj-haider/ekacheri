@@ -3,6 +3,7 @@
  * (except the Attendees field, which is genuinely interactive).
  * Matches the dark/amber dashboard theme (sidebar, header, DataTable).
  */
+
 import AddAttendeesMultiSelect from "../../components/multiselect/AddAttendees";
 
 const FieldRow = ({ label, required, children, hint }) => (
@@ -20,111 +21,86 @@ const FieldRow = ({ label, required, children, hint }) => (
 
 const inputClass =
   "w-full max-w-md rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.08] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/30";
-const chipBase =
-  "rounded-lg px-3 py-1.5 text-xs font-medium ring-1 transition-colors duration-150";
-const chipSelected = `${chipBase} bg-[#fab421]/15 text-[#fab421] ring-[#fab421]/30`;
-const chipUnselected = `${chipBase} bg-white/[0.04] text-gray-400 ring-white/[0.07]`;
-
-const EkacheriCreate = () => {
+const ComplaintCreate = () => {
   return (
     <div className="mx-auto w-full max-w-4xl">
       <div className="overflow-hidden rounded-2xl bg-[#0c0c0d] ring-1 ring-white/[0.07]">
         {/* Header */}
         <div className="border-b border-white/[0.07] px-5 py-4">
           <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-gray-200">
-            Add New E-Kachehri
+            Add New Complaint
           </h2>
         </div>
 
         {/* Fields */}
         <div>
-          <FieldRow label="Kachehri Number" required>
+          <FieldRow label="Customer Number" required>
             <input type="text" placeholder="e.g. 3" className={inputClass} />
           </FieldRow>
 
-          <FieldRow label="Add Attendees" hint="Select one or more attendees.">
-            <AddAttendeesMultiSelect
-              showLabel={false}
-              showHelperText={false}
-              className="max-w-md"
-            />
-          </FieldRow>
-
-          <FieldRow label="Venue" required>
+          <FieldRow label="Complainant Name" required>
             <input
               type="text"
               placeholder="Enter venue"
               className={inputClass}
             />
           </FieldRow>
-
-          <FieldRow label="Live Session">
-            <div className="flex items-center gap-6 pt-1">
-              <label className="flex items-center gap-2 text-sm text-gray-300">
-                <input
-                  type="radio"
-                  name="liveSession"
-                  className="size-4 accent-[#fab421]"
-                />
-                Yes
-              </label>
-              <label className="flex items-center gap-2 text-sm text-gray-300">
-                <input
-                  type="radio"
-                  name="liveSession"
-                  className="size-4 accent-[#fab421]"
-                />
-                No
-              </label>
-            </div>
-          </FieldRow>
-
-          <FieldRow
-            label="Kachehri Date"
-            required
-            hint="Displayed using your browser's date format. Saved as yyyy-mm-dd."
-          >
-            <input type="date" className={inputClass} />
-          </FieldRow>
-
-          <FieldRow label="Kachehri Time" required>
+          <FieldRow label="Telco/Network" required>
             <select className={`${inputClass} max-w-xs`} defaultValue="">
               <option value="" disabled>
-                — Select Time —
+                — Select Network —
               </option>
-              <option>09:00 AM</option>
-              <option>10:00 AM</option>
-              <option>11:00 AM</option>
-              <option>02:00 PM</option>
-              <option>03:00 PM</option>
+              <option>Mobilink</option>
+              <option>Telenor</option>
+              <option>Ufone</option>
+              <option>Warid</option>
+              <option>Zong</option>
+            </select>
+          </FieldRow>
+          <FieldRow label="Department" hint="Select one or more department.">
+            <AddAttendeesMultiSelect
+              showLabel={false}
+              showHelperText={false}
+              className="max-w-md"
+            />
+          </FieldRow>
+          <FieldRow label="Complaint Type" required>
+            <select className={`${inputClass} max-w-xs`} defaultValue="">
+              <option value="" disabled>
+                — Select Complaint Type —
+              </option>
+              <option>Complaint</option>
+              <option>Grievance</option>
+              <option>Suggestion</option>
+              <option>Information Seeking</option>
             </select>
           </FieldRow>
 
-          <FieldRow label="Location" required>
+          <FieldRow label="Complaint Details" required>
             <input
               type="text"
-              placeholder="Enter location"
+              placeholder="Enter complaint details"
               className={inputClass}
             />
           </FieldRow>
-
-          <FieldRow label="Select DFPs" hint="Select one or more DFPs.">
-            <div className="flex max-w-md flex-wrap gap-2 rounded-xl bg-white/[0.04] p-2.5 ring-1 ring-white/[0.08]">
-              <span className={chipSelected}>DFP — Karachi Central</span>
-              <span className={chipSelected}>DFP — Karachi South</span>
-              <span className={chipUnselected}>DFP — Hyderabad</span>
-            </div>
+          <FieldRow label="Prority" required>
+            <select className={`${inputClass} max-w-xs`} defaultValue="">
+              <option value="" disabled>
+                Select Prority
+              </option>
+              <option>Normal</option>
+              <option>urgent</option>
+              <option>Immediate</option>
+              <option>Cancelled</option>
+            </select>
           </FieldRow>
-
           <FieldRow label="Status" required>
             <select className={`${inputClass} max-w-xs`} defaultValue="">
               <option value="" disabled>
-                Select Status
+                Select Prority
               </option>
-              <option>Pending</option>
-              <option>Scheduled</option>
-              <option>Completed</option>
-              <option>Cancelled</option>
+              <option>Open</option>
+              <option>Close</option>
             </select>
           </FieldRow>
         </div>
@@ -155,4 +131,4 @@ const EkacheriCreate = () => {
   );
 };
 
-export default EkacheriCreate;
+export default ComplaintCreate;

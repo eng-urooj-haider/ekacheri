@@ -1,37 +1,55 @@
 import { Link, useNavigate, useLocation } from "react-router";
-// import {
-//   GridIcon,
-//   CalenderIcon,
-//   UserCircleIcon,
-//   HorizontaLDots,
-// } from "../icons";
+import {
+  Building2,
+  MapPin,
+  Users,
+  FileText,
+  MessageSquareWarning,
+  BarChart3,
+  ShieldCheck,
+  LogOut
+} from "lucide-react";
 import { useSidebar } from "../context/SidebarContext";
 import api from "../api/axios";
-import LogoImage from '../components/common/LogoImage.jsx'
+import LogoImage from "../components/common/LogoImage.jsx";
 
 const navItems = [
   {
-    // icon: <GridIcon />,
+    icon: <Building2 size={18} strokeWidth={2} />,
     name: "City",
     path: "/cities",
   },
   {
-    // icon: <CalenderIcon />,
+    icon: <MapPin size={18} strokeWidth={2} />,
     name: "Location",
     path: "/locations",
   },
   {
-    // icon: <CalenderIcon />,
+    icon: <Users size={18} strokeWidth={2} />,
     name: "Department Focal Person",
     path: "/dfps",
   },
   {
-    // icon: <UserCircleIcon />,
-    name: "Ekacheri",
+    icon: <FileText size={18} strokeWidth={2} />,
+    name: "E-kacheri",
     path: "/ekacheries",
   },
+  {
+    icon: <MessageSquareWarning size={18} strokeWidth={2} />,
+    name: "E-kacheri Complaints",
+    path: "/complaints",
+  },
+  {
+    icon: <BarChart3 size={18} strokeWidth={2} />,
+    name: "E-kacheri Reports",
+    path: "/reports",
+  },
+  {
+    icon: <ShieldCheck size={18} strokeWidth={2} />,
+    name: "Admin Users",
+    path: "/users",
+  },
 ];
-
 const AppSidebar = () => {
   const navigate = useNavigate();
 
@@ -62,9 +80,10 @@ const AppSidebar = () => {
             <Link
               to={nav.path}
               className={`group relative flex items-center w-full gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-300 ease-out
-                ${active
-                  ? "bg-gradient-to-r from-[#fab421]/[0.13] via-white/[0.05] to-transparent text-white"
-                  : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-200"
+                ${
+                  active
+                    ? "bg-gradient-to-r from-[#fab421]/[0.13] via-white/[0.05] to-transparent text-white"
+                    : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-200"
                 }
                 ${!isWide ? "lg:justify-center lg:px-0 lg:py-3" : ""}`}
             >
@@ -77,13 +96,14 @@ const AppSidebar = () => {
               {/* Icon */}
               <span
                 className={`relative flex shrink-0 items-center justify-center rounded-lg transition-all duration-300
-                  ${active
-                    ? "size-8 bg-[#fab421]/[0.12] text-[#fab421] ring-1 ring-[#fab421]/20"
-                    : "size-8 text-gray-500 group-hover:text-gray-200 group-hover:bg-white/[0.04]"
+                  ${
+                    active
+                      ? "size-8 bg-[#fab421]/[0.12] text-[#fab421] ring-1 ring-[#fab421]/20"
+                      : "size-8 text-gray-500 group-hover:text-gray-200 group-hover:bg-white/[0.04]"
                   }
                   [&_svg]:size-[18px]`}
               >
-                {/* {nav.icon} */}
+                {nav.icon}
               </span>
 
               {isWide && (
@@ -106,11 +126,12 @@ const AppSidebar = () => {
         bg-[radial-gradient(ellipse_120%_60%_at_50%_-10%,rgba(250,180,33,0.07),transparent_60%),linear-gradient(180deg,#0c0c0d_0%,#080808_100%)]
         border-r border-white/[0.07] shadow-[6px_0_40px_rgba(0,0,0,0.55)]
         lg:mt-0
-        ${isExpanded || isMobileOpen
-          ? "w-[272px]"
-          : isHovered
+        ${
+          isExpanded || isMobileOpen
             ? "w-[272px]"
-            : "w-[84px]"
+            : isHovered
+              ? "w-[272px]"
+              : "w-[84px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
@@ -160,8 +181,17 @@ const AppSidebar = () => {
                 <span className="h-px flex-1 bg-white/[0.07]" />
               </>
             ) : (
-              <svg className="size-5 text-gray-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" clipRule="evenodd" d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" />
+              <svg
+                className="size-5 text-gray-600"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z"
+                />
               </svg>
             )}
           </h2>
@@ -177,7 +207,7 @@ const AppSidebar = () => {
           className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 transition-all duration-300 hover:bg-red-500/10 hover:text-red-300"
         >
           <span className="flex size-8 items-center justify-center rounded-lg">
-            {/* <UserCircleIcon /> */}
+             <LogOut size={18} />
           </span>
 
           {isWide && <span>Logout</span>}

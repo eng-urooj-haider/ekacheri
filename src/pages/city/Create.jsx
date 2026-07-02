@@ -1,6 +1,28 @@
+import { useState } from "react";
 import { Link } from "react-router";
-
+import { storeCity } from "../../api/CityApi.jsx";
 const AddCity = () => {
+  // const [isActive, setIsActive] = useState(true);
+  const [saveCity, setSaveCity] = useState({ title: "", status: 0 });
+  const handleChange = (e) => {
+    try {
+      setSaveCity({ ...saveCity, [e.target.name]: e.target.value });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const submitHandler = async (e) => {
+    try {
+      e.preventDefault();
+      await storeCity(saveCity);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const isActive = saveCity.status === 1;
+  const toggleStatus = () => {
+    setSaveCity((prev) => ({ ...prev, status: prev.status === 1 ? 0 : 1 }));
+  };
   return (
     <div className="mx-auto w-full max-w-lg min-w-0">
       {/* Breadcrumb */}
@@ -27,19 +49,24 @@ const AddCity = () => {
               strokeWidth="1.6"
               strokeLinejoin="round"
             />
-            <circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+            <circle
+              cx="12"
+              cy="10"
+              r="2.4"
+              stroke="currentColor"
+              strokeWidth="1.6"
+            />
           </svg>
         </div>
         <div>
           <h1 className="text-xl font-semibold text-gray-900">Add City</h1>
-          <p className="mt-0.5 text-sm text-gray-500">
-          </p>
+          <p className="mt-0.5 text-sm text-gray-500"></p>
         </div>
       </div>
 
       {/* Form card */}
       <div className="w-full rounded-2xl bg-[#0c0c0d] ring-1 ring-white/[0.07]">
-        <form className="px-7 py-7">
+        <form className="px-7 py-7" onSubmit={submitHandler}>
           <div>
             <label
               htmlFor="city-name"
@@ -48,7 +75,8 @@ const AddCity = () => {
               City Name <span className="text-[#fab421]">*</span>
             </label>
             <input
-              id="city-name"
+              onChange={handleChange}
+              name="title"
               type="text"
               placeholder="e.g. Lahore"
               className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
@@ -58,21 +86,37 @@ const AddCity = () => {
           {/* Status toggle */}
           <div className="mt-6 flex items-center justify-between rounded-xl bg-white/[0.03] px-4 py-3.5 ring-1 ring-white/[0.06]">
             <div>
-              <p className="text-sm font-medium text-gray-200">Active</p>
+              <p className="text-sm font-medium text-gray-200">
+                {isActive ? "Active" : "Inactive"}
+              </p>
               <p className="mt-0.5 text-xs text-gray-500">
                 Inactive cities are hidden from customer-facing forms.
               </p>
             </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked="true"
-              className="relative h-6 w-11 shrink-0 rounded-full bg-[#fab421] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fab421]/40"
-            >
-              <span className="absolute left-[22px] top-0.5 size-5 rounded-full bg-black transition-transform" />
-            </button>
+            <div className="flex shrink-0 items-center gap-2.5">
+              <span
+                className={`text-xs font-medium transition-colors ${
+                  isActive ? "text-[#fab421]" : "text-gray-500"
+                }`}
+              >
+                {isActive ? "Active" : "Inactive"}
+              </span>
+              <button
+                type="button"
+                name="status"
+                role="switch"
+                aria-checked={isActive}
+                onClick={toggleStatus}
+                className={`relative h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fab421]/40
+        ${isActive ? "bg-[#fab421]" : "bg-white/[0.12]"}`}
+              >
+                <span
+                  className={`absolute top-0.5 size-5 rounded-full bg-black transition-transform duration-200
+          ${isActive ? "left-[22px]" : "left-0.5"}`}
+                />
+              </button>
+            </div>
           </div>
-
           {/* Actions */}
           <div className="mt-7 flex items-center justify-end gap-3 border-t border-white/[0.06] pt-6">
             <Link

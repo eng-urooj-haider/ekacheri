@@ -2,7 +2,6 @@ import { useLoading } from "../../context/LoadingContext";
 
 const GlobalLoader = () => {
   const { loading } = useLoading();
-  console.log('i m oader',loading)
 
   if (!loading) return null;
   console.log('i m inside loader')

@@ -1,9 +1,9 @@
 import { Link } from "react-router";
+import { useEffect, useState } from "react";
 import DataTable from "../Dashboard/DataTable";
-import { cities } from "../../data/users";
-
+import { getCities } from "../../api/CityApi.jsx";
 const columns = [
-  { accessorKey: "name", header: "City Name", meta: { width: "30%" } },
+  { accessorKey: "title", header: "City Name", meta: { width: "30%" } },
   { accessorKey: "created_at", header: "Created At", meta: { width: "16%" } },
   {
     id: "actions",
@@ -30,6 +30,15 @@ const columns = [
 ];
 
 const CityList = () => {
+  const [cities, setCities] = useState([]);
+  useEffect(() => {
+    const fetchCities = async () => {
+      const data = await getCities();
+      setCities(data.data || []);
+    };
+    fetchCities();
+  }, []);
+
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -53,6 +62,7 @@ const CityList = () => {
         data={cities}
         pageSize={10}
         searchPlaceholder="Search cities…"
+        showExportButtons={false}
       />
     </div>
   );

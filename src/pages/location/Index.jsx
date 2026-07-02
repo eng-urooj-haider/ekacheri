@@ -54,6 +54,7 @@ const LocationList = () => {
         data={cities}
         pageSize={10}
         searchPlaceholder="Search locations…"
+        showExportButtons = {false}
       />
     </div>
   );

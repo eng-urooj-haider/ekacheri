@@ -71,6 +71,7 @@ const EkacheriIndex = () => {
         data={cities}
         pageSize={10}
         searchPlaceholder="Search focal persons…"
+        showExportButtons = {true}
       />
     </div>
   );

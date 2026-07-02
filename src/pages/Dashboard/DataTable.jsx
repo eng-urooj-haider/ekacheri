@@ -16,6 +16,7 @@ const DataTable = ({
   data,
   pageSize = 10,
   searchPlaceholder = "Search…",
+  showExportButtons,
 }) => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -81,7 +82,7 @@ const DataTable = ({
       row
         .getVisibleCells()
         .filter((cell) => cell.column.id !== "actions") // skip Actions column
-        .map((cell) => String(cell.getValue() ?? ""))
+        .map((cell) => String(cell.getValue() ?? "")),
     );
 
     const tableHeaders = table
@@ -127,24 +128,25 @@ const DataTable = ({
             className="w-full bg-transparent text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none"
           />
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={handleExportExcel}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
-          >
-            Export Excel
-          </button>
-          <button
-            onClick={handleExportPdf}
-            className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-gray-200 ring-1 ring-white/[0.1] transition hover:bg-white/[0.1]"
-          >
-            Download PDF
-          </button>
-          <span className="shrink-0 text-xs text-gray-500">
-            {totalRows} {totalRows === 1 ? "result" : "results"}
-          </span>
-        </div>
+        {showExportButtons && (
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleExportExcel}
+              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
+            >
+              Export Excel
+            </button>
+            <button
+              onClick={handleExportPdf}
+              className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-gray-200 ring-1 ring-white/[0.1] transition hover:bg-white/[0.1]"
+            >
+              Download PDF
+            </button>
+            <span className="shrink-0 text-xs text-gray-500">
+              {totalRows} {totalRows === 1 ? "result" : "results"}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Table — scroll only inside this wrapper on small screens */}

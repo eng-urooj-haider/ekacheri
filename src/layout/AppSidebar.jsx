@@ -7,7 +7,7 @@ import {
   MessageSquareWarning,
   BarChart3,
   ShieldCheck,
-  LogOut
+  LogOut,
 } from "lucide-react";
 import { useSidebar } from "../context/SidebarContext";
 import api from "../api/axios";
@@ -207,7 +207,7 @@ const AppSidebar = () => {
           className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 transition-all duration-300 hover:bg-red-500/10 hover:text-red-300"
         >
           <span className="flex size-8 items-center justify-center rounded-lg">
-             <LogOut size={18} />
+            <LogOut size={18} />
           </span>
 
           {isWide && <span>Logout</span>}

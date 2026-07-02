@@ -4,7 +4,7 @@ import "./index.css";
 // import "flatpickr/dist/flatpickr.css";
 import App from "./App";
 import { LoadingProvider } from "./context/LoadingContext";
-import AxiosInterceptor from "./components/common/AxiosInterceptor";
+import AxiosInterceptor from "./api/AxiosInterceptor";
 createRoot(document.getElementById("root")).render(
   <LoadingProvider>
     <AxiosInterceptor>

@@ -65,6 +65,7 @@ const UserIndex = () => {
         data={cities}
         pageSize={10}
         searchPlaceholder="Search focal persons…"
+        showExportButtons = {false}
       />
     </div>
   );

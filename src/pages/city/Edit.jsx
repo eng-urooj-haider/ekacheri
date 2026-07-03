@@ -7,7 +7,7 @@ const AddCity = () => {
   // const navigate = useNavigate();
 
   const [saveCity, setSaveCity] = useState({ title: "", status: 0 });
-const isActive = saveCity.status === 1;
+  const isActive = saveCity.status === 1;
   // const [errors, setErrors] = useState({});
   useEffect(() => {
     const fetchCity = async () => {
@@ -24,6 +24,9 @@ const isActive = saveCity.status === 1;
   function submitHandler(e) {
     e.preventDefault();
   }
+  const toggleStatus = () => {
+    setSaveCity((prev) => ({ ...prev, status: prev.status === 1 ? 0 : 1 }));
+  };
   return (
     <div className="mx-auto w-full max-w-lg min-w-0">
       {/* Breadcrumb */}
@@ -76,7 +79,9 @@ const isActive = saveCity.status === 1;
               City Name <span className="text-[#fab421]">*</span>
             </label>
             <input
-              id="city-name" name="title" value={saveCity.title}
+              id="city-name"
+              name="title"
+              value={saveCity.title}
               type="text"
               placeholder="e.g. Lahore"
               className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
@@ -95,9 +100,14 @@ const isActive = saveCity.status === 1;
               type="button"
               role="switch"
               aria-checked={isActive}
-              className="relative h-6 w-11 shrink-0 rounded-full bg-[#fab421] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fab421]/40"
+              onClick={toggleStatus}
+              className={`relative h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fab421]/40
+                  ${isActive ? "bg-[#fab421]" : "bg-white/[0.12]"}`}
             >
-              <span className="absolute left-[22px] top-0.5 size-5 rounded-full bg-black transition-transform" />
+              <span
+                className={`absolute top-0.5 size-5 rounded-full bg-black transition-transform duration-200
+                    ${isActive ? "left-[22px]" : "left-0.5"}`}
+              />
             </button>
           </div>
 

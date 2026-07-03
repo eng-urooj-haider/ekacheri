@@ -1,6 +1,29 @@
-import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
+import { getCity } from "../../api/CityApi.jsx";
 
 const AddCity = () => {
+  const { id } = useParams();
+  // const navigate = useNavigate();
+
+  const [saveCity, setSaveCity] = useState({ title: "", status: 0 });
+const isActive = saveCity.status === 1;
+  // const [errors, setErrors] = useState({});
+  useEffect(() => {
+    const fetchCity = async () => {
+      try {
+        const res = await getCity(id);
+        const city = res.data; // adjust if your API wraps differently
+        setSaveCity({ title: city.title, status: city.status });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCity();
+  }, [id]);
+  function submitHandler(e) {
+    e.preventDefault();
+  }
   return (
     <div className="mx-auto w-full max-w-lg min-w-0">
       {/* Breadcrumb */}
@@ -27,19 +50,24 @@ const AddCity = () => {
               strokeWidth="1.6"
               strokeLinejoin="round"
             />
-            <circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+            <circle
+              cx="12"
+              cy="10"
+              r="2.4"
+              stroke="currentColor"
+              strokeWidth="1.6"
+            />
           </svg>
         </div>
         <div>
           <h1 className="text-xl font-semibold text-gray-900">Edit City</h1>
-          <p className="mt-0.5 text-sm text-gray-500">
-          </p>
+          <p className="mt-0.5 text-sm text-gray-500"></p>
         </div>
       </div>
 
       {/* Form card */}
       <div className="w-full rounded-2xl bg-[#0c0c0d] ring-1 ring-white/[0.07]">
-        <form className="px-7 py-7">
+        <form className="px-7 py-7" onSubmit={submitHandler}>
           <div>
             <label
               htmlFor="city-name"
@@ -48,7 +76,7 @@ const AddCity = () => {
               City Name <span className="text-[#fab421]">*</span>
             </label>
             <input
-              id="city-name"
+              id="city-name" name="title" value={saveCity.title}
               type="text"
               placeholder="e.g. Lahore"
               className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
@@ -66,7 +94,7 @@ const AddCity = () => {
             <button
               type="button"
               role="switch"
-              aria-checked="true"
+              aria-checked={isActive}
               className="relative h-6 w-11 shrink-0 rounded-full bg-[#fab421] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fab421]/40"
             >
               <span className="absolute left-[22px] top-0.5 size-5 rounded-full bg-black transition-transform" />

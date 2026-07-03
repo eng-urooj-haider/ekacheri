@@ -10,7 +10,6 @@ const AxiosInterceptor = ({ children }) => {
 
     const requestInterceptor = api.interceptors.request.use(
       (config) => {
-        console.log("request coming")
         requests++;
         setLoading(true);
         return config;

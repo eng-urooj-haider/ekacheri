@@ -1,22 +1,23 @@
 import api from "./axios.jsx";
 
 const getCities = async () => {
-  try {
-    const response = await api.get("/cities");
-    console.log('hyhtyutu',response.data);
-    return response.data;
-  } catch (err) {
-    console.log(err);
-  }
-};
-const storeCity = async (data) => {
-  try {
-    const response = await api.post("/cities", data);
-    console.log(response.data);
-    return response.data;
-  } catch (err) {
-    console.log(err);
-  }
+  const response = await api.get("/cities");
+  return response.data;
 };
 
-export { getCities, storeCity };
+const getCity = async (id) => {
+  const response = await api.get(`/cities/${id}/edit`);
+  return response.data;
+};
+
+const storeCity = async (data) => {
+  const response = await api.post("/cities", data);
+  return response.data;
+};
+
+const updateCity = async (id, data) => {
+  const response = await api.put(`/cities/${id}`, data);
+  return response.data;
+};
+
+export { getCities, getCity, storeCity, updateCity };

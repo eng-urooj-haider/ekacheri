@@ -10,7 +10,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useSidebar } from "../context/SidebarContext";
-import api from "../api/axios";
+import api from "../api/axios.js";
 import LogoImage from "../components/common/LogoImage.jsx";
 
 const navItems = [

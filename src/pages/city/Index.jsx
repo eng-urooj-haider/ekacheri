@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import DataTable from "../Dashboard/DataTable";
-import { getCities } from "../../api/CityApi.jsx";
+import { getCities } from "../../api/CityApi.js";
 const columns = [
   { accessorKey: "title", header: "City Name", meta: { width: "30%" } },
   { accessorKey: "created_at", header: "Created At", meta: { width: "16%" } },

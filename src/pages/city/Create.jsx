@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { storeCity } from "../../api/CityApi.jsx";
+import { storeCity } from "../../api/CityApi.js";
 import { useNavigate } from "react-router";
 const AddCity = () => {
   // const [isActive, setIsActive] = useState(true);
@@ -10,7 +10,7 @@ const AddCity = () => {
   const handleChange = (e) => {
     try {
       setSaveCity({ ...saveCity, [e.target.name]: e.target.value });
-      setError('')
+      setError("");
     } catch (err) {
       console.log(err);
     }

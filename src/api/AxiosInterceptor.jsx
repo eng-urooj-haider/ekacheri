@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import api from "./axios";
+import api from "./axios.js";
 import { useLoading } from "../context/LoadingContext";
 
 const AxiosInterceptor = ({ children }) => {

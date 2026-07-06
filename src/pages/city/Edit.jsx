@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { getCity } from "../../api/CityApi.jsx";
+import { getCity } from "../../api/CityApi.js";
 
 const AddCity = () => {
   const { id } = useParams();

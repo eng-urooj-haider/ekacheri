@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
-import api from "../../api/axios.jsx";
+import api from "../../api/axios.js";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import LogoImage from "../../components/common/LogoImage.jsx";
 const inputClass =

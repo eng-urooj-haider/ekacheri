@@ -53,5 +53,5 @@ const AddCity = () => {
       />
     );
   };
-
-  export default AddCity;
+}
+export default AddCity;

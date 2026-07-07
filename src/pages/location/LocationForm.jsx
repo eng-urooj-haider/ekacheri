@@ -6,6 +6,8 @@ export default function LocationForm({
   handleChange,
   toggleButton,
   isActive,
+  errors,
+  handleSubmit
 }) {
   return (
     <div className="mx-auto w-full max-w-lg min-w-0">
@@ -49,7 +51,7 @@ export default function LocationForm({
 
       {/* Form card */}
       <div className="w-full rounded-2xl bg-[#0c0c0d] ring-1 ring-white/[0.07]">
-        <form className="px-7 py-7">
+        <form className="px-7 py-7"  onSubmit={handleSubmit}>
           <div className="space-y-6">
             {/* City select */}
             <div>
@@ -98,6 +100,8 @@ export default function LocationForm({
                     strokeLinejoin="round"
                   />
                 </svg>
+            {errors && <p className="text-red-600">{errors.city}</p>}
+
               </div>
             </div>
 
@@ -119,6 +123,7 @@ export default function LocationForm({
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
             </div>
+            <p className="text-red-600">{errors.location}</p>
 
             {/* Status toggle */}
             <div className="flex items-center justify-between rounded-xl bg-white/[0.03] px-4 py-3.5 ring-1 ring-white/[0.06]">

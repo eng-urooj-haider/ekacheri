@@ -11,4 +11,8 @@ const getLocation = (id) => {
   api.get(`/Locations/${id}/edit`);
   return Response.data;
 };
-export { getLocations, save ,getLocation};
+const update = (id) => {
+  api.get(`/Locations/${id}/edit`);
+  return Response.data;
+};
+export { getLocations, save ,getLocation , update};

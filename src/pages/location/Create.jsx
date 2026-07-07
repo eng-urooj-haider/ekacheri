@@ -1,33 +1,15 @@
 import LocationForm from "./LocationForm";
-import { useEffect, useState } from "react";
-import { getCities } from "../../api/CityApi.js";
+import useLocationForm from "../../hooks/useLocationForm";
 const AddLocation = () => {
-  const [cities, setCities] = useState([]);
-  const [location, setLocation] = useState({});
-  const toggleButton = () => {
-    setLocation((pre) => ({ ...pre, status: pre.status === 1 ? 0 : 1 }));
-  };
-  const isActive = location.status === 1;
-  useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await getCities();
-        setCities(response.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchCities();
-  }, []);
-  const handleChange = (e) => {
-    setLocation({ ...location, [e.target.name]: e.target.value });
-  };
+  const {cities , handleChange , isActive ,toggleButton , errors , handleSubmit} = useLocationForm()
   return (
     <LocationForm
       cities={cities}
       handleChange={handleChange}
       isActive={isActive}
       toggleButton={toggleButton}
+      errors={errors}
+      handleSubmit={handleSubmit}
     />
   );
 };

@@ -7,7 +7,10 @@ export default function LocationForm({
   toggleButton,
   isActive,
   errors,
-  handleSubmit
+  handleSubmit,
+  heading,
+  location,
+  btnText,
 }) {
   return (
     <div className="mx-auto w-full max-w-lg min-w-0">
@@ -17,7 +20,7 @@ export default function LocationForm({
           Locations
         </Link>
         <span className="text-gray-600">/</span>
-        <span className="text-gray-400">Add Location</span>
+        <span className="text-gray-400">{heading}</span>
       </div>
 
       {/* Header */}
@@ -45,13 +48,13 @@ export default function LocationForm({
           </svg>
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Add Location</h1>
+          <h1 className="text-xl font-semibold text-gray-900">{heading}</h1>
         </div>
       </div>
 
       {/* Form card */}
       <div className="w-full rounded-2xl bg-[#0c0c0d] ring-1 ring-white/[0.07]">
-        <form className="px-7 py-7"  onSubmit={handleSubmit}>
+        <form className="px-7 py-7" onSubmit={handleSubmit}>
           <div className="space-y-6">
             {/* City select */}
             <div>
@@ -64,16 +67,12 @@ export default function LocationForm({
               <div className="relative">
                 <select
                   id="city"
-                  name="city"
-                  value={location.city}
+                  name="city_id"
+                  value={location.city_id}
                   onChange={handleChange}
                   className="w-full appearance-none rounded-xl bg-white/[0.04] px-3.5 py-2.5 pr-9 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 hover:bg-white/[0.06] hover:ring-[#fab421]/20 focus:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-[#fab421]/25"
                 >
-                  <option
-                    value=""
-                    disabled
-                    className="bg-[#1a1a1b] text-gray-500"
-                  >
+                  <option value="" className="bg-[#1a1a1b] text-gray-500">
                     Select a city
                   </option>
                   {cities.map((city) => (
@@ -100,8 +99,7 @@ export default function LocationForm({
                     strokeLinejoin="round"
                   />
                 </svg>
-            {errors && <p className="text-red-600">{errors.city}</p>}
-
+                {errors && <p className="text-red-600">{errors.city_id}</p>}
               </div>
             </div>
 
@@ -164,7 +162,7 @@ export default function LocationForm({
               type="submit"
               className="rounded-lg bg-[#fab421] px-5 py-2.5 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"
             >
-              Save Location
+              {btnText}
             </button>
           </div>
         </form>

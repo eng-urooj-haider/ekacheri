@@ -1,18 +1,19 @@
 import api from "./axios.js";
+
 const getLocations = () => {
-  api.get("/Locations");
-  return Response.data;
+  return api.get("/locations");
 };
-const save = (data) => {
-  api.post("/locations/create", data);
-  return Response.data;
-};
+
 const getLocation = (id) => {
-  api.get(`/Locations/${id}/edit`);
-  return Response.data;
+  return api.get(`/locations/${id}/edit`);
 };
-const update = (id) => {
-  api.get(`/Locations/${id}/edit`);
-  return Response.data;
+
+const save = (data) => {
+  return api.post("/locations", data);
 };
-export { getLocations, save ,getLocation , update};
+
+const update = (id, data) => {
+  return api.put(`/locations/${id}`, data);
+};
+
+export { getLocations, save, getLocation, update };

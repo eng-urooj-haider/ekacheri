@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
 import { cities } from "../../data/users";
+import { useEffect } from "react";
 
 const columns = [
   { accessorKey: "city", header: "City", meta: { width: "30%" } },
@@ -54,7 +55,7 @@ const LocationList = () => {
         data={cities}
         pageSize={10}
         searchPlaceholder="Search locations…"
-        showExportButtons = {false}
+        showExportButtons={false}
       />
     </div>
   );

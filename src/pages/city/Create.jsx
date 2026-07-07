@@ -37,6 +37,7 @@ const AddCity = () => {
         err.response?.data?.errors?.title?.[0] ??
         err.response?.data?.message ??
         "Something went wrong while saving the city. Please try again.";
+        console.log(message)
       setError(message);
     };
 

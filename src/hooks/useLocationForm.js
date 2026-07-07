@@ -1,29 +1,27 @@
 import { useEffect, useState } from "react";
 import { getCities } from "../api/CityApi.js";
 import { getLocation } from "../api/LocationApi.js";
-import {save , update} from "../api/LocationApi.js";
-
+import { save, update } from "../api/LocationApi.js";
+import { useNavigate } from "react-router";
 const useLocationForm = (id) => {
+  const navigate = useNavigate();
   const [cities, setCities] = useState([]);
   const [location, setLocation] = useState({
-    city: "",
+    city_id: "",
     location: "",
-    role: "",
+    status: 1,
   });
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(!!id);
-
   const toggleButton = () => {
     setLocation((prev) => ({ ...prev, status: prev.status === 1 ? 0 : 1 }));
   };
-
   const isActive = location.status === 1;
-
   useEffect(() => {
     const fetchCities = async () => {
       try {
         const response = await getCities();
         setCities(response.data);
+        console.log(cities);
       } catch (err) {
         console.log(err);
       }
@@ -35,23 +33,25 @@ const useLocationForm = (id) => {
     if (!id) return; // guard: don't fetch on Add
     const fetchLocation = async () => {
       try {
-        setLoading(true);
         const response = await getLocation(id);
-        setLocation(response.data);
+        setLocation(response.data.data);
       } catch (err) {
         console.log(err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchLocation();
   }, [id]);
-
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
   const handleChange = (e) => {
-    setErrors({})
+    setErrors({});
     const { name, value } = e.target;
-    setLocation((prev) => ({ ...prev, [name]: value }));
-
+    setLocation((prev) => ({
+      ...prev,
+      [name]: name === "location" ? capitalizeFirstLetter(value) : value,
+    }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -64,28 +64,32 @@ const useLocationForm = (id) => {
       newErrors.location = "Location name is required";
     }
 
-    if (!location.city) {
-      newErrors.city = "Please select a city";
+    if (!location.city_id) {
+      newErrors.city_id = "Please select a city";
     }
 
     setErrors(newErrors);
-     return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return; // stop here if invalid
+    if (!validate()) return;
     try {
       if (id) {
-        await api.update(id, location); // adjust to your actual API method name
+        await update(id, location);
       } else {
-        await api.save(location);
+        await save(location);
       }
+      navigate("/locations");
     } catch (err) {
-      console.log(err);
+      if (err.response && err.response.status === 422) {
+        setErrors(err.response.data.errors);
+      } else {
+        console.log(err);
+      }
     }
   };
-
   return {
     cities,
     toggleButton,
@@ -94,7 +98,6 @@ const useLocationForm = (id) => {
     handleChange,
     errors,
     handleSubmit,
-    loading,
   };
 };
 

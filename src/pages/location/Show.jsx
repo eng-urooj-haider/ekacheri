@@ -1,6 +1,22 @@
 import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { getLocation } from "../../api/LocationApi";
+import { useParams } from "react-router";
 
 const ShowLocation = () => {
+  const { id } = useParams();
+  const [location, setLocation] = useState([]);
+
+  useEffect(() => {
+    const getAllLocation = async () => {
+      const response = await getLocation(id);
+      console.log("response", response.data.data);
+      setLocation(response.data.data); // <-- unwrap here, not the whole response
+    };
+    getAllLocation();
+  }, [id]);
+
+
   return (
     <div className="mx-auto w-full max-w-2xl min-w-0">
       {/* Breadcrumb */}
@@ -9,7 +25,7 @@ const ShowLocation = () => {
           Locations
         </Link>
         <span className="text-gray-600">/</span>
-        <span className="text-gray-400">Gulshan-e-Iqbal</span>
+        <span className="text-gray-400">{location.location}</span>
       </div>
 
       {/* Header */}
@@ -28,19 +44,25 @@ const ShowLocation = () => {
                 strokeWidth="1.6"
                 strokeLinejoin="round"
               />
-              <circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+              <circle
+                cx="12"
+                cy="10"
+                r="2.4"
+                stroke="currentColor"
+                strokeWidth="1.6"
+              />
             </svg>
           </div>
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              Gulshan-e-Iqbal
+              {location.location}
             </h1>
             <p className="mt-0.5 text-sm text-gray-500">Location details</p>
           </div>
         </div>
 
         <Link
-          to="/locations/1/edit"
+          to={`/locations/${location.id}/edit`}
           className="shrink-0 rounded-lg px-4 py-2 text-sm font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
         >
           Edit
@@ -54,7 +76,9 @@ const ShowLocation = () => {
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               City
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">Karachi</dd>
+            <dd className="col-span-2 text-sm text-gray-200">
+              {location.city?.title ?? "—"}
+            </dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
@@ -62,7 +86,7 @@ const ShowLocation = () => {
               Location
             </dt>
             <dd className="col-span-2 text-sm text-gray-200">
-              Gulshan-e-Iqbal
+              {location.location}
             </dd>
           </div>
 
@@ -70,7 +94,9 @@ const ShowLocation = () => {
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               Created At
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">2023-11-03</dd>
+            <dd className="col-span-2 text-sm text-gray-200">
+              {location.created_at_formatted ?? location.created_at}
+            </dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
@@ -78,8 +104,14 @@ const ShowLocation = () => {
               Status
             </dt>
             <dd className="col-span-2">
-              <span className="rounded-full bg-emerald-400/10 px-2.5 py-1 text-xs font-medium text-emerald-400">
-                Active
+              <span
+                className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                  location.status
+                    ? "bg-emerald-400/10 text-emerald-400"
+                    : "bg-red-400/10 text-red-400"
+                }`}
+              >
+                {location.status ? "Active" : "Inactive"}
               </span>
             </dd>
           </div>

@@ -1,12 +1,11 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
-import { cities } from "../../data/users";
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
+import { getLocations } from "../../api/LocationApi";
 const columns = [
-  { accessorKey: "city", header: "City", meta: { width: "30%" } },
+  { accessorKey: "city.title", header: "City", meta: { width: "30%" } },
   { accessorKey: "location", header: "Location", meta: { width: "30%" } },
-  { accessorKey: "created_at", header: "Created At", meta: { width: "16%" } },
+  { accessorKey: "created_at_formatted", header: "Created At", meta: { width: "16%" } },
   {
     id: "actions",
     header: "Actions",
@@ -32,6 +31,14 @@ const columns = [
 ];
 
 const LocationList = () => {
+  const [locations, setLocations] = useState([]);
+  useEffect(() => {
+    const getAllLocations = async () => {
+      const response = await getLocations();
+      setLocations(response.data.data);
+    };
+    getAllLocations();
+  }, []);
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -52,7 +59,7 @@ const LocationList = () => {
 
       <DataTable
         columns={columns}
-        data={cities}
+        data={locations}
         pageSize={10}
         searchPlaceholder="Search locations…"
         showExportButtons={false}

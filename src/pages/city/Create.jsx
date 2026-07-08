@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { storeCity } from "../../api/CityApi.jsx";
+import { storeCity } from "../../api/CityApi.js";
 import CityForm from "./CityForm.jsx";
 
 const AddCity = () => {

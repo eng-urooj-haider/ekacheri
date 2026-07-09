@@ -1,6 +1,21 @@
 import { Link } from "react-router";
-
+import { getCity } from "../../api/CityApi";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 const ShowCity = () => {
+  const { id } = useParams();
+  const [city, setCity] = useState([]);
+  useEffect(() => {
+    const fetchCity = async () => {
+      try {
+        const response = await getCity(id);
+        setCity(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCity();
+  }, []);
   return (
     <div className="mx-auto w-full max-w-2xl min-w-0">
       {/* Breadcrumb */}
@@ -28,7 +43,13 @@ const ShowCity = () => {
                 strokeWidth="1.6"
                 strokeLinejoin="round"
               />
-              <circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+              <circle
+                cx="12"
+                cy="10"
+                r="2.4"
+                stroke="currentColor"
+                strokeWidth="1.6"
+              />
             </svg>
           </div>
           <div>
@@ -52,14 +73,16 @@ const ShowCity = () => {
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               City Name
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">Lahore</dd>
+            <dd className="col-span-2 text-sm text-gray-200">{city.title}</dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               Created At
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">2023-11-03</dd>
+            <dd className="col-span-2 text-sm text-gray-200">
+              {city.created_at_formatted}
+            </dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
@@ -67,8 +90,14 @@ const ShowCity = () => {
               Status
             </dt>
             <dd className="col-span-2">
-              <span className="rounded-full bg-emerald-400/10 px-2.5 py-1 text-xs font-medium text-emerald-400">
-                Active
+              <span
+                className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                  location.status
+                    ? "bg-emerald-400/10 text-emerald-400"
+                    : "bg-red-400/10 text-red-400"
+                }`}
+              >
+                {location.status ? "Active" : "Inactive"}
               </span>
             </dd>
           </div>

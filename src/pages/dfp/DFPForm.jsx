@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-const DFPForm = ({ handleChange , handleSubmit }) => {
+const DFPForm = ({ handleChange, handleSubmit, errors }) => {
   return (
     <div className="mx-auto w-full max-w-2xl min-w-0">
       {/* Breadcrumb */}
@@ -61,6 +61,7 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                 placeholder="e.g. Ahmed Raza"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
+              {errors && <p className="text-red-600">{errors.name}</p>}
             </div>
 
             {/* Email */}
@@ -79,6 +80,7 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                 placeholder="name@ssgc.com.pk"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
+              {errors && <p className="text-red-600">{errors.email}</p>}
             </div>
 
             {/* Gender */}
@@ -129,6 +131,8 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                   />
                 </svg>
               </div>
+              {errors && <p className="text-red-600">{errors.gender}</p>}
+
             </div>
 
             {/* Password */}
@@ -147,6 +151,8 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                 placeholder="••••••••"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
+              {errors && <p className="text-red-600">{errors.password}</p>}
+
             </div>
 
             {/* Telco */}
@@ -203,6 +209,7 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                   />
                 </svg>
               </div>
+              {errors && <p className="text-red-600">{errors.telco}</p>}
             </div>
 
             {/* Mobile */}
@@ -221,6 +228,7 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                 placeholder="e.g. 03001234567"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
+              {errors && <p className="text-red-600">{errors.mobile}</p>}
             </div>
 
             {/* Executive number */}
@@ -239,6 +247,7 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                 placeholder="e.g. EXEC-2045"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
+              {errors && <p className="text-red-600">{errors.executive_number}</p>}
             </div>
 
             {/* Designation */}
@@ -254,9 +263,11 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                 name="designation"
                 id="designation"
                 type="text"
+                value=""
                 placeholder="e.g. Senior Manager"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
+              {errors && <p className="text-red-600">{errors.designation}</p>}
             </div>
 
             {/* Department */}
@@ -270,7 +281,7 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
               <div className="relative">
                 <select
                   onChange={handleChange}
-                  name="department_id"
+                  name="department"
                   id="department"
                   defaultValue=""
                   className="w-full appearance-none rounded-xl bg-white/[0.04] px-3.5 py-2.5 pr-9 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
@@ -283,24 +294,24 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                     Select Department
                   </option>
                   <option
-                    value="customer-services"
+                    value="2"
                     className="bg-[#1a1a1b] text-gray-200"
                   >
                     Customer Services
                   </option>
                   <option
-                    value="field-operations"
+                    value="2"
                     className="bg-[#1a1a1b] text-gray-200"
                   >
                     Field Operations
                   </option>
                   <option
-                    value="billing"
+                    value="2"
                     className="bg-[#1a1a1b] text-gray-200"
                   >
                     Billing
                   </option>
-                  <option value="it" className="bg-[#1a1a1b] text-gray-200">
+                  <option value="2" className="bg-[#1a1a1b] text-gray-200">
                     IT
                   </option>
                 </select>
@@ -318,6 +329,7 @@ const DFPForm = ({ handleChange , handleSubmit }) => {
                     strokeLinejoin="round"
                   />
                 </svg>
+                {errors && <p className="text-red-600">{errors.department}</p>}
               </div>
             </div>
           </div>

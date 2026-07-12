@@ -11,7 +11,7 @@ const useDFPForm = () => {
         mobile: "",
         executive_number: "",
         designation: "",
-        department_id: "",
+        department: "",
     });
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
@@ -57,8 +57,8 @@ const useDFPForm = () => {
             validationErrors.designation = "Designation is required.";
         }
 
-        if (!data.department_id) {
-            validationErrors.department_id = "Please select a department.";
+        if (!data.department) {
+            validationErrors.department = "Please select a department.";
         }
 
         // Password is optional, but if provided, enforce a minimum length

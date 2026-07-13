@@ -263,7 +263,6 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                 name="designation"
                 id="designation"
                 type="text"
-                value=""
                 placeholder="e.g. Senior Manager"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />

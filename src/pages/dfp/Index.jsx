@@ -2,12 +2,13 @@ import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
 // import {  } from "../../../data/focalPersons";
 import { cities } from "../../data/users";
+import { getDFPs } from "../../api/DFPApi";
+import { useState ,useEffect } from "react";
 
 const columns = [
   { accessorKey: "name", header: "Name", meta: { width: "18%" } },
   { accessorKey: "email", header: "Email", meta: { width: "20%" } },
-  { accessorKey: "designation", header: "Designation", meta: { width: "16%" } },
-  { accessorKey: "department", header: "Department", meta: { width: "16%" } },
+  { accessorKey: "executive_number", header: "Executive Number", meta: { width: "16%" } },
   { accessorKey: "mobile", header: "Mobile", meta: { width: "14%" } },
   {
     id: "actions",
@@ -34,6 +35,16 @@ const columns = [
 ];
 
 const FocalPersonList = () => {
+  const [dfps, setDFPs] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getDFPs();
+      setDFPs(data.data);
+    };
+
+    fetchData();
+  }, []);
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -56,10 +67,10 @@ const FocalPersonList = () => {
 
       <DataTable
         columns={columns}
-        data={cities}
+        data={dfps}
         pageSize={10}
         searchPlaceholder="Search focal persons…"
-        showExportButtons = {false}
+        showExportButtons={false}
       />
     </div>
   );

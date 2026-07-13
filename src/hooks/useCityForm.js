@@ -7,7 +7,6 @@ const useCityForm = (id) => {
   const [city, setCity] = useState({ title: "", status: 1 });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(Boolean(id));
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isActive = city.status === 1;
 
@@ -54,11 +53,8 @@ const useCityForm = (id) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate() || isSubmitting) return;
-
-    setIsSubmitting(true);
+    if (!validate()) return;
     setError("");
-
     try {
       if (id) {
         await updateCity(id, city);
@@ -72,8 +68,6 @@ const useCityForm = (id) => {
         err.response?.data?.message ??
         "Something went wrong while saving the city. Please try again.";
       setError(message);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -81,7 +75,6 @@ const useCityForm = (id) => {
     city,
     error,
     loading,
-    isSubmitting,
     isActive,
     handleChange,
     toggleStatus,

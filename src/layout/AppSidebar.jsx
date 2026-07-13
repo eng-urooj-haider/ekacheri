@@ -25,6 +25,11 @@ const navItems = [
     path: "/locations",
   },
   {
+    icon: <MapPin size={18} strokeWidth={2} />,
+    name: "Department",
+    path: "/departments",
+  },
+  {
     icon: <Users size={18} strokeWidth={2} />,
     name: "Department Focal Person",
     path: "/dfps",

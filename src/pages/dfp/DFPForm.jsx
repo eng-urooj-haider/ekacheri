@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-const DFPForm = ({ handleChange, handleSubmit, errors }) => {
+const DFPForm = ({ handleChange, handleSubmit, errors, formData }) => {
   return (
     <div className="mx-auto w-full max-w-2xl min-w-0">
       {/* Breadcrumb */}
@@ -57,6 +57,7 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                 id="name"
                 onChange={handleChange}
                 name="name"
+                value={formData.name}
                 type="text"
                 placeholder="e.g. Ahmed Raza"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
@@ -77,6 +78,7 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                 id="email"
                 name="email"
                 type="email"
+                value={formData.email}
                 placeholder="name@ssgc.com.pk"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
@@ -96,6 +98,7 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                   onChange={handleChange}
                   id="gender"
                   name="gender"
+                  value={formData.gender}
                   defaultValue=""
                   className="w-full appearance-none rounded-xl bg-white/[0.04] px-3.5 py-2.5 pr-9 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
                 >
@@ -132,7 +135,6 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                 </svg>
               </div>
               {errors && <p className="text-red-600">{errors.gender}</p>}
-
             </div>
 
             {/* Password */}
@@ -152,7 +154,6 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
               {errors && <p className="text-red-600">{errors.password}</p>}
-
             </div>
 
             {/* Telco */}
@@ -166,6 +167,7 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
               <div className="relative">
                 <select
                   onChange={handleChange}
+                  value={formData.telco}
                   name="telco"
                   id="telco"
                   defaultValue=""
@@ -221,6 +223,7 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                 Mobile <span className="text-[#fab421]">*</span>
               </label>
               <input
+                value={formData.mobile}
                 onChange={handleChange}
                 name="mobile"
                 id="mobile"
@@ -240,6 +243,7 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                 Executive Number <span className="text-[#fab421]">*</span>
               </label>
               <input
+                value={formData.executive_number}
                 onChange={handleChange}
                 name="executive_number"
                 id="executive-number"
@@ -247,7 +251,9 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                 placeholder="e.g. EXEC-2045"
                 className="w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.07] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/25"
               />
-              {errors && <p className="text-red-600">{errors.executive_number}</p>}
+              {errors && (
+                <p className="text-red-600">{errors.executive_number}</p>
+              )}
             </div>
 
             {/* Designation */}
@@ -259,6 +265,7 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                 Designation <span className="text-[#fab421]">*</span>
               </label>
               <input
+                value={formData.designation}
                 onChange={handleChange}
                 name="designation"
                 id="designation"
@@ -279,6 +286,7 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
               </label>
               <div className="relative">
                 <select
+                  value={formData.department}
                   onChange={handleChange}
                   name="department"
                   id="department"
@@ -292,22 +300,13 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
                   >
                     Select Department
                   </option>
-                  <option
-                    value="2"
-                    className="bg-[#1a1a1b] text-gray-200"
-                  >
+                  <option value="2" className="bg-[#1a1a1b] text-gray-200">
                     Customer Services
                   </option>
-                  <option
-                    value="2"
-                    className="bg-[#1a1a1b] text-gray-200"
-                  >
+                  <option value="2" className="bg-[#1a1a1b] text-gray-200">
                     Field Operations
                   </option>
-                  <option
-                    value="2"
-                    className="bg-[#1a1a1b] text-gray-200"
-                  >
+                  <option value="2" className="bg-[#1a1a1b] text-gray-200">
                     Billing
                   </option>
                   <option value="2" className="bg-[#1a1a1b] text-gray-200">
@@ -336,7 +335,7 @@ const DFPForm = ({ handleChange, handleSubmit, errors }) => {
           {/* Actions */}
           <div className="mt-7 flex items-center justify-end gap-3 border-t border-white/[0.06] pt-6">
             <Link
-              to="/focal-persons"
+              to="/dfps"
               className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
             >
               Cancel

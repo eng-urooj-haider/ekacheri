@@ -1,6 +1,39 @@
 import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { getDFP } from "../../api/DFPApi";
+import { useParams } from "react-router";
 
 const Show = () => {
+  const [dfp, setDfp] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
+
+  useEffect(() => {
+    const fetchDfp = async () => {
+      try {
+        const response = await getDFP(id);
+        setDfp(response.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDfp();
+  }, [id]);
+
+  if (loading) {
+    return <div className="mx-auto w-full max-w-2xl min-w-0">Loading...</div>;
+  }
+
+  if (!dfp) {
+    return (
+      <div className="mx-auto w-full max-w-2xl min-w-0">
+        Focal person not found.
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto w-full max-w-2xl min-w-0">
       {/* Breadcrumb */}
@@ -9,7 +42,7 @@ const Show = () => {
           Focal Persons
         </Link>
         <span className="text-gray-600">/</span>
-        <span className="text-gray-400">Ahmed Raza</span>
+        <span className="text-gray-400">{dfp.name}</span>
       </div>
 
       {/* Header */}
@@ -36,7 +69,7 @@ const Show = () => {
             </svg>
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">Ahmed Raza</h1>
+            <h1 className="text-xl font-semibold text-gray-900">{dfp.name}</h1>
             <p className="mt-0.5 text-sm text-gray-500">
               Department Focal Person details
             </p>
@@ -44,7 +77,7 @@ const Show = () => {
         </div>
 
         <Link
-          to="/focal-persons/1/edit"
+          to={`/focal-persons/${id}/edit`}
           className="shrink-0 rounded-lg px-4 py-2 text-sm font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
         >
           Edit
@@ -58,44 +91,44 @@ const Show = () => {
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               Name
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">Ahmed Raza</dd>
+            <dd className="col-span-2 text-sm text-gray-200">{dfp.name}</dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               Email
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">
-              ahmed.raza@ssgc.com.pk
-            </dd>
+            <dd className="col-span-2 text-sm text-gray-200">{dfp.email}</dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               Gender
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">Male</dd>
+            <dd className="col-span-2 text-sm text-gray-200">{dfp.gender}</dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               Telco
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">Jazz</dd>
+            <dd className="col-span-2 text-sm text-gray-200">{dfp.telco}</dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               Mobile
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">03001234567</dd>
+            <dd className="col-span-2 text-sm text-gray-200">{dfp.mobile}</dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
             <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
               Executive Number
             </dt>
-            <dd className="col-span-2 text-sm text-gray-200">EXEC-2045</dd>
+            <dd className="col-span-2 text-sm text-gray-200">
+              {dfp.executive_number}
+            </dd>
           </div>
 
           <div className="grid grid-cols-3 gap-4 px-7 py-4">
@@ -103,7 +136,7 @@ const Show = () => {
               Designation
             </dt>
             <dd className="col-span-2 text-sm text-gray-200">
-              Senior Manager
+              {dfp.designation}
             </dd>
           </div>
 
@@ -112,7 +145,7 @@ const Show = () => {
               Department
             </dt>
             <dd className="col-span-2 text-sm text-gray-200">
-              Customer Services
+              {dfp.department}
             </dd>
           </div>
         </dl>
@@ -121,7 +154,7 @@ const Show = () => {
       {/* Back link */}
       <div className="mt-5">
         <Link
-          to="/focal-persons"
+          to="/dfps"
           className="text-sm text-gray-400 transition hover:text-gray-200"
         >
           ← Back to all focal persons

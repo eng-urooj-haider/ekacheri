@@ -84,7 +84,7 @@ const useDFPForm = (id) => {
           password: "", // never prefill password
           telco: data.telco ?? "",
           mobile: data.mobile ?? "",
-          executive_number: data.executive_number ?? "",
+          executive_number: data.executive_number != null ? String(data.executive_number) : "",
           designation: data.designation ?? "",
           department: data.department ?? "",
         });

@@ -37,7 +37,7 @@ const navItems = [
   {
     icon: <FileText size={18} strokeWidth={2} />,
     name: "E-kacheri",
-    path: "/ekacheries",
+    path: "/kachehries",
   },
   {
     icon: <MessageSquareWarning size={18} strokeWidth={2} />,

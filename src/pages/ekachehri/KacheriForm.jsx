@@ -25,6 +25,7 @@ const EkacheriForm = () => {
     locations,
     dfpOptions,
     isEditMode,
+    isComplaintLocked,
     formData,
     attendeeIds,
     setAttendeeIds,
@@ -49,7 +50,11 @@ const EkacheriForm = () => {
         )}
 
         <div>
-          <FieldRow label="Kachehri Number" required error={errors.kachehriNumber}>
+          <FieldRow
+            label="Kachehri Number"
+            required
+            error={errors.kachehriNumber}
+          >
             <input
               type="text"
               name="kachehriNumber"
@@ -60,7 +65,11 @@ const EkacheriForm = () => {
             />
           </FieldRow>
 
-          <FieldRow label="Add Attendees" hint="Select one or more attendees." error={errors.attendees}>
+          <FieldRow
+            label="Add Attendees"
+            hint="Select one or more attendees."
+            error={errors.attendees}
+          >
             <AddAttendeesMultiSelect
               showLabel={false}
               showHelperText={false}
@@ -82,14 +91,14 @@ const EkacheriForm = () => {
             />
           </FieldRow>
 
-          <FieldRow label="Live Session" error={errors.liveSession}>
+          <FieldRow label="Live Session" error={errors.session}>
             <div className="flex items-center gap-6 pt-1">
               <label className="flex items-center gap-2 text-sm text-gray-300">
                 <input
                   type="radio"
-                  name="liveSession"
-                  value="Yes"
-                  checked={formData.liveSession === "Yes"}
+                  name="session"
+                  value="1"
+                  checked={formData.session === "1"}
                   onChange={handleChange}
                   className="size-4 accent-[#fab421]"
                 />
@@ -98,9 +107,9 @@ const EkacheriForm = () => {
               <label className="flex items-center gap-2 text-sm text-gray-300">
                 <input
                   type="radio"
-                  name="liveSession"
-                  value="No"
-                  checked={formData.liveSession === "No"}
+                  name="session"
+                  value="0"
+                  checked={formData.session === "0"}
                   onChange={handleChange}
                   className="size-4 accent-[#fab421]"
                 />
@@ -145,14 +154,22 @@ const EkacheriForm = () => {
                 — Select Location —
               </option>
               {locations.map((location) => (
-                <option key={location.id} value={location.location} className={optionClass}>
+                <option
+                  key={location.id}
+                  value={location.location}
+                  className={optionClass}
+                >
                   {location.location}-{location.city.title}
                 </option>
               ))}
             </select>
           </FieldRow>
 
-          <FieldRow label="Select DFP" hint="Select one or more DFP." error={errors.dfps}>
+          <FieldRow
+            label="Select DFP"
+            hint="Select one or more DFP."
+            error={errors.dfps}
+          >
             <AddAttendeesMultiSelect
               showLabel={false}
               showHelperText={false}
@@ -173,12 +190,93 @@ const EkacheriForm = () => {
               <option value="" disabled className={optionClass}>
                 Select Status
               </option>
-              <option className={optionClass}>Pending</option>
-              <option className={optionClass}>Scheduled</option>
-              <option className={optionClass}>Completed</option>
-              <option className={optionClass}>Cancelled</option>
+              <option value="Active" className={optionClass}>
+                Active
+              </option>
+              <option value="Inactive" className={optionClass}>
+                Inactive
+              </option>
             </select>
           </FieldRow>
+
+          {isEditMode && (
+            <>
+              <FieldRow
+                label="Complaint Received"
+                required
+                error={errors.complaintReceived}
+              >
+                <select
+                  name="complaintReceived"
+                  className={`${inputClass} max-w-xs`}
+                  value={formData.complaintReceived}
+                  onChange={handleChange}
+                  disabled={isComplaintLocked}
+                >
+                  <option value="" disabled className={optionClass}>
+                    — Select —
+                  </option>
+                  <option value="No" className={optionClass}>
+                    No [Nill]
+                  </option>
+                  <option value="Yes" className={optionClass}>
+                    Yes [Not-Nill]
+                  </option>
+                </select>
+              </FieldRow>
+
+              <FieldRow
+                label="Session Convened"
+                required
+                error={errors.sessionConvened}
+              >
+                <select
+                  name="sessionConvened"
+                  className={`${inputClass} max-w-xs`}
+                  value={formData.sessionConvened}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled className={optionClass}>
+                    — Select —
+                  </option>
+                  <option value="Yes" className={optionClass}>
+                    Yes
+                  </option>
+                  <option value="No" className={optionClass}>
+                    No
+                  </option>
+                </select>
+              </FieldRow>
+
+              {formData.sessionConvened === "No" && (
+                <FieldRow
+                  label="If Session Not Conducted (Reason)"
+                  required
+                  error={errors.reasonNotConducted}
+                >
+                  <select
+                    name="reasonNotConducted"
+                    className={`${inputClass} max-w-xs`}
+                    value={formData.reasonNotConducted}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled className={optionClass}>
+                      — Select Reason —
+                    </option>
+                    <option value="Public Holiday" className={optionClass}>
+                      Public Holiday
+                    </option>
+                    <option value="Officer Unavailable" className={optionClass}>
+                      Officer Unavailable
+                    </option>
+                    <option value="Others" className={optionClass}>
+                      Others
+                    </option>
+                  </select>
+                </FieldRow>
+              )}
+            </>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-3 px-5 py-4">

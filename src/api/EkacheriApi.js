@@ -5,19 +5,19 @@ const getLatestId = () => {
     return api.get('/latest_kacheries')
 };
 const getEkachehries = () => {
-  return api.get("/locations");
+  return api.get("/kachehries");
 };
 
 const getEkachehri = (id) => {
-  return api.get(`/locations/${id}/edit`);
+  return api.get(`/kachehries/${id}/edit`);
 };
 
 const storeEkachehri = (data) => {
-  return api.post("/locations", data);
+  return api.post("/kachehries", data);
 };
 
 const updateEkachehri = (id, data) => {
-  return api.put(`/locations/${id}`, data);
+  return api.put(`/kachehries/${id}`, data);
 };
 
 export { getEkachehries, storeEkachehri, getEkachehri, updateEkachehri , getLatestId};

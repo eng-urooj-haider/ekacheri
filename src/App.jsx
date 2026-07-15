@@ -29,8 +29,10 @@ const CreateDepartment = lazy(() => import("./pages/department/Create"));
 const ShowDepartment = lazy(() => import("./pages/department/Show"));
 const EditDepartment = lazy(() => import("./pages/department/Edit"));
 
-const EkacheriIndex = lazy(() => import("./pages/ekacheri/Index"));
-const EkacheriCreate = lazy(() => import("./pages/ekacheri/Create"));
+const IndexKachehri = lazy(() => import("./pages/ekachehri/Index"));
+const CreateKachehri = lazy(() => import("./pages/ekachehri/Create"));
+// const ShowKachehri = lazy(() => import("./pages/ekachehri/Edit"));   // ← loads Edit.jsx
+const EditKachehri = lazy(() => import("./pages/ekachehri/Edit"));   // ← loads Show.jsx
 
 const ComplaintIndex = lazy(() => import("./pages/complaint/Index"));
 const ComplaintCreate = lazy(() => import("./pages/complaint/Create"));
@@ -87,9 +89,11 @@ export default function App() {
               <Route path=":id/edit" element={<EditDPF />} />
             </Route>
             {/* Ekacheri */}
-            <Route path="ekacheries">
-              <Route index element={<EkacheriIndex />} />
-              <Route path="create" element={<EkacheriCreate />} />
+            <Route path="/kachehries">
+              <Route index element={<IndexKachehri />} />
+              <Route path="create" element={<CreateKachehri />} />
+              {/* <Route path=":id" element={<ShowKachehri />} /> */}
+              <Route path=":id/edit" element={<EditKachehri />} />
             </Route>
             <Route path="complaints">
               <Route index element={<ComplaintIndex />} />

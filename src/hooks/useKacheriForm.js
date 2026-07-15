@@ -2,10 +2,19 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import { getLocations } from "../api/LocationApi";
 import { getDFPs } from "../api/DFPApi";
-import { storeEkachehri, updateEkachehri, getEkachehri } from "../api/EkacheriApi.js";
+import {
+  storeEkachehri,
+  updateEkachehri,
+  getEkachehri,
+  getLatestId,
+} from "../api/EkacheriApi.js";
+
 const useKacheriForm = () => {
+  const [latestid, setlatestId] = useState(null);
+  const [isComplaintLocked, setIsComplaintLocked] = useState(false); // FIX #2: added
+
   const navigate = useNavigate();
-  const { id } = useParams(); // presence of `id` in the URL means "edit mode"
+  const { id } = useParams();
   const isEditMode = Boolean(id);
 
   const [locations, setLocations] = useState([]);
@@ -14,24 +23,53 @@ const useKacheriForm = () => {
   const [formData, setFormData] = useState({
     kachehriNumber: "",
     venue: "",
-    liveSession: "",
+    session: "", // FIX #1: renamed from "session"
     kachehriDate: "",
     kachehriTime: "",
     location: "",
     status: "",
+    complaintReceived: "", // FIX #6: added to initial state
+    sessionConvened: "", // FIX #6: added to initial state
+    reasonNotConducted: "", // FIX #6: added to initial state
   });
   const [attendeeIds, setAttendeeIds] = useState([]);
   const [dfpIds, setDfpIds] = useState([]);
   const [errors, setErrors] = useState({});
 
-  // Reshape dfps -> { id, label } so AddAttendeesMultiSelect can consume it directly
+  // Fetch the next available Kachehri number — only needed in create mode
+  useEffect(() => {
+    if (isEditMode) return;
+
+    const fetchId = async () => {
+      try {
+        const response = await getLatestId();
+        setlatestId(response.data.data.id + 1);
+      } catch (error) {
+        console.error("Error fetching latest ID:", error);
+      }
+    };
+
+    fetchId();
+  }, [isEditMode]);
+
+  // Once latestid resolves, seed it into formData.kachehriNumber
+  useEffect(() => {
+    if (isEditMode) return;
+    if (latestid == null) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      kachehriNumber: latestid,
+    }));
+  }, [latestid, isEditMode]);
+
   const dfpOptions = useMemo(
     () =>
       (dfps ?? []).map((dfp) => ({
         id: dfp.id,
         label: `${dfp.name}${dfp.designation ? ` — ${dfp.designation}` : ""}`,
       })),
-    [dfps]
+    [dfps],
   );
 
   const handleChange = (e) => {
@@ -39,7 +77,6 @@ const useKacheriForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Fetch reference data
   useEffect(() => {
     const fetchLocations = async () => {
       const response = await getLocations();
@@ -56,25 +93,40 @@ const useKacheriForm = () => {
     fetchDfps();
   }, []);
 
-  // Load existing record when editing
   useEffect(() => {
     if (!isEditMode) return;
 
     const fetchEkachehri = async () => {
       try {
         const response = await getEkachehri(id);
-        const data = response.data;
+        const data = response.data.data; // matches your JSON: { data: { ... } }
+
         setFormData({
-          kachehriNumber: data.kachehriNumber ?? "",
+          kachehriNumber: data.kachehri_number ?? "",
           venue: data.venue ?? "",
-          liveSession: data.liveSession ?? "",
-          kachehriDate: data.kachehriDate ?? "",
-          kachehriTime: data.kachehriTime ?? "",
+          session: data.session === 1 ? "Yes" : "No", // FIX #1: key renamed to session
+          kachehriDate: data.kachehri_date ?? "",
+          kachehriTime: data.kachehri_time ?? "",
           location: data.location ?? "",
           status: data.status ?? "",
+          complaintReceived: data.complaint_received ?? "",
+          sessionConvened: data.session_convened ?? "",
+          // FIX #5: confirm this matches your ACTUAL current backend column name.
+          // Legacy schema: data.session_not_conv_reason
+          // New schema (if migration ran): data.reason_not_conducted
+          reasonNotConducted: data.session_not_conv_reason ?? "",
         });
-        setAttendeeIds(data.attendeeIds ?? []);
-        setDfpIds(data.dfpIds ?? []);
+
+        const attendeeIdList = (data.attendees ?? []).map(
+          (attendee) => attendee.id,
+        );
+        setAttendeeIds(attendeeIdList);
+
+        // FIX #3: dfp_ids is already a flat array from the backend — don't re-wrap it
+        setDfpIds(data.dfp_ids ?? []);
+
+        // FIX #2: read the lock flag from the API response
+        setIsComplaintLocked(response.data.isComplaintLocked ?? false);
       } catch (err) {
         console.error(err);
         setErrors({ form: "Failed to load E-Kachehri." });
@@ -89,33 +141,38 @@ const useKacheriForm = () => {
 
     if (!data.kachehriNumber.toString().trim())
       validationErrors.kachehriNumber = "Kachehri number is required.";
-
     if (!data.venue.trim()) validationErrors.venue = "Venue is required.";
 
-    if (!data.liveSession)
-      validationErrors.liveSession = "Please select Yes or No.";
+    // FIX #1: check session, not session
+    if (!data.session)
+      validationErrors.session = "Please select Yes or No.";
 
     if (!data.kachehriDate)
       validationErrors.kachehriDate = "Kachehri date is required.";
-
     if (!data.kachehriTime)
       validationErrors.kachehriTime = "Kachehri time is required.";
-
     if (!data.location)
       validationErrors.location = "Please select a location.";
-
     if (!data.status) validationErrors.status = "Please select a status.";
-
     if (attendeeIds.length === 0)
       validationErrors.attendees = "Select at least one attendee.";
-
     if (dfpIds.length === 0)
       validationErrors.dfps = "Select at least one DFP.";
+
+    if (isEditMode) {
+      if (!data.complaintReceived)
+        validationErrors.complaintReceived = "Please select Yes or No.";
+      if (!data.sessionConvened)
+        validationErrors.sessionConvened = "Please select Yes or No.";
+      if (data.sessionConvened === "No" && !data.reasonNotConducted)
+        validationErrors.reasonNotConducted = "Please select a reason.";
+    }
 
     return validationErrors;
   };
 
   const handleSubmit = async (goBack = false) => {
+    // FIX #7: accept and use the goBack parameter
     const validationErrors = validate(formData);
     setErrors(validationErrors);
 
@@ -135,9 +192,9 @@ const useKacheriForm = () => {
       }
 
       if (goBack) {
-        navigate("/ekachehris");
+        navigate("/kachehries"); // FIX #4: corrected route spelling
       } else {
-        navigate("/ekachehris"); // adjust if you want to stay on the page after create
+        navigate("/kachehries"); // FIX #4: corrected route spelling
       }
     } catch (err) {
       const message = err.response?.data?.errors ?? {
@@ -154,6 +211,7 @@ const useKacheriForm = () => {
     dfps,
     dfpOptions,
     isEditMode,
+    isComplaintLocked, // FIX #2: now returned
     formData,
     attendeeIds,
     setAttendeeIds,

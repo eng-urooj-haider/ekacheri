@@ -180,65 +180,53 @@ const EkacheriForm = () => {
             />
           </FieldRow>
 
-          <FieldRow label="Status" required error={errors.status}>
-            <select
-              name="status"
-              className={`${inputClass} max-w-xs`}
-              value={formData.status}
-              onChange={handleChange}
-            >
-              <option value="" disabled className={optionClass}>
-                Select Status
-              </option>
-              <option value="Active" className={optionClass}>
-                Active
-              </option>
-              <option value="Inactive" className={optionClass}>
-                Inactive
-              </option>
-            </select>
-          </FieldRow>
+          {!isEditMode && (
+            <FieldRow label="Status" required error={errors.status}>
+              <select
+                name="status"
+                className={`${inputClass} max-w-xs`}
+                value={formData.status}
+                onChange={handleChange}
+              >
+                <option value="" disabled className={optionClass}>
+                  Select Status
+                </option>
+                <option value="Active" className={optionClass}>
+                  Active
+                </option>
+                <option value="Inactive" className={optionClass}>
+                  Inactive
+                </option>
+              </select>
+            </FieldRow>
+          )}
 
           {isEditMode && (
             <>
-              <FieldRow
-                label="Complaint Received"
-                required
-                error={errors.complaintReceived}
-              >
+              <FieldRow label="Complaint Received">
                 <select
-                  name="complaintReceived"
+                  name="complaint_received"
                   className={`${inputClass} max-w-xs`}
-                  value={formData.complaintReceived}
+                  value={formData.complaint_received}
                   onChange={handleChange}
                   disabled={isComplaintLocked}
                 >
-                  <option value="" disabled className={optionClass}>
-                    — Select —
+                  <option value="Yes" className={optionClass}>
+                    yes
                   </option>
                   <option value="No" className={optionClass}>
-                    No [Nill]
-                  </option>
-                  <option value="Yes" className={optionClass}>
-                    Yes [Not-Nill]
+                    No
                   </option>
                 </select>
               </FieldRow>
 
-              <FieldRow
-                label="Session Convened"
-                required
-                error={errors.sessionConvened}
-              >
+              <FieldRow label="Session Convened">
                 <select
-                  name="sessionConvened"
+                  name="session_convened"
                   className={`${inputClass} max-w-xs`}
-                  value={formData.sessionConvened}
+                  value={formData.session_convened}
                   onChange={handleChange}
                 >
-                  <option value="" disabled className={optionClass}>
-                    — Select —
-                  </option>
                   <option value="Yes" className={optionClass}>
                     Yes
                   </option>
@@ -248,33 +236,27 @@ const EkacheriForm = () => {
                 </select>
               </FieldRow>
 
-              {formData.sessionConvened === "No" && (
-                <FieldRow
-                  label="If Session Not Conducted (Reason)"
-                  required
-                  error={errors.reasonNotConducted}
+              <FieldRow label="If Session Not Conducted (Reason)">
+                <select
+                  name="session_not_conv_reason"
+                  className={`${inputClass} max-w-xs`}
+                  value={formData.session_not_conv_reason}
+                  onChange={handleChange}
                 >
-                  <select
-                    name="reasonNotConducted"
-                    className={`${inputClass} max-w-xs`}
-                    value={formData.reasonNotConducted}
-                    onChange={handleChange}
-                  >
-                    <option value="" disabled className={optionClass}>
-                      — Select Reason —
-                    </option>
-                    <option value="Public Holiday" className={optionClass}>
-                      Public Holiday
-                    </option>
-                    <option value="Officer Unavailable" className={optionClass}>
-                      Officer Unavailable
-                    </option>
-                    <option value="Others" className={optionClass}>
-                      Others
-                    </option>
-                  </select>
-                </FieldRow>
-              )}
+                  <option value=""  className={optionClass}>
+                    — Select Reason —
+                  </option>
+                  <option value="Non Availability Of Landline" className={optionClass}>
+                    Non Availability Of Landline
+                  </option>
+                  <option value="Light Issue" className={optionClass}>
+                    Light Issue
+                  </option>
+                  <option value="Others" className={optionClass}>
+                    Others
+                  </option>
+                </select>
+              </FieldRow>
             </>
           )}
         </div>

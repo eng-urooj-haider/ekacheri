@@ -95,9 +95,9 @@ export default function App() {
               {/* <Route path=":id" element={<ShowKachehri />} /> */}
               <Route path=":id/edit" element={<EditKachehri />} />
             </Route>
-            <Route path="complaints">
+            <Route path="/complaints">
               <Route index element={<ComplaintIndex />} />
-              <Route path="create" element={<ComplaintCreate />} />
+              <Route path="create/:uuid" element={<ComplaintCreate />} />
             </Route>
             <Route path="users">
               <Route index element={<UserIndex />} />

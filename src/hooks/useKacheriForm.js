@@ -28,9 +28,9 @@ const useKacheriForm = () => {
     kachehriTime: "",
     location: "",
     status: "",
-    complaintReceived: "", // FIX #6: added to initial state
-    sessionConvened: "", // FIX #6: added to initial state
-    reasonNotConducted: "", // FIX #6: added to initial state
+    complaint_received: "", // FIX #6: added to initial state
+    session_convened: "", // FIX #6: added to initial state
+    session_not_conv_reason: "", // FIX #6: added to initial state
   });
   const [attendeeIds, setAttendeeIds] = useState([]);
   const [dfpIds, setDfpIds] = useState([]);
@@ -43,6 +43,7 @@ const useKacheriForm = () => {
     const fetchId = async () => {
       try {
         const response = await getLatestId();
+        console.log(response.data.data.id)
         setlatestId(response.data.data.id + 1);
       } catch (error) {
         console.error("Error fetching latest ID:", error);
@@ -96,6 +97,20 @@ const useKacheriForm = () => {
   useEffect(() => {
     if (!isEditMode) return;
 
+    const normalizeDfpIds = (raw) => {
+  if (raw == null) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "number") return [raw];
+  if (typeof raw === "string") {
+    return raw
+      .split(",")
+      .map((id) => id.trim())
+      .filter((id) => id !== "" && !isNaN(id))
+      .map((id) => Number(id));
+  }
+  return [];
+};
+
     const fetchEkachehri = async () => {
       try {
         const response = await getEkachehri(id);
@@ -104,17 +119,17 @@ const useKacheriForm = () => {
         setFormData({
           kachehriNumber: data.kachehri_number ?? "",
           venue: data.venue ?? "",
-          session: data.session === 1 ? "Yes" : "No", // FIX #1: key renamed to session
+          session: data.session === 1 ? "1" : "0", // FIX #1: key renamed to session
           kachehriDate: data.kachehri_date ?? "",
           kachehriTime: data.kachehri_time ?? "",
           location: data.location ?? "",
           status: data.status ?? "",
-          complaintReceived: data.complaint_received ?? "",
-          sessionConvened: data.session_convened ?? "",
+          complaint_received: data.complaint_received ?? "",
+          session_convened: data.session_convened ?? "",
           // FIX #5: confirm this matches your ACTUAL current backend column name.
           // Legacy schema: data.session_not_conv_reason
           // New schema (if migration ran): data.reason_not_conducted
-          reasonNotConducted: data.session_not_conv_reason ?? "",
+          session_not_conv_reason: data.session_not_conv_reason ?? "",
         });
 
         const attendeeIdList = (data.attendees ?? []).map(
@@ -123,7 +138,7 @@ const useKacheriForm = () => {
         setAttendeeIds(attendeeIdList);
 
         // FIX #3: dfp_ids is already a flat array from the backend — don't re-wrap it
-        setDfpIds(data.dfp_ids ?? []);
+        setDfpIds(normalizeDfpIds(data.dfp_ids));
 
         // FIX #2: read the lock flag from the API response
         setIsComplaintLocked(response.data.isComplaintLocked ?? false);
@@ -158,16 +173,6 @@ const useKacheriForm = () => {
       validationErrors.attendees = "Select at least one attendee.";
     if (dfpIds.length === 0)
       validationErrors.dfps = "Select at least one DFP.";
-
-    if (isEditMode) {
-      if (!data.complaintReceived)
-        validationErrors.complaintReceived = "Please select Yes or No.";
-      if (!data.sessionConvened)
-        validationErrors.sessionConvened = "Please select Yes or No.";
-      if (data.sessionConvened === "No" && !data.reasonNotConducted)
-        validationErrors.reasonNotConducted = "Please select a reason.";
-    }
-
     return validationErrors;
   };
 

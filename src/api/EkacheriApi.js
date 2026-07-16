@@ -19,5 +19,8 @@ const storeEkachehri = (data) => {
 const updateEkachehri = (id, data) => {
   return api.put(`/kachehries/${id}`, data);
 };
-
-export { getEkachehries, storeEkachehri, getEkachehri, updateEkachehri , getLatestId};
+const checkEkachehriExists = async (uuid) => {
+  const response = await api.get(`/complaints/fetchuuid/${uuid}`);
+  return response.data;
+};
+export { getEkachehries, storeEkachehri, getEkachehri, updateEkachehri , getLatestId , checkEkachehriExists};

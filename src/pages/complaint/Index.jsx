@@ -1,15 +1,36 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
 // import {  } from "../../../data/focalPersons";
-import { cities } from "../../data/users";
-
+import { useEffect } from "react";
+import { getComplaints } from "../../api/ComplaintApi.js";
+import { useState } from "react";
 const columns = [
-  { accessorKey: "complaint_number", header: "Complaint No#", meta: { width: "16%" } },
+  {
+    accessorKey: "complaint_number",
+    header: "Complaint No#",
+    meta: { width: "16%" },
+  },
   { accessorKey: "venue", header: "Venue", meta: { width: "16%" } },
-  { accessorKey: "complainant_name", header: "Complainant Name", meta: { width: "16%" } },
-  { accessorKey: "complaint_category", header: "Complaint Category", meta: { width: "16%" } },
-  { accessorKey: "complaint_type", header: "Complaint Type", meta: { width: "16%" } },
-  { accessorKey: "complaint_details", header: "Complaint Details", meta: { width: "16%" } },
+  {
+    accessorKey: "complainant_name",
+    header: "Complainant Name",
+    meta: { width: "16%" },
+  },
+  {
+    accessorKey: "complaint_category",
+    header: "Complaint Category",
+    meta: { width: "16%" },
+  },
+  {
+    accessorKey: "complaint_type",
+    header: "Complaint Type",
+    meta: { width: "16%" },
+  },
+  {
+    accessorKey: "complaint_details",
+    header: "Complaint Details",
+    meta: { width: "16%" },
+  },
   { accessorKey: "status", header: "Status", meta: { width: "16%" } },
   { accessorKey: "created_at", header: "Created At", meta: { width: "16%" } },
   { accessorKey: "created_by", header: "Created By", meta: { width: "14%" } },
@@ -23,13 +44,13 @@ const columns = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Link
-          to={`/dfps/${row.original.id}`}
+          to={`/complaints/${row.original.id}`}
           className="rounded-lg px-2.5 py-1 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/25 transition hover:bg-[#fab421]/10"
         >
           View
         </Link>
         <Link
-          to={`/dfps/${row.original.id}/edit`}
+          to={`/complaints/${row.original.id}/edit`}
           className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
         >
           Edit
@@ -40,6 +61,15 @@ const columns = [
 ];
 
 const ComplaintIndex = () => {
+  const [complaints, setComplaints] = useState([]);
+  useEffect(() => {
+    const fetchComplain = async () => {
+      const response = await getComplaints();
+      console.log(response.data)
+      setComplaints(response.data);
+    };
+    fetchComplain();
+  }, []);
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -48,7 +78,7 @@ const ComplaintIndex = () => {
             E-Kacheri Complaints
           </h1>
           <p className="no-print mt-1 text-sm text-gray-500">
-            View and manage all  E-Kacheri Complaints.
+            View and manage all E-Kacheri Complaints.
           </p>
         </div>
 
@@ -62,10 +92,10 @@ const ComplaintIndex = () => {
 
       <DataTable
         columns={columns}
-        data={cities}
+        data={complaints}
         pageSize={10}
         searchPlaceholder="Search focal persons…"
-        showExportButtons = {false}
+        showExportButtons={false}
       />
     </div>
   );

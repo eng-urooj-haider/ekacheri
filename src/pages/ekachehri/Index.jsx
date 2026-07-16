@@ -56,7 +56,7 @@ const columns = [
           Edit
         </Link>
         <Link
-          to={`/kachehries/create`}
+          to={`/complaints/create/${row.original.uuid}`}
           className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
         >
           Add Complaint

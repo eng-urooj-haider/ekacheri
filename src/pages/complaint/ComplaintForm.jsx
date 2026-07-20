@@ -32,6 +32,7 @@ const ComplaintCreate = () => {
     handleChange,
     handleSubmit,
     depOptions,
+    department
   } = useComplaintForm();
 
   return (
@@ -57,7 +58,7 @@ const ComplaintCreate = () => {
             error={errors.customer_number}
           >
             <input
-              type="number"
+              type="text"
               name="customer_number"
               placeholder="Enter number"
               className={inputClass}
@@ -65,7 +66,20 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
-
+          <FieldRow
+            label="Customer Name"
+            required
+            error={errors.name}
+          >
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter customer name"
+              className={inputClass}
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </FieldRow>
           <FieldRow label="Telco/Network" required error={errors.telco}>
             <select
               name="telco"
@@ -135,15 +149,11 @@ const ComplaintCreate = () => {
           <FieldRow
             label="Department"
             hint="Select one or more department."
-            error={errors.departments}
           >
             <AddAttendeesMultiSelect
-              showLabel={false}
-              showHelperText={false}
-              className="max-w-md"
               value={departmentIds}
               options={depOptions}
-              onChange={(selectedIds) => setDepartmentIds(selectedIds)}
+              onChange={setDepartmentIds}
             />
           </FieldRow>
 
@@ -210,13 +220,10 @@ const ComplaintCreate = () => {
               <option className={optionClass} value="Immediate">
                 Immediate
               </option>
-              <option className={optionClass} value="Cancelled">
-                Cancelled
-              </option>
             </select>
           </FieldRow>
 
-          <FieldRow label="Status" required error={errors.status}>
+          <FieldRow label="Status">
             {/* FIX: name="status" moved from the <option> onto the <select> itself */}
             <select
               name="status"
@@ -234,6 +241,76 @@ const ComplaintCreate = () => {
                 Close
               </option>
             </select>
+          </FieldRow>
+          <FieldRow label="Status Disposal" >
+            {/* FIX: name="status" moved from the <option> onto the <select> itself */}
+            <select
+              name="disposal_status"
+              className={`${inputClass} max-w-xs`}
+              value={formData.disposal_status}
+              onChange={handleChange}
+            >
+              <option value="" disabled className={optionClass}>
+                — Select Disposal Status —
+              </option>
+              <option className={optionClass} value="Relief Granted">
+                Relief Granted
+              </option>
+              <option className={optionClass} value="Partial Relief Granted">
+                Partial Relief Granted
+              </option>
+              <option className={optionClass} value="Relief cannot be Granted">
+                Relief Granted
+              </option>
+            </select>
+          </FieldRow>
+          <FieldRow
+            label="Closure Date"
+          >
+            <input
+              type="date"
+              name="closure_date"
+              placeholder="Enter Date"
+              className={inputClass}
+              value={formData.closure_date}
+              onChange={handleChange}
+            />
+          </FieldRow>
+          <FieldRow
+            label="Closure Time"
+          >
+            <input
+              type="time"
+              name="closure_time"
+              placeholder="Enter Time"
+              className={inputClass}
+              value={formData.closure_time}
+              onChange={handleChange}
+            />
+          </FieldRow>
+          <FieldRow
+            label="Department Status"
+          >
+            <input
+              type="text"
+              name="department_status"
+              placeholder="Enter Status"
+              className={inputClass}
+              value={formData.department_status}
+              onChange={handleChange}
+            />
+          </FieldRow>
+          <FieldRow
+            label="Customer Feedback"
+          >
+            <input
+              type="text"
+              name="customer_feedback"
+              placeholder="Enter Feedback"
+              className={inputClass}
+              value={formData.customer_feedback}
+              onChange={handleChange}
+            />
           </FieldRow>
         </div>
 

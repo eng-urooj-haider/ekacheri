@@ -1,35 +1,28 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
-// import {  } from "../../../data/focalPersons";
-import { cities } from "../../data/users";
+import { getDFPs } from "../../api/DFPApi";
+import { useState ,useEffect } from "react";
 
 const columns = [
-  { accessorKey: "name", header: "Name", meta: { width: "16%" } },
-  { accessorKey: "email", header: "Email", meta: { width: "16%" } },
-  { accessorKey: "telco", header: "Telco", meta: { width: "16%" } },
-  { accessorKey: "mobile", header: "Mobile", meta: { width: "16%" } },
+  { accessorKey: "name", header: "Name", meta: { width: "18%" } },
+  { accessorKey: "email", header: "Email", meta: { width: "20%" } },
   { accessorKey: "executive_number", header: "Executive Number", meta: { width: "16%" } },
-  { accessorKey: "designation", header: "designation", meta: { width: "16%" } },
-  { accessorKey: "department", header: "Department", meta: { width: "16%" } },
-  { accessorKey: "status", header: "Status", meta: { width: "16%" } },
-  { accessorKey: "created_by", header: "Created By", meta: { width: "14%" } },
-  // { accessorKey: "complaint_close", header: "Complaint Close", meta: { width: "14%" } },
-  // { accessorKey: "total_complaint", header: "Total Complaint", meta: { width: "14%" } },
+  { accessorKey: "mobile", header: "Mobile", meta: { width: "14%" } },
   {
     id: "actions",
     header: "Actions",
-    meta: { width: "20%" },
+    meta: { width: "16%" },
     enableSorting: false,
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Link
-          to={`/dfps/${row.original.id}`}
+          to={`/users/${row.original.id}`}
           className="rounded-lg px-2.5 py-1 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/25 transition hover:bg-[#fab421]/10"
         >
           View
         </Link>
         <Link
-          to={`/dfps/${row.original.id}/edit`}
+          to={`/users/${row.original.id}/edit`}
           className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
         >
           Edit
@@ -39,36 +32,46 @@ const columns = [
   },
 ];
 
-const UserIndex = () => {
+const FocalPersonList = () => {
+  const [dfps, setDFPs] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getDFPs();
+      setDFPs(data.data);
+    };
+
+    fetchData();
+  }, []);
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">
-            Admin User
+            Admin Users
           </h1>
-          <p className="no-print mt-1 text-sm text-gray-500">
-            View and manage all Users.
+          <p className="mt-1 text-sm text-gray-500">
+            View and manage all admin users.
           </p>
         </div>
 
         <Link
           to="/users/create"
-          className="no-print rounded-lg bg-[#fab421] px-4 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"
+          className="rounded-lg bg-[#fab421] px-4 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"
         >
-          + Add New User
+          + Add User
         </Link>
       </div>
 
       <DataTable
         columns={columns}
-        data={cities}
+        data={dfps}
         pageSize={10}
         searchPlaceholder="Search focal persons…"
-        showExportButtons = {false}
+        showExportButtons={false}
       />
     </div>
   );
 };
 
-export default UserIndex;
+export default FocalPersonList;

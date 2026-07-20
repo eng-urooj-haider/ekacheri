@@ -1,7 +1,7 @@
 import useKacheriForm from "../../hooks/useKacheriForm"; // adjust path
 import AddAttendeesMultiSelect from "../../components/multiselect/AddAttendees";
 
-const FieldRow = ({ label, required, children, hint, error }) => (
+const FieldRow = ({ label, required, children, hint, error , readonly }) => (
   <div className="grid grid-cols-1 gap-2 border-b border-white/[0.06] px-5 py-4 sm:grid-cols-3 sm:items-start sm:gap-6">
     <label className="text-sm font-medium text-gray-300 sm:pt-2.5">
       {label}
@@ -180,7 +180,7 @@ const EkacheriForm = () => {
             />
           </FieldRow>
 
-          {!isEditMode && (
+          {/* {!isEditMode && (
             <FieldRow label="Status" required error={errors.status}>
               <select
                 name="status"
@@ -199,7 +199,7 @@ const EkacheriForm = () => {
                 </option>
               </select>
             </FieldRow>
-          )}
+          )} */}
 
           {isEditMode && (
             <>

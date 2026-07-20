@@ -1,9 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { storeDFP, updateDFP, getDFP } from "../api/DFPApi";
 import { useNavigate } from "react-router";
-
-const useDFPForm = (id) => {
+import { getLocation } from "../api/LocationApi";
+import { getDepartments } from "../api/DepartmentApi";
+import { useParams, useLocation } from "react-router";
+const useDFPForm = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const section = pathname.startsWith("/users") ? "users" : "dfps";
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,9 +19,11 @@ const useDFPForm = (id) => {
     executive_number: "",
     designation: "",
     department: "",
+    roleId: section == "users" ? 3 : 2,
   });
   const [errors, setErrors] = useState({});
-
+  const [departments, setDepartment] = useState([]);
+  const [deptId, setDeptIds] = useState([]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -58,9 +65,9 @@ const useDFPForm = (id) => {
       validationErrors.designation = "Designation is required.";
     }
 
-    if (!data.department) {
-      validationErrors.department = "Please select a department.";
-    }
+    // if (!data.department) {
+    //   validationErrors.department = "Please select a department.";
+    // }
 
     // Password is optional, but if provided, enforce a minimum length
     if (data.password && data.password.length < 8) {
@@ -84,10 +91,12 @@ const useDFPForm = (id) => {
           password: "", // never prefill password
           telco: data.telco ?? "",
           mobile: data.mobile ?? "",
-          executive_number: data.executive_number != null ? String(data.executive_number) : "",
+          executive_number:
+            data.executive_number != null ? String(data.executive_number) : "",
           designation: data.designation ?? "",
-          department: data.department ?? "",
+          roleId: section == "users" ? 3 : 2,
         });
+        setDeptIds(data.department);
       } catch (err) {
         console.error(err);
         setErrors({ form: "Failed to load focal person." });
@@ -96,10 +105,28 @@ const useDFPForm = (id) => {
 
     fetchDfp();
   }, [id]);
-
+  useEffect(() => {
+    const fetchDept = async () => {
+      try {
+        const response = await getDepartments();
+        setDepartment(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchDept();
+  }, []);
+  const dptOptions = useMemo(
+    () => (departments ?? []).map((dpt) => ({ id: dpt.id, label: dpt.title })),
+    [departments],
+  );
   // onSuccess: navigates to /dfps after a successful save
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      ...formData,
+      department: deptId,
+    };
 
     const validationErrors = validate(formData);
     setErrors(validationErrors);
@@ -110,11 +137,15 @@ const useDFPForm = (id) => {
 
     try {
       if (id) {
-        await updateDFP(id, formData);
+        await updateDFP(id, payload);
       } else {
-        await storeDFP(formData);
+        await storeDFP(payload);
       }
-      navigate("/dfps");
+      if (section == "users") {
+        navigate("/users");
+      } else {
+        navigate("/dfps");
+      }
     } catch (err) {
       const message = err.response?.data?.errors ?? {
         form:
@@ -130,6 +161,10 @@ const useDFPForm = (id) => {
     errors,
     handleChange,
     handleSubmit,
+    departments,
+    dptOptions,
+    setDeptIds,
+    deptId,
   };
 };
 

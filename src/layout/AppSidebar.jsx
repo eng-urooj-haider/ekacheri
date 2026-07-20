@@ -14,6 +14,11 @@ import api from "../api/axios.js";
 import LogoImage from "../components/common/LogoImage.jsx";
 
 const navItems = [
+   {
+    icon: <Building2 size={18} strokeWidth={2} />,
+    name: "Dashboard",
+    path: "/",
+  },
   {
     icon: <Building2 size={18} strokeWidth={2} />,
     name: "City",

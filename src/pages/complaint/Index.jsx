@@ -6,13 +6,13 @@ import { getComplaints } from "../../api/ComplaintApi.js";
 import { useState } from "react";
 const columns = [
   {
-    accessorKey: "complaint_number",
-    header: "Complaint No#",
+    accessorKey: "ekachehri_id",
+    header: "eKachehri No#",
     meta: { width: "16%" },
+    cell: ({ getValue }) => String(getValue()).padStart(5, "0"),
   },
-  { accessorKey: "venue", header: "Venue", meta: { width: "16%" } },
   {
-    accessorKey: "complainant_name",
+    accessorKey: "name",
     header: "Complainant Name",
     meta: { width: "16%" },
   },
@@ -26,14 +26,14 @@ const columns = [
     header: "Complaint Type",
     meta: { width: "16%" },
   },
-  {
-    accessorKey: "complaint_details",
-    header: "Complaint Details",
-    meta: { width: "16%" },
-  },
   { accessorKey: "status", header: "Status", meta: { width: "16%" } },
-  { accessorKey: "created_at", header: "Created At", meta: { width: "16%" } },
-  { accessorKey: "created_by", header: "Created By", meta: { width: "14%" } },
+  { accessorKey: "closure_date_formatted", header: "Closure Date", meta: { width: "16%" } },
+  {
+    accessorKey: "createdby",
+    header: "Created By",
+    cell: ({ row }) => row.original.user?.name || "-",
+    meta: { width: "14%" },
+  },
   // { accessorKey: "complaint_close", header: "Complaint Close", meta: { width: "14%" } },
   // { accessorKey: "total_complaint", header: "Total Complaint", meta: { width: "14%" } },
   {

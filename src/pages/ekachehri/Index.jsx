@@ -12,20 +12,23 @@ const columns = [
   },
   { accessorKey: "venue", header: "Venue", meta: { width: "16%" } },
   {
-    accessorKey: "kacheri_date",
-    header: "Kacheri Date",
+    accessorKey: "kachehri_date_formatted",
+    header: "Kachehri Date",
     meta: { width: "16%" },
   },
   {
-    accessorKey: "kacheri_time",
-    header: "Kacheri Time",
+    accessorKey: "kachehri_time_formatted",
+    header: "Kachehri Time",
     meta: { width: "16%" },
   },
   { accessorKey: "location", header: "Location", meta: { width: "16%" } },
   {
-    accessorKey: "live_session",
+    accessorKey: "session",
     header: "Live Session",
     meta: { width: "16%" },
+    cell: ({ row }) => (
+    row.original.session == 1 ? "Yes" : "No"
+  ),
   },
   {
     accessorKey: "session_convened",

@@ -11,7 +11,7 @@ const DFPForm = () => {
           Focal Persons
         </Link>
         <span className="text-gray-600">/</span>
-        <span className="text-gray-400">Add Department Focal Person</span>
+        <span className="text-gray-400">Add User</span>
       </div>
 
       {/* Header */}
@@ -38,7 +38,7 @@ const DFPForm = () => {
         </div>
         <div>
           <h1 className="text-xl font-semibold text-gray-900">
-            Add Department Focal Person
+            Add User
           </h1>
         </div>
       </div>

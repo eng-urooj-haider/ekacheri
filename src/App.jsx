@@ -36,9 +36,14 @@ const EditKachehri = lazy(() => import("./pages/ekachehri/Edit"));   // ← load
 
 const ComplaintIndex = lazy(() => import("./pages/complaint/Index"));
 const ComplaintCreate = lazy(() => import("./pages/complaint/Create"));
+const ComplaintEdit = lazy(() => import("./pages/complaint/Edit"));
+
 
 const UserIndex = lazy(() => import("./pages/user/Index"));
 const UserCreate = lazy(() => import("./pages/user/Create"));
+const UserEdit = lazy(() => import("./pages/user/Create"));
+const UserShow = lazy(() => import("./pages/user/Create"));
+
 
 export default function App() {
   return (
@@ -98,10 +103,12 @@ export default function App() {
             <Route path="/complaints">
               <Route index element={<ComplaintIndex />} />
               <Route path="create/:uuid" element={<ComplaintCreate />} />
+              <Route path=":id/edit" element={<ComplaintEdit />} />
             </Route>
-            <Route path="users">
+            <Route path="/users">
               <Route index element={<UserIndex />} />
               <Route path="create" element={<UserCreate />} />
+              <Route path=":id/edit" element={<UserEdit />} />
             </Route>
           </Route>
         </Route>

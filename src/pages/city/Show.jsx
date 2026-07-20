@@ -92,12 +92,12 @@ const ShowCity = () => {
             <dd className="col-span-2">
               <span
                 className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                  location.status
+                  city.status
                     ? "bg-emerald-400/10 text-emerald-400"
                     : "bg-red-400/10 text-red-400"
                 }`}
               >
-                {location.status ? "Active" : "Inactive"}
+                {city.status ? "Active" : "Inactive"}
               </span>
             </dd>
           </div>

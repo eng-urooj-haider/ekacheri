@@ -43,7 +43,7 @@ const useKacheriForm = () => {
     const fetchId = async () => {
       try {
         const response = await getLatestId();
-        console.log(response.data.data.id)
+        console.log(response.data.data.id);
         setlatestId(response.data.data.id + 1);
       } catch (error) {
         console.error("Error fetching latest ID:", error);
@@ -98,18 +98,18 @@ const useKacheriForm = () => {
     if (!isEditMode) return;
 
     const normalizeDfpIds = (raw) => {
-  if (raw == null) return [];
-  if (Array.isArray(raw)) return raw;
-  if (typeof raw === "number") return [raw];
-  if (typeof raw === "string") {
-    return raw
-      .split(",")
-      .map((id) => id.trim())
-      .filter((id) => id !== "" && !isNaN(id))
-      .map((id) => Number(id));
-  }
-  return [];
-};
+      if (raw == null) return [];
+      if (Array.isArray(raw)) return raw;
+      if (typeof raw === "number") return [raw];
+      if (typeof raw === "string") {
+        return raw
+          .split(",")
+          .map((id) => id.trim())
+          .filter((id) => id !== "" && !isNaN(id))
+          .map((id) => Number(id));
+      }
+      return [];
+    };
 
     const fetchEkachehri = async () => {
       try {
@@ -159,20 +159,17 @@ const useKacheriForm = () => {
     if (!data.venue.trim()) validationErrors.venue = "Venue is required.";
 
     // FIX #1: check session, not session
-    if (!data.session)
-      validationErrors.session = "Please select Yes or No.";
+    if (!data.session) validationErrors.session = "Please select Yes or No.";
 
     if (!data.kachehriDate)
       validationErrors.kachehriDate = "Kachehri date is required.";
     if (!data.kachehriTime)
       validationErrors.kachehriTime = "Kachehri time is required.";
-    if (!data.location)
-      validationErrors.location = "Please select a location.";
-    if (!data.status) validationErrors.status = "Please select a status.";
+    if (!data.location) validationErrors.location = "Please select a location.";
+    // if (!data.status) validationErrors.status = "Please select a status.";
     if (attendeeIds.length === 0)
       validationErrors.attendees = "Select at least one attendee.";
-    if (dfpIds.length === 0)
-      validationErrors.dfps = "Select at least one DFP.";
+    if (dfpIds.length === 0) validationErrors.dfps = "Select at least one DFP.";
     return validationErrors;
   };
 

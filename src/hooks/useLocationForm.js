@@ -20,12 +20,17 @@ const useLocationForm = (id) => {
     const fetchCities = async () => {
       try {
         const response = await getCities();
-        setCities(response.data);
-        console.log(cities);
+
+        const filteredCities = response.data.filter(
+          (city) => city.status === 1,
+        );
+
+        setCities(filteredCities);
       } catch (err) {
         console.log(err);
       }
     };
+
     fetchCities();
   }, []);
 

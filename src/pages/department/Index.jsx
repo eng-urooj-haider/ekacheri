@@ -45,7 +45,7 @@ const DepartmentList = () => {
         <div>
           <h1 className="text-xl font-semibold text-gray-900">Cities</h1>
           <p className="mt-1 text-sm text-gray-500">
-            View and manage all cities.
+            View and manage all Departments.
           </p>
         </div>
 

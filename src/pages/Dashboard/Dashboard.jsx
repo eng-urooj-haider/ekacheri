@@ -1,62 +1,17 @@
 /**
  * E-Kachehri Dashboard — stat cards wired to real data, bar chart wired to
- * real monthly kachehri counts, line chart still placeholder.
+ * real monthly kachehri counts, line chart wired to real complaint trend.
  * Matches the dark/amber dashboard theme.
  */
-import { getDashboardStats, getKachehriMonthly, getComplaintMonthly } from '../../api/DashboardApi.js'
-import { useEffect, useState } from 'react';
-
-const staticStats = [
-  {
-    label: "Complaints Resolved",
-    value: "2,914",
-    change: "83% resolution rate",
-    up: true,
-    icon: (
-      <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M22 4 12 14.01l-3-3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    label: "Complaints Open",
-    value: "568",
-    change: "-23 from last month",
-    up: false,
-    icon: (
-      <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    label: "Total Attendees",
-    value: "1,076",
-    change: "+64 this month",
-    up: true,
-    icon: (
-      <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    label: "Department Focal Persons",
-    value: "38",
-    change: "+2 this month",
-    up: true,
-    icon: (
-      <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" />
-      </svg>
-    ),
-  },
-];
+import {
+  getDashboardStats,
+  getKachehriMonthly,
+  getComplaintMonthly,
+  getComplaintStatus,
+  getTotalCity,
+  getTotalDfp,
+} from "../../api/DashboardApi.js";
+import { useEffect, useState } from "react";
 
 const kachehriIcon = (
   <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -67,6 +22,28 @@ const kachehriIcon = (
 const complaintIcon = (
   <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const openIcon = (
+  <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" />
+    <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+);
+
+const cityIcon = (
+  <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" />
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const dfpIcon = (
+  <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" />
   </svg>
 );
 
@@ -84,6 +61,20 @@ const Dashboard = () => {
 
   const [lineData, setLineData] = useState([]); // [{ month, value }, ...]
   const [loadingLineData, setLoadingLineData] = useState(true);
+
+  const [complaintStatusData, setComplaintStatusData] = useState({
+    openCount: 0,
+    closeCounts: 0,
+  });
+  const [loadingStatus, setLoadingStatus] = useState(true);
+
+  // Each of these gets its OWN loading flag — never share one flag across
+  // unrelated fetches, or finishing fetch A can wrongly mark fetch B "done".
+  const [totalCity, setTotalCity] = useState(0);
+  const [loadingCity, setLoadingCity] = useState(true);
+
+  const [totalDfp, setTotalDfp] = useState(0);
+  const [loadingDfp, setLoadingDfp] = useState(true);
 
   useEffect(() => {
     const fetchDashboardStats = async () => {
@@ -127,6 +118,54 @@ const Dashboard = () => {
     fetchComplaintMonthly();
   }, []);
 
+  useEffect(() => {
+    const fetchComplaintStatus = async () => {
+      try {
+        const response = await getComplaintStatus();
+        setComplaintStatusData(response); // e.g. { openCount, closeCounts }
+      } catch (err) {
+        console.error("Failed to load complaint status breakdown:", err);
+      } finally {
+        setLoadingStatus(false);
+      }
+    };
+    fetchComplaintStatus();
+  }, []);
+
+  useEffect(() => {
+    const fetchCity = async () => {
+      try {
+        const response = await getTotalCity();
+        // TODO: confirm actual response shape from getTotalCity(). Assuming
+        // it returns the raw count directly; change to response.user or
+        // response.total etc. once the real payload shape is confirmed.
+        setTotalCity(response.city);
+      } catch (err) {
+        console.error("Failed to load total city count:", err);
+      } finally {
+        setLoadingCity(false);
+      }
+    };
+    fetchCity();
+  }, []);
+
+  useEffect(() => {
+    const fetchDfp = async () => {
+      try {
+        const response = await getTotalDfp();
+        // TODO: confirm actual response shape from getTotalDfp(). Assuming
+        // it returns the raw count directly; change to response.user or
+        // response.total etc. once the real payload shape is confirmed.
+        setTotalDfp(response.dfp);
+      } catch (err) {
+        console.error("Failed to load total DFP count:", err);
+      } finally {
+        setLoadingDfp(false);
+      }
+    };
+    fetchDfp();
+  }, []);
+
   const kachehriStatCard = {
     label: "Total E-Kachehris",
     value: loadingStats ? "…" : String(dashboardStats.total_kachehri),
@@ -143,7 +182,44 @@ const Dashboard = () => {
     icon: complaintIcon,
   };
 
-  const allStats = [kachehriStatCard, complaintStatCard, ...staticStats];
+  const openStatCard = {
+    label: "Complaints Open",
+    value: loadingStatus ? "…" : String(complaintStatusData.openCount ?? 0),
+    change: loadingStatus ? "" : `${complaintStatusData.closeCounts ?? 0} resolved`,
+    up: false,
+    icon: openIcon,
+  };
+
+  const closeStatCard = {
+    label: "Complaints Closed",
+    value: loadingStatus ? "…" : String(complaintStatusData.closeCounts ?? 0),
+    change: loadingStatus ? "" : `${complaintStatusData.openCount ?? 0} still open`,
+    up: true,
+    icon: complaintIcon,
+  };
+
+  const cityStatCard = {
+    label: "City",
+    value: loadingCity ? "…" : String(totalCity),
+    up: true,
+    icon: cityIcon,
+  };
+
+  const dfpStatCard = {
+    label: "Department Focal Persons",
+    value: loadingDfp ? "…" : String(totalDfp),
+    up: true,
+    icon: dfpIcon,
+  };
+
+  const allStats = [
+    kachehriStatCard,
+    complaintStatCard,
+    openStatCard,
+    closeStatCard,
+    cityStatCard,
+    dfpStatCard,
+  ];
 
   // Avoid dividing by zero if all months are 0 or data hasn't loaded yet
   const maxBar = Math.max(1, ...barData.map((d) => d.value));
@@ -182,9 +258,11 @@ const Dashboard = () => {
               <p className="mt-1 text-2xl font-semibold text-gray-100">
                 {stat.value}
               </p>
-              <p className={`mt-1 text-xs font-medium ${stat.up ? "text-emerald-400" : "text-red-400"}`}>
-                {stat.change}
-              </p>
+              {stat.change && (
+                <p className={`mt-1 text-xs font-medium ${stat.up ? "text-emerald-400" : "text-red-400"}`}>
+                  {stat.change}
+                </p>
+              )}
             </div>
           </div>
         ))}
@@ -229,7 +307,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Line chart — Complaints trend (still placeholder) */}
+        {/* Line chart — Complaints trend (real data) */}
         <div className="rounded-2xl bg-[#0c0c0d] p-5 ring-1 ring-white/[0.07]">
           <div className="mb-4">
             <h2 className="text-sm font-semibold text-gray-200">

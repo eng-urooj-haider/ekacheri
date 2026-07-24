@@ -138,13 +138,6 @@ const SignIn = () => {
                   >
                     Password
                   </label>
-
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs font-medium text-[#fab421] hover:text-[#fab421]/80"
-                  >
-                    Forgot password?
-                  </Link>
                 </div>
 
                 <div className="relative">

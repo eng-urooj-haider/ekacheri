@@ -10,8 +10,8 @@ const ATTENDEE_OPTIONS = [
   { id: "nadia", label: "Ms. Nadia Farooq — HR Lead" },
 ];
 
-const AddAttendeeSelect = ({
-  label = "Add Attendee",
+const AddDeptSelect = ({
+  label = "Add Department",
   showLabel = true,
   showHelperText = true,
   options = ATTENDEE_OPTIONS,
@@ -192,4 +192,4 @@ const AddAttendeeSelect = ({
   );
 };
 
-export default AddAttendeeSelect;
+export default AddDeptSelect;

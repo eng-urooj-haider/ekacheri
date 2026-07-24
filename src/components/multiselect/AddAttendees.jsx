@@ -45,6 +45,7 @@ const AddAttendeesMultiSelect = ({
   placeholder = "Select attendee…",
   disabled = false,
   className = "",
+  text = "Select one or more Attendee"
 }) => {
   const isControlled = value !== undefined;
 
@@ -233,7 +234,7 @@ const AddAttendeesMultiSelect = ({
         <p className="mt-1.5 text-xs text-gray-500">
           {selectedOptions.length > 0
             ? `${selectedOptions.length} attendee${selectedOptions.length > 1 ? "s" : ""} selected.`
-            : "Select one or more attendees."}
+            : text}
         </p>
       )}
     </div>

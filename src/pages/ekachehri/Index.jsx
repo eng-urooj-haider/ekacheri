@@ -8,24 +8,24 @@ const columns = [
   {
     accessorKey: "id",
     header: "Kacheri Number",
-    meta: { width: "16%" },
+    meta: { width: "5%" },
   },
-  { accessorKey: "venue", header: "Venue", meta: { width: "16%" } },
+  { accessorKey: "venue", header: "Venue", meta: { width: "10%" } },
   {
     accessorKey: "kachehri_date_formatted",
     header: "Kachehri Date",
-    meta: { width: "16%" },
+    meta: { width: "10%" },
   },
   {
     accessorKey: "kachehri_time_formatted",
     header: "Kachehri Time",
-    meta: { width: "16%" },
+    meta: { width: "10%" },
   },
   { accessorKey: "location", header: "Location", meta: { width: "16%" } },
   {
     accessorKey: "session",
     header: "Live Session",
-    meta: { width: "16%" },
+    meta: { width: "5%" },
     cell: ({ row }) => (
     row.original.session == 1 ? "Yes" : "No"
   ),
@@ -33,7 +33,7 @@ const columns = [
   {
     accessorKey: "session_convened",
     header: "Session Convened",
-    meta: { width: "16%" },
+    meta: { width: "5%" },
   },
   // { accessorKey: "complaint_received", header: "Complaint Received", meta: { width: "16%" } },
   // { accessorKey: "complaint_open", header: "Complaint Open", meta: { width: "14%" } },
@@ -63,6 +63,12 @@ const columns = [
           className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
         >
           Add Complaint
+        </Link>
+          <Link
+          to={`/complaints/all/${row.original.id}`}
+          className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
+        >
+          All Complaint
         </Link>
       </div>
     ),

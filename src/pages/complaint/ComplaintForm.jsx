@@ -32,7 +32,7 @@ const ComplaintCreate = () => {
     handleChange,
     handleSubmit,
     depOptions,
-    department
+    EkachehriNumber,
   } = useComplaintForm();
 
   return (
@@ -51,6 +51,9 @@ const ComplaintCreate = () => {
 
         {/* Fields */}
         <div>
+          <FieldRow label="Ekachehri Number">
+            <input type="text" className={inputClass} value={EkachehriNumber} readOnly/>
+          </FieldRow>
           {/* FIX: removed the duplicate, uncontrolled "Customer Number" field that was here */}
           <FieldRow
             label="Customer Number"
@@ -66,11 +69,7 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
-          <FieldRow
-            label="Customer Name"
-            required
-            error={errors.name}
-          >
+          <FieldRow label="Customer Name" required error={errors.name}>
             <input
               type="text"
               name="name"
@@ -146,14 +145,14 @@ const ComplaintCreate = () => {
             </select>
           </FieldRow>
 
-          <FieldRow
-            label="Department"
-            hint="Select one or more department."
-          >
+          <FieldRow label="Department" error={errors.departments}>
             <AddAttendeesMultiSelect
+              label="Add Department"
               value={departmentIds}
               options={depOptions}
               onChange={setDepartmentIds}
+              text="Select one or more Department"
+              placeholder="Select Department"
             />
           </FieldRow>
 
@@ -223,7 +222,7 @@ const ComplaintCreate = () => {
             </select>
           </FieldRow>
 
-          <FieldRow label="Status">
+          <FieldRow label="Status" error={errors.status}>
             {/* FIX: name="status" moved from the <option> onto the <select> itself */}
             <select
               name="status"
@@ -242,7 +241,7 @@ const ComplaintCreate = () => {
               </option>
             </select>
           </FieldRow>
-          <FieldRow label="Status Disposal" >
+          <FieldRow label="Status Disposal">
             {/* FIX: name="status" moved from the <option> onto the <select> itself */}
             <select
               name="disposal_status"
@@ -264,9 +263,7 @@ const ComplaintCreate = () => {
               </option>
             </select>
           </FieldRow>
-          <FieldRow
-            label="Closure Date"
-          >
+          <FieldRow label="Closure Date">
             <input
               type="date"
               name="closure_date"
@@ -276,9 +273,7 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
-          <FieldRow
-            label="Closure Time"
-          >
+          <FieldRow label="Closure Time">
             <input
               type="time"
               name="closure_time"
@@ -288,9 +283,7 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
-          <FieldRow
-            label="Department Status"
-          >
+          <FieldRow label="Department Status">
             <input
               type="text"
               name="department_status"
@@ -300,9 +293,7 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
-          <FieldRow
-            label="Customer Feedback"
-          >
+          <FieldRow label="Customer Feedback">
             <input
               type="text"
               name="customer_feedback"

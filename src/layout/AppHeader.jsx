@@ -4,18 +4,29 @@ import { useSidebar } from "../context/SidebarContext";
 // import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
 import LogoImage from "../components/common/LogoImage";
-
-// Replace with real announcements / news items as needed
-const ANNOUNCEMENTS = [
-  "New billing cycle starts on the 1st — review your invoices before the deadline.",
-  "Scheduled maintenance this weekend from 11 PM to 3 AM.",
-  "Updated safety guidelines for field teams are now available in the docs.",
-  "Customer portal will support online complaint tracking starting next month.",
-];
+import { getActiveAnnouncements } from "../api/AnnouncementApi.js"; // adjust path
 
 const AppHeader = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
+
+  const [announcements, setAnnouncements] = useState([]);
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const response = await getActiveAnnouncements();
+        console.log(response);
+        setAnnouncements(response.ekachehri);
+      } catch (err) {
+        console.error("Failed to load announcements:", err);
+      } finally {
+        setLoadingAnnouncements(false);
+      }
+    };
+    fetchAnnouncements();
+  }, []);
 
   const handleToggle = () => {
     if (window.innerWidth >= 1024) {
@@ -43,9 +54,7 @@ const AppHeader = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  const marqueeText = ANNOUNCEMENTS.join("     •     ");
-
+  const hasAnnouncements = !loadingAnnouncements && announcements.length > 0;
   return (
     <header className="no-print sticky top-0 z-99999 flex w-full min-w-0 max-w-full min-h-20 bg-[#0a0a0a] border-b border-white/[0.07]">
       <div className="flex w-full min-w-0 max-w-full min-h-20 items-stretch">
@@ -56,7 +65,13 @@ const AppHeader = () => {
           aria-label="Toggle Sidebar"
         >
           {isMobileOpen ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -65,7 +80,13 @@ const AppHeader = () => {
               />
             </svg>
           ) : (
-            <svg width="18" height="14" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              width="18"
+              height="14"
+              viewBox="0 0 16 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -76,36 +97,42 @@ const AppHeader = () => {
           )}
         </button>
 
-        {/* Announcement marquee — same row, fills remaining space */}
-        <div className="relative flex min-w-0 flex-1 items-stretch overflow-hidden">
-          <div className="flex shrink-0 items-center gap-2 bg-[#fab421]/[0.1] px-5 py-3 ring-1 ring-[#fab421]/15">
-            <span className="relative flex size-2 shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#fab421]/60" />
-              <span className="relative inline-flex size-2 rounded-full bg-[#fab421]" />
-            </span>
-            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[#fab421] whitespace-nowrap">
-              Announcements
-            </span>
-          </div>
-
-          <div className="group relative min-w-0 flex-1 overflow-hidden">
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
-
-            <div className="marquee-track flex h-full items-center gap-12 whitespace-nowrap text-sm font-medium text-gray-400 group-hover:[animation-play-state:paused]">
-              <span className="px-4">{marqueeText}</span>
-              <span className="px-4" aria-hidden="true">
-                {marqueeText}
+        {/* Announcement marquee — only rendered when there's real content */}
+        {hasAnnouncements && (
+          <div className="relative flex min-w-0 flex-1 items-stretch overflow-hidden">
+            <div className="flex shrink-0 items-center gap-2 bg-[#fab421]/[0.1] px-5 py-3 ring-1 ring-[#fab421]/15">
+              <span className="relative flex size-2 shrink-0">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#fab421]/60" />
+                <span className="relative inline-flex size-2 rounded-full bg-[#fab421]" />
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[#fab421] whitespace-nowrap">
+                Announcements
               </span>
             </div>
+
+            <div className="group relative min-w-0 flex-1 overflow-hidden">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
+
+              <div className="marquee-track flex h-full items-center gap-12 whitespace-nowrap text-sm font-medium text-gray-400 group-hover:[animation-play-state:paused]">
+                <span className="px-4">{announcements}</span>
+                <span className="px-4" aria-hidden="true">
+                  {announcements}
+                </span>
+                <span className="px-4" aria-hidden="true">
+                  {announcements}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* When there are no announcements, this spacer keeps the header
+            layout (logo/menu positions) stable instead of collapsing. */}
+        {!hasAnnouncements && <div className="flex-1" />}
 
         {/* Mobile logo */}
         <Link to="/" className="flex shrink-0 items-center px-4 lg:hidden">
-          {/* <div className="flex items-center rounded-lg bg-white/[0.97] px-3 py-1.5 ring-1 ring-white/10">
-            <img className="h-8 w-auto object-contain" src="./images/logo/logo.png" alt="Logo" />
-          </div> */}
           <LogoImage />
         </Link>
 
@@ -114,7 +141,13 @@ const AppHeader = () => {
           onClick={toggleApplicationMenu}
           className="z-99999 flex shrink-0 items-center justify-center px-5 text-gray-400 transition-colors duration-200 hover:bg-white/[0.05] hover:text-[#fab421] lg:hidden border-l border-white/[0.07]"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -139,12 +172,12 @@ const AppHeader = () => {
 
       <style>{`
         @keyframes marquee-scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
+          from { transform: translateX(100%); }
+          to { transform: translateX(-100%); }
         }
         .marquee-track {
           width: max-content;
-          animation: marquee-scroll 36s linear infinite;
+          animation: marquee-scroll 8s linear infinite;
         }
         @media (prefers-reduced-motion: reduce) {
           .marquee-track { animation: none; }

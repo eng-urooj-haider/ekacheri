@@ -5,9 +5,9 @@ import {
   Users,
   FileText,
   MessageSquareWarning,
-  BarChart3,
   ShieldCheck,
   LogOut,
+  Landmark
 } from "lucide-react";
 import { useSidebar } from "../context/SidebarContext";
 import api from "../api/axios.js";
@@ -30,7 +30,7 @@ const navItems = [
     path: "/locations",
   },
   {
-    icon: <MapPin size={18} strokeWidth={2} />,
+    icon: <Landmark  size={18} strokeWidth={2} />,
     name: "Department",
     path: "/departments",
   },
@@ -49,11 +49,11 @@ const navItems = [
     name: "E-kacheri Complaints",
     path: "/complaints",
   },
-  {
-    icon: <BarChart3 size={18} strokeWidth={2} />,
-    name: "E-kacheri Reports",
-    path: "/reports",
-  },
+  // {
+  //   icon: <BarChart3 size={18} strokeWidth={2} />,
+  //   name: "E-kacheri Reports",
+  //   path: "/reports",
+  // },
   {
     icon: <ShieldCheck size={18} strokeWidth={2} />,
     name: "Admin Users",

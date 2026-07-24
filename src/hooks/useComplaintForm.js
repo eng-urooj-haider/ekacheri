@@ -35,11 +35,8 @@ const useComplaintForm = () => {
   const [departmentIds, setDepartmentIds] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [errors, setErrors] = useState({});
-
-  // Only relevant in create mode — edit mode has no uuid to check
-  const [isCheckingEkachehri, setIsCheckingEkachehri] = useState(!isEditMode);
   const [ekachehriExists, setEkachehriExists] = useState(false);
-
+  const [EkachehriNumber, setEkachehriNumber] = useState('');
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -109,15 +106,16 @@ const useComplaintForm = () => {
 
     if (!ekachehriUuid) {
       setErrors({ form: "No E-Kachehri specified for this complaint." });
-      setIsCheckingEkachehri(false);
       return;
     }
 
     const verifyEkachehri = async () => {
-      setIsCheckingEkachehri(true);
+      
       try {
         const found = await checkEkachehriExists(ekachehriUuid);
-        setEkachehriExists(found);
+        setEkachehriExists(found)
+        setEkachehriNumber(String(found.data.kachehri_number).padStart(5, "0"));
+        
         if (!found) {
           setErrors({ form: "This E-Kachehri could not be found." });
         }
@@ -127,9 +125,7 @@ const useComplaintForm = () => {
           form: "E-Kachehri not found, complaint will not be submitted.",
         });
         setEkachehriExists(false);
-      } finally {
-        setIsCheckingEkachehri(false);
-      }
+      } 
     };
 
     verifyEkachehri();
@@ -168,6 +164,7 @@ const useComplaintForm = () => {
   };
 
   const handleSubmit = async () => {
+
     // Block submission only in create mode if the parent Ekachehri doesn't exist
     if (!isEditMode && !ekachehriExists) {
       setErrors({
@@ -178,6 +175,7 @@ const useComplaintForm = () => {
 
     const validationErrors = validate(formData);
     setErrors(validationErrors);
+        console.log(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) return;
 
@@ -216,8 +214,7 @@ const useComplaintForm = () => {
     handleSubmit,
     depOptions,
     isEditMode,
-    isCheckingEkachehri,
-    ekachehriExists,
+    EkachehriNumber,
   };
 };
 

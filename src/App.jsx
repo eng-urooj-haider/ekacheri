@@ -31,20 +31,20 @@ const EditDepartment = lazy(() => import("./pages/department/Edit"));
 
 const IndexKachehri = lazy(() => import("./pages/ekachehri/Index"));
 const CreateKachehri = lazy(() => import("./pages/ekachehri/Create"));
-// const ShowKachehri = lazy(() => import("./pages/ekachehri/Edit"));   // ← loads Edit.jsx
-const EditKachehri = lazy(() => import("./pages/ekachehri/Edit"));   // ← loads Show.jsx
+const ShowKachehri = lazy(() => import("./pages/ekachehri/Show")); // ← loads Edit.jsx
+const EditKachehri = lazy(() => import("./pages/ekachehri/Edit")); // ← loads Show.jsx
 
 const ComplaintIndex = lazy(() => import("./pages/complaint/Index"));
 const ComplaintCreate = lazy(() => import("./pages/complaint/Create"));
 const ComplaintEdit = lazy(() => import("./pages/complaint/Edit"));
-
+const ComplaintShow = lazy(() => import("./pages/complaint/Show"));
+const AllComplaint = lazy(() => import("./pages/complaint/AllComplaint"));
 
 const UserIndex = lazy(() => import("./pages/user/Index"));
 const UserCreate = lazy(() => import("./pages/user/Create"));
 const UserEdit = lazy(() => import("./pages/user/Create"));
-const UserShow = lazy(() => import("./pages/user/Create"));
-
-
+// const UserShow = lazy(() => import("./pages/user/Create"));
+import GuestRoute from "./components/auth/GuestRoute.jsx";
 export default function App() {
   return (
     <Router>
@@ -52,16 +52,9 @@ export default function App() {
       {/* <Suspense fallback={<GlobalLoader />}> */}
       <Routes>
         {/* Guest Routes */}
-        <Route
-          path="/login"
-          element={
-            // <GuestRoute>
-            <SignIn />
-            // </GuestRoute>
-          }
-        />
-
-        {/* Protected Routes */}
+        <Route element={<GuestRoute />}>
+          <Route path="/login" element={<SignIn />} />
+        </Route>
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route index element={<Dashboard />} />
@@ -97,13 +90,16 @@ export default function App() {
             <Route path="/kachehries">
               <Route index element={<IndexKachehri />} />
               <Route path="create" element={<CreateKachehri />} />
-              {/* <Route path=":id" element={<ShowKachehri />} /> */}
+              <Route path=":id" element={<ShowKachehri />} />
               <Route path=":id/edit" element={<EditKachehri />} />
             </Route>
             <Route path="/complaints">
               <Route index element={<ComplaintIndex />} />
               <Route path="create/:uuid" element={<ComplaintCreate />} />
               <Route path=":id/edit" element={<ComplaintEdit />} />
+              <Route path="all/:id" element={<AllComplaint />} />
+              <Route path=":id" element={<ComplaintShow />} />
+              ComplaintShow
             </Route>
             <Route path="/users">
               <Route index element={<UserIndex />} />
@@ -112,8 +108,6 @@ export default function App() {
             </Route>
           </Route>
         </Route>
-
-        {/* 404 */}
         <Route path="*" element={<h1>404 | Page Not Found</h1>} />
       </Routes>
       {/* </Suspense> */}

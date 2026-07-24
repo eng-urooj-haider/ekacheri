@@ -19,15 +19,14 @@ const updateComplaint = async (id, data) => {
   const response = await api.put(`/complaints/${id}`, data);
   return response.data;
 };
-const fetchUuid = async (uuid) => {
-  const response = await api.get(`/complaints/fetchuuid/${uuid}`);
+const allComplaints = async (id) => {
+  const response = await api.get(`/all_complaints/${id}`);
   return response.data;
 };
-
 export {
   getComplaints,
   getComplaint,
   storeComplaint,
   updateComplaint,
-  fetchUuid,
+  allComplaints,
 };

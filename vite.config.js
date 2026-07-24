@@ -4,6 +4,12 @@ import svgr from "vite-plugin-svgr";
 
 // https://vite.dev/config/
 export default defineConfig({
+	    server: {
+        host: true, // or '0.0.0.0'
+        allowedHosts: [
+            'kacheri.suigas.pk'
+        ]
+    },
   plugins: [
     react(),
     svgr({

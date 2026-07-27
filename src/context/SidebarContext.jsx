@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import {getUser} from '../api/UserApi'
 const SidebarContext = createContext(undefined);
 export const useSidebar = () => {
   const context = useContext(SidebarContext);
@@ -30,6 +31,7 @@ export const SidebarProvider = ({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+  
   const toggleSidebar = () => {
     setIsExpanded(prev => !prev);
   };

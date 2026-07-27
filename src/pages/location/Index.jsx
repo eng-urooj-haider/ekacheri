@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
-import { useEffect, useState } from "react";
 import { getLocations } from "../../api/LocationApi";
 const columns = [
   { accessorKey: "city.title", header: "City", meta: { width: "30%" } },
@@ -31,14 +30,6 @@ const columns = [
 ];
 
 const LocationList = () => {
-  const [locations, setLocations] = useState([]);
-  useEffect(() => {
-    const getAllLocations = async () => {
-      const response = await getLocations();
-      setLocations(response.data.data);
-    };
-    getAllLocations();
-  }, []);
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -56,12 +47,12 @@ const LocationList = () => {
           + Add Location
         </Link>
       </div>
-
-      <DataTable
+       <DataTable
         columns={columns}
-        data={locations}
+        fetchData={getLocations}
+        queryKey="locations"
         pageSize={10}
-        searchPlaceholder="Search locations…"
+        searchPlaceholder="Search locations..."
         showExportButtons={false}
       />
     </div>

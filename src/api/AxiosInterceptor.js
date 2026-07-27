@@ -10,26 +10,34 @@ const AxiosInterceptor = ({ children }) => {
 
     const requestInterceptor = api.interceptors.request.use(
       (config) => {
-        requests++;
-        setLoading(true);
+        if (!config.skipLoader) {          // NEW: check the flag
+          requests++;
+          setLoading(true);
+        }
         return config;
       },
       (error) => {
-        requests--;
-        if (requests <= 0) setLoading(false);
+        if (!error.config?.skipLoader) {   // NEW
+          requests--;
+          if (requests <= 0) setLoading(false);
+        }
         return Promise.reject(error);
       }
     );
 
     const responseInterceptor = api.interceptors.response.use(
       (response) => {
-        requests--;
-        if (requests <= 0) setLoading(false);
+        if (!response.config.skipLoader) { // NEW
+          requests--;
+          if (requests <= 0) setLoading(false);
+        }
         return response;
       },
       (error) => {
-        requests--;
-        if (requests <= 0) setLoading(false);
+        if (!error.config?.skipLoader) {   // NEW
+          requests--;
+          if (requests <= 0) setLoading(false);
+        }
         return Promise.reject(error);
       }
     );

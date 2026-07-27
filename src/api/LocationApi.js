@@ -1,9 +1,17 @@
 import api from "./axios.js";
 
-const getLocations = () => {
-  return api.get("/locations");
+const getLocations = async ({
+  pageIndex = 0,
+  pageSize = 10,
+  search = "",
+  skipLoader = false,
+} = {}) => {
+  const response = await api.get("/locations", {
+    params: { page: pageIndex + 1, per_page: pageSize, search },
+    skipLoader,
+  });
+  return response.data.data; // must match your CityController's wrapping
 };
-
 const getLocation = (id) => {
   return api.get(`/locations/${id}/edit`);
 };

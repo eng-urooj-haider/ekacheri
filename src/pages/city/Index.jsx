@@ -1,10 +1,21 @@
 import { Link } from "react-router";
-import { useEffect, useState } from "react";
 import DataTable from "../Dashboard/DataTable";
 import { getCities } from "../../api/CityApi.js";
 const columns = [
+  {
+    id: "index",
+    header: "#",
+    meta: { width: "6%" },
+    enableSorting: false,
+    cell: ({ row }) => <div>{row.index + 1}</div>,
+  },
   { accessorKey: "title", header: "City Name", meta: { width: "30%" } },
-  { accessorKey: "created_at_formatted", header: "Created At", meta: { width: "16%" } },
+  {
+    accessorKey: "created_at_formatted",
+    header: "Created At",
+    meta: { width: "16%" },
+  },
+
   {
     id: "actions",
     header: "Actions",
@@ -30,15 +41,6 @@ const columns = [
 ];
 
 const CityList = () => {
-  const [cities, setCities] = useState([]);
-  useEffect(() => {
-    const fetchCities = async () => {
-      const data = await getCities();
-      setCities(data.data || []);
-    };
-    fetchCities();
-  }, []);
-
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -59,9 +61,10 @@ const CityList = () => {
 
       <DataTable
         columns={columns}
-        data={cities}
+        fetchData={getCities}
+        queryKey="cities"
         pageSize={10}
-        searchPlaceholder="Search cities…"
+        searchPlaceholder="Search cities.."
         showExportButtons={false}
       />
     </div>

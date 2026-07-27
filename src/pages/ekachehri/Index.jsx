@@ -1,7 +1,5 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable.jsx";
-// import {  } from "../../../data/focalPersons";
-import { useEffect , useState} from "react";
 import { getEkachehries } from "../../api/EkacheriApi.js";
 
 const columns = [
@@ -9,6 +7,7 @@ const columns = [
     accessorKey: "id",
     header: "Kacheri Number",
     meta: { width: "5%" },
+    cell: ({ getValue }) => String(getValue()).padStart(5, "0"),
   },
   { accessorKey: "venue", header: "Venue", meta: { width: "10%" } },
   {
@@ -26,9 +25,7 @@ const columns = [
     accessorKey: "session",
     header: "Live Session",
     meta: { width: "5%" },
-    cell: ({ row }) => (
-    row.original.session == 1 ? "Yes" : "No"
-  ),
+    cell: ({ row }) => (row.original.session == 1 ? "Yes" : "No"),
   },
   {
     accessorKey: "session_convened",
@@ -64,7 +61,7 @@ const columns = [
         >
           Add Complaint
         </Link>
-          <Link
+        <Link
           to={`/complaints/all/${row.original.id}`}
           className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
         >
@@ -76,14 +73,6 @@ const columns = [
 ];
 
 const EkacheriIndex = () => {
-  const [kachehries , setKachehries] = useState([])
-  useEffect(() => {
-    const fetchKacheries = async () => {
-      const response = await getEkachehries();
-      setKachehries(response.data.data)
-    };
-    fetchKacheries();
-  }, []);
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -101,13 +90,13 @@ const EkacheriIndex = () => {
           + Add EKacheri
         </Link>
       </div>
-
       <DataTable
         columns={columns}
-        data={kachehries}
+        fetchData={getEkachehries}
+        queryKey="cities"
         pageSize={10}
         searchPlaceholder="Search focal persons…"
-        showExportButtons={true}
+        showExportButtons={false}
       />
     </div>
   );

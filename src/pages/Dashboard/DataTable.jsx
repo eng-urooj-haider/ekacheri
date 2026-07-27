@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react"; // NEW: useRef added
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
@@ -6,58 +7,85 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
 import * as XLSX from "xlsx";
 
 const DataTable = ({
   columns,
-  data,
+  fetchData,
+  queryKey,
   pageSize = 10,
   searchPlaceholder = "Search…",
   showExportButtons,
 }) => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize });
+
+  const isSearchAction = useRef(false); // NEW: tracks whether the NEXT fetch was caused by search
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      isSearchAction.current = true; // NEW: mark this upcoming fetch as search-triggered
+      setDebouncedSearch(globalFilter);
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }, 400);
+
+    return () => clearTimeout(timeout);
+  }, [globalFilter]);
+
+  const { data: apiData, isFetching } = useQuery({
+    queryKey: [queryKey, pagination, debouncedSearch],
+    queryFn: () => {
+      const skipLoader = isSearchAction.current; // NEW: read the flag
+      isSearchAction.current = false;             // NEW: reset immediately so it doesn't leak into the next (e.g. pagination) fetch
+      return fetchData({
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        search: debouncedSearch,
+        skipLoader, // NEW
+      });
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  const data = apiData?.data ?? [];
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, globalFilter },
+    state: { sorting, globalFilter, pagination },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
-    initialState: { pagination: { pageSize } },
+    onPaginationChange: setPagination,
+    manualPagination: true,
+    manualFiltering: true,
+    pageCount: apiData?.last_page ?? -1,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
-  // Normal paginated rows for on-screen display.
-  // PDF/Excel export pull from getFilteredRowModel() directly (all matching
-  // rows, ignoring pagination) — see handleExportPdf / handleExportExcel.
   const rows = table.getRowModel().rows;
+  const totalRows = apiData?.total ?? 0;
+  const pageIndex = pagination.pageIndex;
+  const pageCount = apiData?.last_page ?? 1;
+  const from = apiData?.from ?? 0;
+  const to = apiData?.to ?? 0;
 
-  const totalRows = table.getFilteredRowModel().rows.length;
-  const pageIndex = table.getState().pagination.pageIndex;
-  const pageCount = table.getPageCount();
-  const from = pageIndex * pageSize + 1;
-  const to = Math.min(from + pageSize - 1, totalRows);
+  // ...rest of the component (export functions, JSX) stays exactly the same
 
   const handleExportExcel = () => {
-    // Export all searched & sorted rows (ignores pagination)
     const exportRows = table.getFilteredRowModel().rows;
     const exportData = exportRows.map((row) => {
       const rowData = {};
-
       row.getVisibleCells().forEach((cell) => {
-        // Skip Actions column
         if (cell.column.id === "actions") return;
         const header = cell.column.columnDef.header;
         rowData[header] = cell.getValue();
       });
-
       return rowData;
     });
 
@@ -69,22 +97,16 @@ const DataTable = ({
 
   const handleExportPdf = () => {
     const doc = new jsPDF();
-
-    // Title
     doc.setFontSize(14);
     doc.text("E-Kachehri", 14, 15);
 
-    // Pull all filtered rows (same approach as Excel export) — ignores
-    // pagination, respects current search/sort.
     const exportRows = table.getFilteredRowModel().rows;
-
     const tableData = exportRows.map((row) =>
       row
         .getVisibleCells()
-        .filter((cell) => cell.column.id !== "actions") // skip Actions column
+        .filter((cell) => cell.column.id !== "actions")
         .map((cell) => String(cell.getValue() ?? "")),
     );
-
     const tableHeaders = table
       .getHeaderGroups()[0]
       .headers.filter((h) => h.column.id !== "actions")
@@ -95,7 +117,7 @@ const DataTable = ({
       body: tableData,
       startY: 22,
       styles: { fontSize: 9 },
-      headStyles: { fillColor: [250, 180, 33] }, // amber, matches the theme
+      headStyles: { fillColor: [250, 180, 33] },
     });
 
     doc.save("ekachehri-report.pdf");
@@ -149,7 +171,7 @@ const DataTable = ({
         )}
       </div>
 
-      {/* Table — scroll only inside this wrapper on small screens */}
+      {/* Table */}
       <div className="w-full min-w-0 overflow-x-auto">
         <table className="w-full min-w-full table-fixed border-collapse text-left text-sm">
           <colgroup>
@@ -182,18 +204,14 @@ const DataTable = ({
                           <span className="flex flex-col leading-none text-[8px]">
                             <span
                               className={
-                                sortDir === "asc"
-                                  ? "text-[#fab421]"
-                                  : "text-gray-600"
+                                sortDir === "asc" ? "text-[#fab421]" : "text-gray-600"
                               }
                             >
                               ▲
                             </span>
                             <span
                               className={
-                                sortDir === "desc"
-                                  ? "text-[#fab421]"
-                                  : "text-gray-600"
+                                sortDir === "desc" ? "text-[#fab421]" : "text-gray-600"
                               }
                             >
                               ▼
@@ -226,10 +244,7 @@ const DataTable = ({
                 className="border-b border-white/[0.04] text-gray-300 transition-colors duration-150 hover:bg-white/[0.03]"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className="min-w-0 max-w-0 truncate px-4 py-3"
-                  >
+                  <td key={cell.id} className="min-w-0 max-w-0 truncate px-4 py-3">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -242,9 +257,8 @@ const DataTable = ({
       {/* Pagination footer */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-3.5">
         <span className="text-xs text-gray-500">
-          {totalRows === 0
-            ? "0 results"
-            : `Showing ${from}–${to} of ${totalRows}`}
+          {totalRows === 0 ? "0 results" : `Showing ${from}–${to} of ${totalRows}`}
+          {isFetching && " · Updating…"}
         </span>
 
         <div className="flex items-center gap-1.5">

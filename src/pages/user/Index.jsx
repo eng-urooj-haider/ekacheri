@@ -1,8 +1,6 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
 import { getDFPs } from "../../api/DFPApi";
-import { useState ,useEffect } from "react";
-
 const columns = [
   { accessorKey: "name", header: "Name", meta: { width: "18%" } },
   { accessorKey: "email", header: "Email", meta: { width: "20%" } },
@@ -33,16 +31,6 @@ const columns = [
 ];
 
 const FocalPersonList = () => {
-  const [dfps, setDFPs] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getDFPs();
-      setDFPs(data.data);
-    };
-
-    fetchData();
-  }, []);
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -63,11 +51,12 @@ const FocalPersonList = () => {
         </Link>
       </div>
 
-      <DataTable
+       <DataTable
         columns={columns}
-        data={dfps}
+        fetchData={getDFPs}
+        queryKey="locations"
         pageSize={10}
-        searchPlaceholder="Search focal persons…"
+        searchPlaceholder="Search admin..."
         showExportButtons={false}
       />
     </div>

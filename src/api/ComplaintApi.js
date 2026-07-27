@@ -1,10 +1,17 @@
 import api from "./axios.js";
 
-const getComplaints = async () => {
-  const response = await api.get("/complaints");
-  return response.data;
+const getComplaints = async ({
+  pageIndex = 0,
+  pageSize = 10,
+  search = "",
+  skipLoader = false,
+} = {}) => {
+  const response = await api.get("/complaints", {
+    params: { page: pageIndex + 1, per_page: pageSize, search },
+    skipLoader, // whatever DataTable decided
+  });
+  return response.data.data;
 };
-
 const getComplaint = async (id) => {
   const response = await api.get(`/complaints/${id}/edit`);
   return response.data;

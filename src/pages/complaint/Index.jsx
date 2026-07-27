@@ -1,9 +1,7 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
-// import {  } from "../../../data/focalPersons";
-import { useEffect } from "react";
 import { getComplaints } from "../../api/ComplaintApi.js";
-import { useState } from "react";
+
 const columns = [
   {
     accessorKey: "ekachehri_id",
@@ -33,7 +31,6 @@ const columns = [
   },
   { accessorKey: "status", header: "Status", meta: { width: "20%" } },
   { accessorKey: "priority", header: "Priority", meta: { width: "20%" } },
-
   { accessorKey: "closure_date_formatted", header: "Closure Date", meta: { width: "20%" } },
   {
     accessorKey: "createdby",
@@ -41,8 +38,6 @@ const columns = [
     cell: ({ row }) => row.original.user?.name || "-",
     meta: { width: "20%" },
   },
-  // { accessorKey: "complaint_close", header: "Complaint Close", meta: { width: "14%" } },
-  // { accessorKey: "total_complaint", header: "Total Complaint", meta: { width: "14%" } },
   {
     id: "actions",
     header: "Actions",
@@ -68,15 +63,6 @@ const columns = [
 ];
 
 const ComplaintIndex = () => {
-  const [complaints, setComplaints] = useState([]);
-  useEffect(() => {
-    const fetchComplain = async () => {
-      const response = await getComplaints();
-      console.log(response.data)
-      setComplaints(response.data);
-    };
-    fetchComplain();
-  }, []);
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -88,20 +74,14 @@ const ComplaintIndex = () => {
             View and manage all E-Kacheri Complaints.
           </p>
         </div>
-
-        {/* <Link
-          to="/ekacheries/create"
-          className="no-print rounded-lg bg-[#fab421] px-4 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"
-        >
-          + Add EKacheri
-        </Link> */}
       </div>
 
       <DataTable
         columns={columns}
-        data={complaints}
+        fetchData={getComplaints}
+        queryKey="complaints"
         pageSize={10}
-        searchPlaceholder="Search focal persons…"
+        searchPlaceholder="Search complaints…"
         showExportButtons={false}
       />
     </div>

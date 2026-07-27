@@ -7,14 +7,17 @@ import {
   MessageSquareWarning,
   ShieldCheck,
   LogOut,
-  Landmark
+  Landmark,
 } from "lucide-react";
+import { getUser } from "../api/UserApi.js";
+
 import { useSidebar } from "../context/SidebarContext";
 import api from "../api/axios.js";
 import LogoImage from "../components/common/LogoImage.jsx";
+import { useQuery } from "@tanstack/react-query";
 
 const navItems = [
-   {
+  {
     icon: <Building2 size={18} strokeWidth={2} />,
     name: "Dashboard",
     path: "/",
@@ -30,7 +33,7 @@ const navItems = [
     path: "/locations",
   },
   {
-    icon: <Landmark  size={18} strokeWidth={2} />,
+    icon: <Landmark size={18} strokeWidth={2} />,
     name: "Department",
     path: "/departments",
   },
@@ -49,17 +52,16 @@ const navItems = [
     name: "E-kacheri Complaints",
     path: "/complaints",
   },
-  // {
-  //   icon: <BarChart3 size={18} strokeWidth={2} />,
-  //   name: "E-kacheri Reports",
-  //   path: "/reports",
-  // },
   {
     icon: <ShieldCheck size={18} strokeWidth={2} />,
     name: "Admin Users",
     path: "/users",
   },
 ];
+
+// NEW: paths visible to role_id 2 (limited access role)
+const ROLE_2_ALLOWED_PATHS = ["/kachehries", "/complaints"];
+
 const AppSidebar = () => {
   const navigate = useNavigate();
 
@@ -69,6 +71,21 @@ const AppSidebar = () => {
   const isWide = isExpanded || isHovered || isMobileOpen;
 
   const isActive = (path) => location.pathname === path;
+
+  // NEW: read the logged-in user from storage
+  // const user = JSON.parse(localStorage.getItem("user") || "null");
+  const { data: user } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: getUser,
+    staleTime: Infinity,
+  });
+
+  // CHANGED: logic flipped per your request
+  const visibleNavItems =
+    user && user.role_id === 2
+      ? navItems // role_id 2 → full sidebar
+      : navItems.filter((item) => ROLE_2_ALLOWED_PATHS.includes(item.path)); // everyone else → limited
+
   const handleLogout = async () => {
     try {
       await api.post("/logout");
@@ -81,6 +98,7 @@ const AppSidebar = () => {
       console.error(error);
     }
   };
+
   const renderMenuItems = (items) => (
     <ul className="flex flex-col gap-1.5">
       {items.map((nav) => {
@@ -159,11 +177,6 @@ const AppSidebar = () => {
         <Link to="/" className="flex items-center gap-3 min-w-0">
           {isWide ? (
             <div className="flex items-center gap-3 rounded-2xl  px-3.5 py-2.5">
-              {/* <img
-                src="/images/logo/logo.png"
-                alt="Sui Southern Gas Company Limited"
-                className="h-10 w-auto max-w-[190px] object-contain"
-              /> */}
               <LogoImage maxWidth="200px" />
             </div>
           ) : (
@@ -205,8 +218,7 @@ const AppSidebar = () => {
               </svg>
             )}
           </h2>
-
-          {renderMenuItems(navItems)}
+          {renderMenuItems(visibleNavItems)} {/* CHANGED: was navItems */}
         </nav>
       </div>
 

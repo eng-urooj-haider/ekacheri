@@ -1,8 +1,16 @@
 import api from "./axios.js";
 
-const getDepartments = async () => {
-  const response = await api.get("/departments");
-  return response.data;
+const getDepartments = async ({
+  pageIndex = 0,
+  pageSize = 10,
+  search = "",
+  skipLoader = false,
+} = {}) => {
+  const response = await api.get("/departments", {
+    params: { page: pageIndex + 1, per_page: pageSize, search },
+    skipLoader,
+  });
+  return response.data.data; // must match your CityController's wrapping
 };
 
 const getDepartment = async (id) => {

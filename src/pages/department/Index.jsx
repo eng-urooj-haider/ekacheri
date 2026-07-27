@@ -1,6 +1,5 @@
 import DataTable from "../Dashboard/DataTable";
 import { Link } from "react-router";
-import { useEffect, useState } from "react";
 import { getDepartments } from "../../api/DepartmentApi";
 const columns = [
   { accessorKey: "title", header: "Title", meta: { width: "30%" } },
@@ -30,15 +29,6 @@ const columns = [
 ];
 
 const DepartmentList = () => {
-  const [departments, setDepartments] = useState([]);
-  useEffect(() => {
-    const fetchCities = async () => {
-      const data = await getDepartments();
-      setDepartments(data.data || []);
-    };
-    fetchCities();
-  }, []);
-
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -56,12 +46,12 @@ const DepartmentList = () => {
           + Add Department
         </Link>
       </div>
-
-      <DataTable
+       <DataTable
         columns={columns}
-        data={departments}
+        fetchData={getDepartments}
+        queryKey="departments"
         pageSize={10}
-        searchPlaceholder="Search cities…"
+        searchPlaceholder="Search departments..."
         showExportButtons={false}
       />
     </div>

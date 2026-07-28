@@ -8,6 +8,7 @@ export default defineConfig({
         host: true, // or '0.0.0.0'
         allowedHosts: [
             // 'kacheri.suigas.pk'
+            'localhost:5173'
         ]
     },
   plugins: [

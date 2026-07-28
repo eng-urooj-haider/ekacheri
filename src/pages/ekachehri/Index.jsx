@@ -1,8 +1,9 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable.jsx";
 import { getEkachehries } from "../../api/EkacheriApi.js";
+import { useUser } from "../../context/UserContext.jsx";
 
-const columns = [
+const getColumns = (user) => [
   {
     accessorKey: "id",
     header: "Kacheri Number",
@@ -32,10 +33,6 @@ const columns = [
     header: "Session Convened",
     meta: { width: "5%" },
   },
-  // { accessorKey: "complaint_received", header: "Complaint Received", meta: { width: "16%" } },
-  // { accessorKey: "complaint_open", header: "Complaint Open", meta: { width: "14%" } },
-  // { accessorKey: "complaint_close", header: "Complaint Close", meta: { width: "14%" } },
-  // { accessorKey: "total_complaint", header: "Total Complaint", meta: { width: "14%" } },
   {
     id: "actions",
     header: "Actions",
@@ -49,12 +46,14 @@ const columns = [
         >
           View
         </Link>
-        <Link
-          to={`/kachehries/${row.original.id}/edit`}
-          className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
-        >
-          Edit
-        </Link>
+        {user?.roleId == 3 && (
+          <Link
+            to={`/kachehries/${row.original.id}/edit`}
+            className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
+          >
+            Edit
+          </Link>
+        )}
         <Link
           to={`/complaints/create/${row.original.uuid}`}
           className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
@@ -73,6 +72,9 @@ const columns = [
 ];
 
 const EkacheriIndex = () => {
+  const { user } = useUser();
+  const columns = getColumns(user); // NEW: build columns with access to `user`
+
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -83,19 +85,21 @@ const EkacheriIndex = () => {
           </p>
         </div>
 
-        <Link
-          to="/kachehries/create"
-          className="no-print rounded-lg bg-[#fab421] px-4 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"
-        >
-          + Add EKacheri
-        </Link>
+        {user?.roleId == 3 && (
+          <Link
+            to="/kachehries/create"
+            className="no-print rounded-lg bg-[#fab421] px-4 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"
+          >
+            + Add EKacheri
+          </Link>
+        )}
       </div>
       <DataTable
         columns={columns}
         fetchData={getEkachehries}
-        queryKey="cities"
+        queryKey="ekachehries" // CHANGED — see note below
         pageSize={10}
-        searchPlaceholder="Search focal persons…"
+        searchPlaceholder="Search e-kachehries…"
         showExportButtons={false}
       />
     </div>

@@ -62,6 +62,7 @@ const EkacheriForm = () => {
               className={inputClass}
               value={formData.kachehriNumber}
               onChange={handleChange}
+              readOnly
             />
           </FieldRow>
 

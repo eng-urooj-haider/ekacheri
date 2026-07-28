@@ -1,10 +1,8 @@
-/**
- * Add New Complaint — fully controlled form using useComplaintForm.
- * Matches the dark/amber dashboard theme (sidebar, header, DataTable).
- */
-
-import useComplaintForm from "../../hooks/useComplaintForm"; // adjust path
+import useComplaintForm from "../../hooks/useComplaintForm";
 import AddAttendeesMultiSelect from "../../components/multiselect/AddAttendees";
+import api from "../../api/axios";
+import { useState } from "react";
+
 const FieldRow = ({ label, required, children, hint, error }) => (
   <div className="grid grid-cols-1 gap-2 border-b border-white/[0.06] px-5 py-4 sm:grid-cols-3 sm:items-start sm:gap-6">
     <label className="text-sm font-medium text-gray-300 sm:pt-2.5">
@@ -24,6 +22,10 @@ const inputClass =
   "w-full max-w-md rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-gray-200 ring-1 ring-white/[0.08] transition-all duration-200 placeholder:text-gray-500 focus:bg-white/[0.06] focus:outline-none focus:ring-[#fab421]/30";
 
 const ComplaintCreate = () => {
+  const [validationError, setValidationError] = useState("");
+  const [customerVerified, setCustomerVerified] = useState(false); // NEW
+  const [isVerifying, setIsVerifying] = useState(false); // NEW
+
   const {
     formData,
     departmentIds,
@@ -34,6 +36,50 @@ const ComplaintCreate = () => {
     depOptions,
     EkachehriNumber,
   } = useComplaintForm();
+
+  const verifyCustomer = async () => {
+    const data = formData.customer_number ?? "";
+
+    if (data.trim() === "") {
+      setValidationError("Please enter a customer number.");
+      setCustomerVerified(false);
+      return;
+    }
+
+    setValidationError("");
+    setIsVerifying(true); // NEW
+
+    try {
+      const response = await api.post("/verify-customer", {
+        customer_number: formData.customer_number,
+      });
+
+      // NEW: explicit success/failure branching
+      if (response.data == 0 || !response.data) {
+        setValidationError("This customer does not exist.");
+        setCustomerVerified(false);
+      } else {
+        setValidationError("");
+        setCustomerVerified(true); // customer confirmed — allow save to proceed
+      }
+    } catch (error) {
+      console.error("Customer verification failed:", error);
+      setValidationError("Failed to verify customer. Please try again.");
+      setCustomerVerified(false);
+    } finally {
+      setIsVerifying(false); // NEW
+    }
+  };
+
+  // NEW: re-typing the number invalidates any previous verification
+  const handleCustomerNumberChange = (e) => {
+    handleChange(e);
+    setCustomerVerified(false);
+    setValidationError("");
+  };
+
+  // NEW: block save for unverified existing customers
+  const canSave = formData.customerType !== "existing" || customerVerified;
 
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -52,24 +98,96 @@ const ComplaintCreate = () => {
         {/* Fields */}
         <div>
           <FieldRow label="Ekachehri Number">
-            <input type="text" className={inputClass} value={EkachehriNumber} readOnly/>
-          </FieldRow>
-          {/* FIX: removed the duplicate, uncontrolled "Customer Number" field that was here */}
-          <FieldRow
-            label="Customer Number"
-            required
-            error={errors.customer_number}
-          >
             <input
               type="text"
-              name="customer_number"
-              placeholder="Enter number"
               className={inputClass}
-              value={formData.customer_number}
-              onChange={handleChange}
+              value={EkachehriNumber}
+              readOnly
             />
           </FieldRow>
-          <FieldRow label="Customer Name" required error={errors.name}>
+
+          {/* Customer Type Selection */}
+          <FieldRow label="Customer Type" required error={errors.customerType}>
+            <div className="flex items-center gap-6 pt-1">
+              <label className="flex items-center gap-2 text-sm text-gray-300">
+                <input
+                  type="radio"
+                  name="customerType"
+                  value="new"
+                  checked={formData.customerType === "new"}
+                  onChange={handleChange}
+                  className="size-4 accent-[#fab421]"
+                />
+                New Customer
+              </label>
+              <label className="flex items-center gap-2 text-sm text-gray-300">
+                <input
+                  type="radio"
+                  name="customerType"
+                  value="existing"
+                  checked={formData.customerType === "existing"}
+                  onChange={handleChange}
+                  className="size-4 accent-[#fab421]"
+                />
+                Existing Customer
+              </label>
+            </div>
+          </FieldRow>
+
+          {formData.customerType === "existing" && (
+            <FieldRow
+              label="Customer Number"
+              required
+              hint="Enter the existing customer's account number, then click Verify."
+              error={errors.customerNumber}
+            >
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  name="customer_number"
+                  placeholder="Enter number"
+                  className={inputClass}
+                  value={formData.customer_number}
+                  onChange={handleCustomerNumberChange} // CHANGED
+                />
+                <button
+                  type="button"
+                  onClick={verifyCustomer}
+                  disabled={isVerifying} // NEW
+                  className="shrink-0 rounded-xl bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-gray-200 ring-1 ring-white/[0.1] transition hover:bg-white/[0.1] disabled:opacity-50"
+                >
+                  {isVerifying ? "Verifying…" : "Verify"}
+                </button>
+              </div>
+
+              {validationError && (
+                <p className="mt-1.5 text-xs text-red-400">{validationError}</p>
+              )}
+
+              {/* NEW: success feedback */}
+              {customerVerified && !validationError && (
+                <p className="mt-1.5 flex items-center gap-1.5 text-xs text-emerald-400">
+                  <svg
+                    className="size-3.5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Customer verified.
+                </p>
+              )}
+            </FieldRow>
+          )}
+          <FieldRow
+            label="Contact Name"
+            required
+            error={errors.contact_name}
+          >
             <input
               type="text"
               name="name"
@@ -79,6 +197,7 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
+
           <FieldRow label="Telco/Network" required error={errors.telco}>
             <select
               name="telco"
@@ -106,7 +225,6 @@ const ComplaintCreate = () => {
               </option>
             </select>
           </FieldRow>
-
           <FieldRow
             label="Contact Number"
             required
@@ -121,7 +239,6 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
-
           <FieldRow
             label="Complaint Category"
             required
@@ -223,7 +340,6 @@ const ComplaintCreate = () => {
           </FieldRow>
 
           <FieldRow label="Status" error={errors.status}>
-            {/* FIX: name="status" moved from the <option> onto the <select> itself */}
             <select
               name="status"
               className={`${inputClass} max-w-xs`}
@@ -241,8 +357,8 @@ const ComplaintCreate = () => {
               </option>
             </select>
           </FieldRow>
+
           <FieldRow label="Status Disposal">
-            {/* FIX: name="status" moved from the <option> onto the <select> itself */}
             <select
               name="disposal_status"
               className={`${inputClass} max-w-xs`}
@@ -259,10 +375,11 @@ const ComplaintCreate = () => {
                 Partial Relief Granted
               </option>
               <option className={optionClass} value="Relief cannot be Granted">
-                Relief Granted
+                Relief cannot be Granted
               </option>
             </select>
           </FieldRow>
+
           <FieldRow label="Closure Date">
             <input
               type="date"
@@ -273,6 +390,7 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
+
           <FieldRow label="Closure Time">
             <input
               type="time"
@@ -283,6 +401,7 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
+
           <FieldRow label="Department Status">
             <input
               type="text"
@@ -293,6 +412,7 @@ const ComplaintCreate = () => {
               onChange={handleChange}
             />
           </FieldRow>
+
           <FieldRow label="Customer Feedback">
             <input
               type="text"
@@ -310,14 +430,16 @@ const ComplaintCreate = () => {
           <button
             type="button"
             onClick={() => handleSubmit(false)}
-            className="rounded-xl bg-[#fab421] px-4 py-2.5 text-sm font-semibold text-black"
+            disabled={!canSave} // NEW
+            className="rounded-xl bg-[#fab421] px-4 py-2.5 text-sm font-semibold text-black disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save
           </button>
           <button
             type="button"
             onClick={() => handleSubmit(true)}
-            className="rounded-xl bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-gray-200 ring-1 ring-white/[0.1]"
+            disabled={!canSave} // NEW
+            className="rounded-xl bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-gray-200 ring-1 ring-white/[0.1] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save and go back to list
           </button>
@@ -329,6 +451,13 @@ const ComplaintCreate = () => {
             Cancel
           </button>
         </div>
+
+        {/* NEW: hint when save is blocked */}
+        {!canSave && (
+          <p className="px-5 pb-4 text-xs text-gray-500">
+            Please verify the customer number before saving.
+          </p>
+        )}
       </div>
     </div>
   );

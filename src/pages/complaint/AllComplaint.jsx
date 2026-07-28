@@ -1,9 +1,7 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
 // import {  } from "../../../data/focalPersons";
-import { useEffect } from "react";
 import { allComplaints } from "../../api/ComplaintApi.js";
-import { useState } from "react";
 import { useParams } from "react-router";
 const columns = [
   {
@@ -62,16 +60,8 @@ const columns = [
 ];
 
 const ComplaintIndex = () => {
-  const [complaints, setComplaints] = useState([]);
   const {id} = useParams()
-  useEffect(() => {
-    const fetchComplain = async () => {
-      const response = await allComplaints(id);
-      console.log(response.data)
-      setComplaints(response.data);
-    };
-    fetchComplain();
-  }, []);
+      const complaints =  allComplaints(id);
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -91,12 +81,12 @@ const ComplaintIndex = () => {
           + Add EKacheri
         </Link> */}
       </div>
-
       <DataTable
         columns={columns}
-        data={complaints}
+        fetchData={complaints}
+        queryKey="complaints"
         pageSize={10}
-        searchPlaceholder="Search focal persons…"
+        searchPlaceholder="Search complaints…"
         showExportButtons={false}
       />
     </div>

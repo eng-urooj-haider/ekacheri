@@ -80,8 +80,8 @@ const useKacheriForm = () => {
 
   useEffect(() => {
     const fetchLocations = async () => {
-      const response = await getLocations();
-      setLocations(response.data.data);
+      const response = await getLocations({notPaginate:true});
+      setLocations(response);
     };
     fetchLocations();
   }, []);

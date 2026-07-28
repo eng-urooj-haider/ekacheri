@@ -9,90 +9,43 @@ import {
   LogOut,
   Landmark,
 } from "lucide-react";
-import { getUser } from "../api/UserApi.js";
-
 import { useSidebar } from "../context/SidebarContext";
-import api from "../api/axios.js";
 import LogoImage from "../components/common/LogoImage.jsx";
-import { useQuery } from "@tanstack/react-query";
+import { useUser } from "../context/UserContext.jsx"; // FIXED: path depth
 
 const navItems = [
-  {
-    icon: <Building2 size={18} strokeWidth={2} />,
-    name: "Dashboard",
-    path: "/",
-  },
-  {
-    icon: <Building2 size={18} strokeWidth={2} />,
-    name: "City",
-    path: "/cities",
-  },
-  {
-    icon: <MapPin size={18} strokeWidth={2} />,
-    name: "Location",
-    path: "/locations",
-  },
-  {
-    icon: <Landmark size={18} strokeWidth={2} />,
-    name: "Department",
-    path: "/departments",
-  },
-  {
-    icon: <Users size={18} strokeWidth={2} />,
-    name: "Department Focal Person",
-    path: "/dfps",
-  },
-  {
-    icon: <FileText size={18} strokeWidth={2} />,
-    name: "E-kacheri",
-    path: "/kachehries",
-  },
-  {
-    icon: <MessageSquareWarning size={18} strokeWidth={2} />,
-    name: "E-kacheri Complaints",
-    path: "/complaints",
-  },
-  {
-    icon: <ShieldCheck size={18} strokeWidth={2} />,
-    name: "Admin Users",
-    path: "/users",
-  },
+  { icon: <Building2 size={18} strokeWidth={2} />, name: "Dashboard", path: "/" },
+  { icon: <Building2 size={18} strokeWidth={2} />, name: "City", path: "/cities" },
+  { icon: <MapPin size={18} strokeWidth={2} />, name: "Location", path: "/locations" },
+  { icon: <Landmark size={18} strokeWidth={2} />, name: "Department", path: "/departments" },
+  { icon: <Users size={18} strokeWidth={2} />, name: "Department Focal Person", path: "/dfps" },
+  { icon: <FileText size={18} strokeWidth={2} />, name: "E-kacheri", path: "/kachehries" },
+  { icon: <MessageSquareWarning size={18} strokeWidth={2} />, name: "E-kacheri Complaints", path: "/complaints" },
+  { icon: <ShieldCheck size={18} strokeWidth={2} />, name: "Admin Users", path: "/users" },
 ];
 
-// NEW: paths visible to role_id 2 (limited access role)
+// role_id 2 → limited sidebar (kachehries + complaints only)
 const ROLE_2_ALLOWED_PATHS = ["/kachehries", "/complaints"];
 
 const AppSidebar = () => {
   const navigate = useNavigate();
-
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
-
   const location = useLocation();
   const isWide = isExpanded || isHovered || isMobileOpen;
-
   const isActive = (path) => location.pathname === path;
 
-  // NEW: read the logged-in user from storage
-  // const user = JSON.parse(localStorage.getItem("user") || "null");
-  const { data: user } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: getUser,
-    staleTime: Infinity,
-  });
+  const { user, logout } = useUser(); // FIXED: single top-level call
 
-  // CHANGED: logic flipped per your request
   const visibleNavItems =
-    user && user.role_id === 2
-      ? navItems // role_id 2 → full sidebar
-      : navItems.filter((item) => ROLE_2_ALLOWED_PATHS.includes(item.path)); // everyone else → limited
+    user && user.roleId == 2
+      ? navItems.filter((item) => ROLE_2_ALLOWED_PATHS.includes(item.path))
+      : navItems;
 
   const handleLogout = async () => {
     try {
-      await api.post("/logout");
-
+      await logout(); // FIXED: no more nested useUser() call
       localStorage.clear();
       sessionStorage.clear();
-
       navigate("/login");
     } catch (error) {
       console.error(error);
@@ -115,13 +68,10 @@ const AppSidebar = () => {
                 }
                 ${!isWide ? "lg:justify-center lg:px-0 lg:py-3" : ""}`}
             >
-              {/* Active indicator */}
               <span
                 className={`absolute -left-3.5 top-1/2 -translate-y-1/2 rounded-full bg-[#fab421] transition-all duration-300 ease-out
                   ${active ? "h-5 w-[3px] opacity-100 shadow-[0_0_10px_2px_rgba(250,180,33,0.5)]" : "h-0 w-[3px] opacity-0"}`}
               />
-
-              {/* Icon */}
               <span
                 className={`relative flex shrink-0 items-center justify-center rounded-lg transition-all duration-300
                   ${
@@ -133,11 +83,7 @@ const AppSidebar = () => {
               >
                 {nav.icon}
               </span>
-
-              {isWide && (
-                <span className="truncate tracking-wide">{nav.name}</span>
-              )}
-
+              {isWide && <span className="truncate tracking-wide">{nav.name}</span>}
               {active && isWide && (
                 <span className="ml-auto size-1.5 shrink-0 rounded-full bg-[#fab421] shadow-[0_0_8px_rgba(250,180,33,0.6)]" />
               )}
@@ -166,10 +112,8 @@ const AppSidebar = () => {
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Hairline sheen at top edge */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-      {/* Logo */}
       <div
         className={`flex shrink-0 items-center border-b border-white/[0.06] px-4 py-5
           ${!isWide ? "lg:justify-center lg:px-0" : "justify-start"}`}
@@ -191,7 +135,6 @@ const AppSidebar = () => {
         </Link>
       </div>
 
-      {/* Navigation */}
       <div className="flex flex-1 flex-col overflow-y-auto px-3.5 py-6 no-scrollbar">
         <nav className="px-1">
           <h2
@@ -218,11 +161,10 @@ const AppSidebar = () => {
               </svg>
             )}
           </h2>
-          {renderMenuItems(visibleNavItems)} {/* CHANGED: was navItems */}
+          {renderMenuItems(visibleNavItems)}
         </nav>
       </div>
 
-      {/* Footer */}
       <div className="px-3.5 pb-4">
         <button
           onClick={handleLogout}
@@ -231,7 +173,6 @@ const AppSidebar = () => {
           <span className="flex size-8 items-center justify-center rounded-lg">
             <LogOut size={18} />
           </span>
-
           {isWide && <span>Logout</span>}
         </button>
       </div>

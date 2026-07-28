@@ -14,6 +14,7 @@ const useComplaintForm = () => {
   const { id } = useParams(); // present only on /complaints/:id/edit
 
   const isEditMode = Boolean(id);
+  const [EkacheriId, setEkacheriId] = useState("");
 
   const [formData, setFormData] = useState({
     customer_number: "",
@@ -30,16 +31,14 @@ const useComplaintForm = () => {
     closure_time: "",
     department_status: "",
     customer_feedback: "",
-    kachehri_id: ekachehriUuid || "",
   });
   const [departmentIds, setDepartmentIds] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [errors, setErrors] = useState({});
   const [ekachehriExists, setEkachehriExists] = useState(false);
-  const [EkachehriNumber, setEkachehriNumber] = useState('');
+  const [EkachehriNumber, setEkachehriNumber] = useState("");
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     let cleanedValue = value;
 
     if (name === "customer_number") {
@@ -110,12 +109,11 @@ const useComplaintForm = () => {
     }
 
     const verifyEkachehri = async () => {
-      
       try {
         const found = await checkEkachehriExists(ekachehriUuid);
-        setEkachehriExists(found)
+        setEkachehriExists(found);
         setEkachehriNumber(String(found.data.kachehri_number).padStart(5, "0"));
-        
+        setEkacheriId(found.data.kachehri_number);
         if (!found) {
           setErrors({ form: "This E-Kachehri could not be found." });
         }
@@ -125,7 +123,7 @@ const useComplaintForm = () => {
           form: "E-Kachehri not found, complaint will not be submitted.",
         });
         setEkachehriExists(false);
-      } 
+      }
     };
 
     verifyEkachehri();
@@ -134,9 +132,10 @@ const useComplaintForm = () => {
   const validate = (data) => {
     const validationErrors = {};
 
-    if (!data.customer_number.trim()) {
-      validationErrors.customer_number = "Customer number is required.";
-    } else if (!/^\d{10}$/.test(data.customer_number)) {
+    // if (!data.customer_number.trim()) {
+    //   validationErrors.customer_number = "Customer number is required.";
+    // } else
+    if (data.customer_number.trim() && !/^\d{10}$/.test(data.customer_number)) {
       validationErrors.customer_number =
         "Customer number must be exactly 10 digits.";
     }
@@ -164,7 +163,6 @@ const useComplaintForm = () => {
   };
 
   const handleSubmit = async () => {
-
     // Block submission only in create mode if the parent Ekachehri doesn't exist
     if (!isEditMode && !ekachehriExists) {
       setErrors({
@@ -175,16 +173,14 @@ const useComplaintForm = () => {
 
     const validationErrors = validate(formData);
     setErrors(validationErrors);
-        console.log(validationErrors)
+    console.log(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) return;
 
     const payload = {
       ...formData,
       departmentIds,
-      // Only attach the parent E-Kachehri link when creating; on edit,
-      // the link already exists via formData.kachehri_id.
-      ...(isEditMode ? {} : { ekachehri_uuid: ekachehriUuid }),
+      EkacheriId,
     };
 
     try {
@@ -193,8 +189,7 @@ const useComplaintForm = () => {
       } else {
         await storeComplaint(payload);
       }
-        navigate("/complaints");
-     
+      navigate("/complaints");
     } catch (err) {
       const message = err.response?.data?.errors ?? {
         form:
@@ -214,7 +209,7 @@ const useComplaintForm = () => {
     handleSubmit,
     depOptions,
     isEditMode,
-    EkachehriNumber,
+    EkachehriNumber
   };
 };
 

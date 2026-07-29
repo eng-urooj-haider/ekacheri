@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable";
-// import {  } from "../../../data/focalPersons";
 import { allComplaints } from "../../api/ComplaintApi.js";
 import { useParams } from "react-router";
+
 const columns = [
   {
     accessorKey: "ekachehri_id",
@@ -26,15 +26,17 @@ const columns = [
     meta: { width: "16%" },
   },
   { accessorKey: "status", header: "Status", meta: { width: "16%" } },
-  { accessorKey: "closure_date_formatted", header: "Closure Date", meta: { width: "16%" } },
+  {
+    accessorKey: "closure_date_formatted",
+    header: "Closure Date",
+    meta: { width: "16%" },
+  },
   {
     accessorKey: "createdby",
     header: "Created By",
     cell: ({ row }) => row.original.user?.name || "-",
     meta: { width: "14%" },
   },
-  // { accessorKey: "complaint_close", header: "Complaint Close", meta: { width: "14%" } },
-  // { accessorKey: "total_complaint", header: "Total Complaint", meta: { width: "14%" } },
   {
     id: "actions",
     header: "Actions",
@@ -60,8 +62,10 @@ const columns = [
 ];
 
 const ComplaintIndex = () => {
-  const {id} = useParams()
-      const complaints =  allComplaints(id);
+  const { id } = useParams();
+
+  // NEW: wrap allComplaints so DataTable can call it as fetchData(params),
+  // while `id` from the URL is bound in via closure
   return (
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
@@ -73,21 +77,15 @@ const ComplaintIndex = () => {
             View and manage all E-Kacheri Complaints.
           </p>
         </div>
-
-        {/* <Link
-          to="/ekacheries/create"
-          className="no-print rounded-lg bg-[#fab421] px-4 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"
-        >
-          + Add EKacheri
-        </Link> */}
       </div>
       <DataTable
         columns={columns}
-        fetchData={complaints}
-        queryKey="complaints"
+        fetchData={allComplaints} // CHANGED: was `complaints` (a resolved/broken Promise)
+        queryKey={`all-complaints-${id}`} // CHANGED: unique per id, avoids cache collisions across different ekachehri IDs
         pageSize={10}
         searchPlaceholder="Search complaints…"
         showExportButtons={false}
+        id={id}
       />
     </div>
   );

@@ -1,7 +1,7 @@
-import useKacheriForm from "../../hooks/useKacheriForm"; // adjust path
+import useKacheriForm from "../../hooks/useKacheriForm";
 import AddAttendeesMultiSelect from "../../components/multiselect/AddAttendees";
 
-const FieldRow = ({ label, required, children, hint, error , readonly }) => (
+const FieldRow = ({ label, required, children, hint, error, readonly }) => (
   <div className="grid grid-cols-1 gap-2 border-b border-white/[0.06] px-5 py-4 sm:grid-cols-3 sm:items-start sm:gap-6">
     <label className="text-sm font-medium text-gray-300 sm:pt-2.5">
       {label}
@@ -20,7 +20,23 @@ const inputClass =
 
 const optionClass = "text-gray-900";
 
+// NEW: local-date-safe helper, avoids UTC/toISOString off-by-one-day bug
+const getLocalDateString = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 const EkacheriForm = () => {
+  const today = getLocalDateString(new Date()); // FIXED: local date, not UTC
+  const now = new Date();
+
+  const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(
+    now.getMinutes(),
+  ).padStart(2, "0")}`;
+  // removed leftover console.log
+
   const {
     locations,
     dfpOptions,
@@ -61,7 +77,6 @@ const EkacheriForm = () => {
               placeholder="e.g. 3"
               className={inputClass}
               value={formData.kachehriNumber}
-              onChange={handleChange}
               readOnly
             />
           </FieldRow>
@@ -122,7 +137,7 @@ const EkacheriForm = () => {
           <FieldRow
             label="Kachehri Date"
             required
-            hint="Displayed using your browser's date format. Saved as yyyy-mm-dd."
+            hint="yyyy-mm-dd"
             error={errors.kachehriDate}
           >
             <input
@@ -131,6 +146,7 @@ const EkacheriForm = () => {
               className={inputClass}
               value={formData.kachehriDate}
               onChange={handleChange}
+              min={today}
             />
           </FieldRow>
 
@@ -141,6 +157,7 @@ const EkacheriForm = () => {
               className={inputClass}
               value={formData.kachehriTime}
               onChange={handleChange}
+              min={formData.kachehriDate === today ? currentTime : undefined}
             />
           </FieldRow>
 
@@ -180,27 +197,6 @@ const EkacheriForm = () => {
               onChange={(selectedIds) => setDfpIds(selectedIds)}
             />
           </FieldRow>
-
-          {/* {!isEditMode && (
-            <FieldRow label="Status" required error={errors.status}>
-              <select
-                name="status"
-                className={`${inputClass} max-w-xs`}
-                value={formData.status}
-                onChange={handleChange}
-              >
-                <option value="" disabled className={optionClass}>
-                  Select Status
-                </option>
-                <option value="Active" className={optionClass}>
-                  Active
-                </option>
-                <option value="Inactive" className={optionClass}>
-                  Inactive
-                </option>
-              </select>
-            </FieldRow>
-          )} */}
 
           {isEditMode && (
             <>
@@ -244,7 +240,7 @@ const EkacheriForm = () => {
                   value={formData.session_not_conv_reason}
                   onChange={handleChange}
                 >
-                  <option value=""  className={optionClass}>
+                  <option value="" className={optionClass}>
                     — Select Reason —
                   </option>
                   <option value="Non Availability Of Landline" className={optionClass}>

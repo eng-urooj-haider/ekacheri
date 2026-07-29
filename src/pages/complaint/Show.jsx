@@ -115,12 +115,25 @@ const ComplaintShow = () => {
           <Row label="Contact Number">{complaint.contact_number}</Row>
           <Row label="Complaint Category">{complaint.complaint_category}</Row>
           <Row label="Complaint Type">{complaint.complaint_type}</Row>
-          <Row label="Complaint Details">{complaint.complaint_details}</Row>
+
+          {/* CHANGED: render complaint_details as a list, since it's stored comma-separated */}
+          <Row label="Complaint Details">
+            {complaint.complaint_details ? (
+              <ul className="list-disc space-y-1 pl-4 break-words">
+                {complaint.complaint_details
+                  .split(",")
+                  .map((detail) => detail.trim())
+                  .filter((detail) => detail !== "")
+                  .map((detail, index) => (
+                    <li key={index} className="break-words">{detail}</li>
+                  ))}
+              </ul>
+            ) : (
+              <span className="text-gray-600">—</span>
+            )}
+          </Row>
+
           <Row label="Department">
-            {/* Prefer the related department's title if it was eager-loaded
-                (e.g. complaint.dept?.title or complaint.departments as an
-                array for the many-to-many relation); fall back to the raw
-                id only if the relation wasn't loaded. */}
             {complaint.dept?.title ??
               (Array.isArray(complaint.departments) && complaint.departments.length > 0
                 ? complaint.departments.map((d) => d.title).join(", ")

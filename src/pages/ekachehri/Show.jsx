@@ -17,11 +17,14 @@ const Row = ({ label, children }) => (
 );
 
 const YesNoBadge = ({ value }) => {
-  const isYes = value === true || value === 1 || value === "1" || value === "Yes";
+  const isYes =
+    value === true || value === 1 || value === "1" || value === "Yes";
   return (
     <span
       className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
-        isYes ? "bg-emerald-400/10 text-emerald-400" : "bg-white/[0.06] text-gray-400"
+        isYes
+          ? "bg-emerald-400/10 text-emerald-400"
+          : "bg-white/[0.06] text-gray-400"
       }`}
     >
       {isYes ? "Yes" : "No"}
@@ -35,7 +38,9 @@ const StatusBadge = ({ value }) => {
   return (
     <span
       className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
-        isActive ? "bg-emerald-400/10 text-emerald-400" : "bg-white/[0.06] text-gray-400"
+        isActive
+          ? "bg-emerald-400/10 text-emerald-400"
+          : "bg-white/[0.06] text-gray-400"
       }`}
     >
       {value}
@@ -87,15 +92,16 @@ const EkachehriShow = () => {
   // "Add Complaint" is disabled once 48 hours have passed since the
   // E-Kachehri's date + time.
   const kachehriDateTime = new Date(
-    `${ekachehri.kachehri_date}T${ekachehri.kachehri_time ?? "00:00:00"}`
+    `${ekachehri.kachehri_date}T${ekachehri.kachehri_time ?? "00:00:00"}`,
   );
-  const hoursSince = (Date.now() - kachehriDateTime.getTime()) / (1000 * 60 * 60);
+  const hoursSince =
+    (Date.now() - kachehriDateTime.getTime()) / (1000 * 60 * 60);
   const isAddComplaintDisabled = !Number.isNaN(hoursSince) && hoursSince > 48;
 
   const dfpLabel =
     Array.isArray(ekachehri.dfps) && ekachehri.dfps.length > 0
       ? ekachehri.dfps.map((d) => d.name ?? d.id).join(", ")
-      : ekachehri.dfp_ids ?? ekachehri.dfps;
+      : (ekachehri.dfp_ids ?? ekachehri.dfps);
 
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -113,10 +119,41 @@ const EkachehriShow = () => {
           <Row label="Live Session">
             <YesNoBadge value={ekachehri.session} />
           </Row>
-          <Row label="Kachehri Date">{ekachehri.kachehri_date_formatted ?? ekachehri.kachehri_date}</Row>
-          <Row label="Kachehri Time">{ekachehri.kachehri_time_formatted ?? ekachehri.kachehri_time}</Row>
+          <Row label="Kachehri Date">
+            {ekachehri.kachehri_date_formatted ?? ekachehri.kachehri_date}
+          </Row>
+          <Row label="Kachehri Time">
+            {ekachehri.kachehri_time_formatted ?? ekachehri.kachehri_time}
+          </Row>
           <Row label="Location">{ekachehri.location}</Row>
-          <Row label="Select DFPs">{dfpLabel}</Row>
+          <Row label="DFPs">
+            {ekachehri.dfps && ekachehri.dfps.length > 0 ? (
+              <ul className="list-disc space-y-1 pl-4">
+                {ekachehri.dfps.map((dfp) => (
+                  <li key={dfp.id}>
+                    {dfp.name}
+                    {dfp.designation && ` — ${dfp.designation}`}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <span className="text-gray-600">—</span>
+            )}
+          </Row>
+          <Row label="Attendees">
+            {ekachehri.attendees && ekachehri.attendees.length > 0 ? (
+              <ul className="list-disc space-y-1 pl-4">
+                {ekachehri.attendees.map((attendee) => (
+                  <li key={attendee.id}>
+                    {attendee.name}
+                    {attendee.designation && ` — ${attendee.designation}`}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <span className="text-gray-600">—</span>
+            )}
+          </Row>
           <Row label="Status">
             <StatusBadge value={ekachehri.status} />
           </Row>
@@ -144,8 +181,8 @@ const EkachehriShow = () => {
         {/* Note */}
         <div className="border-t border-white/[0.07] px-5 py-3">
           <p className="text-xs text-red-400">
-            <span className="font-semibold">NOTE:</span>{" "}
-            Add Complaint will be disabled after 48 hours from E-Kacheri date.
+            <span className="font-semibold">NOTE:</span> Add Complaint will be
+            disabled after 48 hours from E-Kacheri date.
           </p>
         </div>
       </div>

@@ -32,6 +32,10 @@ const checkEkachehriExists = async (uuid) => {
   const response = await api.get(`/complaints/fetchuuid/${uuid}`);
   return response.data;
 };
+const kachehriReopen = async (id) => {
+  const response = await api.get(`/complaints/reopen/${id}`);
+  return response.data;
+};
 export {
   getEkachehries,
   storeEkachehri,
@@ -39,4 +43,5 @@ export {
   updateEkachehri,
   getLatestId,
   checkEkachehriExists,
+  kachehriReopen,
 };

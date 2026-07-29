@@ -15,8 +15,9 @@ const useComplaintForm = () => {
 
   const isEditMode = Boolean(id);
   const [EkacheriId, setEkacheriId] = useState("");
-
+  const [complaintDetailsList, setComplaintDetailsList] = useState([""]);
   const [formData, setFormData] = useState({
+    customer_type: "",
     customer_number: "",
     name: "",
     contact_number: "",
@@ -37,17 +38,16 @@ const useComplaintForm = () => {
   const [errors, setErrors] = useState({});
   const [ekachehriExists, setEkachehriExists] = useState(false);
   const [EkachehriNumber, setEkachehriNumber] = useState("");
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     let cleanedValue = value;
 
-    if (name === "customer_number") {
-      cleanedValue = value.replace(/\D/g, "").slice(0, 10); // digits only, max 10
-    } else if (name === "contact_number") {
-      cleanedValue = value.replace(/\D/g, "").slice(0, 11); // digits only, max 11
-    }
-
     setFormData((prev) => ({ ...prev, [name]: cleanedValue }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const normalizeDfpIds = (raw) => {
@@ -70,9 +70,26 @@ const useComplaintForm = () => {
     const fetchComplaint = async () => {
       try {
         const response = await getComplaint(id);
-        setFormData((prev) => ({ ...prev, ...response.data }));
+        setFormData((prev) => ({
+          ...prev,
+          ...response.data,
+          // NEW: derive customer_type based on whether customer_number exists
+          customer_type: response.data.customer_number ? "existing" : "new",
+        }));
         const ids = normalizeDfpIds(response.data.department);
+        setEkachehriNumber(String(response.data.ekachehri_id).padStart(5, "0"));
         setDepartmentIds(ids);
+        setEkacheriId(response.data.ekachehri_id);
+
+        // Populate the dynamic list from the saved comma-separated string
+        if (response.data.complaint_details) {
+          const splitDetails = response.data.complaint_details
+            .split(",")
+            .filter((d) => d.trim() !== "");
+          setComplaintDetailsList(
+            splitDetails.length > 0 ? splitDetails : [""],
+          );
+        }
       } catch (err) {
         console.error("Error fetching complaint:", err);
         setErrors({ form: "Could not load this complaint." });
@@ -132,10 +149,14 @@ const useComplaintForm = () => {
   const validate = (data) => {
     const validationErrors = {};
 
-    // if (!data.customer_number.trim()) {
-    //   validationErrors.customer_number = "Customer number is required.";
-    // } else
-    if (data.customer_number.trim() && !/^\d{10}$/.test(data.customer_number)) {
+    if (!data.customer_type) {
+      validationErrors.customer_type = "Customer type is required.";
+    }
+    if (
+      data.customer_number &&
+      data.customer_number.trim() &&
+      !/^\d{10}$/.test(data.customer_number)
+    ) {
       validationErrors.customer_number =
         "Customer number must be exactly 10 digits.";
     }
@@ -147,7 +168,7 @@ const useComplaintForm = () => {
         "Enter a valid mobile number (e.g. 03001234567).";
     }
 
-    if (!data.telco) validationErrors.telco = "Please select a network.";
+    if (!data.name) validationErrors.name = "Customer name is required.";
     if (!data.complaint_category)
       validationErrors.complaint_category = "Please select a category.";
     if (!data.complaint_type)
@@ -155,15 +176,11 @@ const useComplaintForm = () => {
     if (!data.complaint_details.trim())
       validationErrors.complaint_details = "Complaint details are required.";
     if (!data.priority) validationErrors.priority = "Please select a priority.";
-    if (!data.status) validationErrors.status = "Please select a status.";
-    if (departmentIds.length === 0)
-      validationErrors.departments = "Select at least one department.";
 
     return validationErrors;
   };
 
   const handleSubmit = async () => {
-    // Block submission only in create mode if the parent Ekachehri doesn't exist
     if (!isEditMode && !ekachehriExists) {
       setErrors({
         form: "Cannot submit — the linked E-Kachehri could not be found.",
@@ -171,14 +188,25 @@ const useComplaintForm = () => {
       return;
     }
 
-    const validationErrors = validate(formData);
+    // Merge complaintDetailsList into a single comma-separated string
+    const mergedComplaintDetails = complaintDetailsList
+      .map((d) => d.trim())
+      .filter((d) => d !== "")
+      .join(",");
+
+    const dataToValidate = {
+      ...formData,
+      complaint_details: mergedComplaintDetails,
+    };
+
+    const validationErrors = validate(dataToValidate);
     setErrors(validationErrors);
-    console.log(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) return;
 
     const payload = {
       ...formData,
+      complaint_details: mergedComplaintDetails,
       departmentIds,
       EkacheriId,
     };
@@ -200,6 +228,23 @@ const useComplaintForm = () => {
     }
   };
 
+  const addComplaintDetail = () => {
+    setComplaintDetailsList((prev) => [...prev, ""]);
+  };
+
+  const removeComplaintDetail = (index) => {
+    setComplaintDetailsList((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleComplaintDetailChange = (index, value) => {
+    if (errors.complaint_details) {
+      setErrors((prev) => ({ ...prev, complaint_details: "" }));
+    }
+    setComplaintDetailsList((prev) =>
+      prev.map((detail, i) => (i === index ? value : detail)),
+    );
+  };
+
   return {
     formData,
     departmentIds,
@@ -209,7 +254,11 @@ const useComplaintForm = () => {
     handleSubmit,
     depOptions,
     isEditMode,
-    EkachehriNumber
+    EkachehriNumber,
+    addComplaintDetail,
+    removeComplaintDetail,
+    handleComplaintDetailChange,
+    complaintDetailsList,
   };
 };
 

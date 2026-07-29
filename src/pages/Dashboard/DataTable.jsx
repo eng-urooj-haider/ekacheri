@@ -18,6 +18,7 @@ const DataTable = ({
   pageSize = 10,
   searchPlaceholder = "Search…",
   showExportButtons,
+  id=null
 }) => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -42,6 +43,7 @@ const DataTable = ({
       const skipLoader = isSearchAction.current; // NEW: read the flag
       isSearchAction.current = false;             // NEW: reset immediately so it doesn't leak into the next (e.g. pagination) fetch
       return fetchData({
+        id:id,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         search: debouncedSearch,

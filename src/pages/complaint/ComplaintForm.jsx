@@ -35,6 +35,10 @@ const ComplaintCreate = () => {
     handleSubmit,
     depOptions,
     EkachehriNumber,
+    addComplaintDetail,
+    removeComplaintDetail,
+    handleComplaintDetailChange,
+    complaintDetailsList,
   } = useComplaintForm();
 
   const verifyCustomer = async () => {
@@ -79,7 +83,7 @@ const ComplaintCreate = () => {
   };
 
   // NEW: block save for unverified existing customers
-  const canSave = formData.customerType !== "existing" || customerVerified;
+  const canSave = formData.customer_type !== "existing" || customerVerified;
 
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -94,8 +98,6 @@ const ComplaintCreate = () => {
         {errors.form && (
           <div className="px-5 pt-4 text-sm text-red-400">{errors.form}</div>
         )}
-
-        {/* Fields */}
         <div>
           <FieldRow label="Ekachehri Number">
             <input
@@ -105,16 +107,14 @@ const ComplaintCreate = () => {
               readOnly
             />
           </FieldRow>
-
-          {/* Customer Type Selection */}
-          <FieldRow label="Customer Type" required error={errors.customerType}>
+          <FieldRow label="Customer Type" required error={errors.customer_type}>
             <div className="flex items-center gap-6 pt-1">
               <label className="flex items-center gap-2 text-sm text-gray-300">
                 <input
                   type="radio"
-                  name="customerType"
+                  name="customer_type"
                   value="new"
-                  checked={formData.customerType === "new"}
+                  checked={formData.customer_type === "new"}
                   onChange={handleChange}
                   className="size-4 accent-[#fab421]"
                 />
@@ -123,9 +123,9 @@ const ComplaintCreate = () => {
               <label className="flex items-center gap-2 text-sm text-gray-300">
                 <input
                   type="radio"
-                  name="customerType"
+                  name="customer_type"
                   value="existing"
-                  checked={formData.customerType === "existing"}
+                  checked={formData.customer_type === "existing"}
                   onChange={handleChange}
                   className="size-4 accent-[#fab421]"
                 />
@@ -134,7 +134,7 @@ const ComplaintCreate = () => {
             </div>
           </FieldRow>
 
-          {formData.customerType === "existing" && (
+          {formData.customer_type === "existing" && (
             <FieldRow
               label="Customer Number"
               required
@@ -183,11 +183,7 @@ const ComplaintCreate = () => {
               )}
             </FieldRow>
           )}
-          <FieldRow
-            label="Contact Name"
-            required
-            error={errors.contact_name}
-          >
+          <FieldRow label="Complainant Name" required error={errors.name}>
             <input
               type="text"
               name="name"
@@ -198,7 +194,7 @@ const ComplaintCreate = () => {
             />
           </FieldRow>
 
-          <FieldRow label="Telco/Network" required error={errors.telco}>
+          <FieldRow label="Telco/Network" error={errors.telco}>
             <select
               name="telco"
               className={`${inputClass} max-w-xs`}
@@ -261,18 +257,6 @@ const ComplaintCreate = () => {
               </option>
             </select>
           </FieldRow>
-
-          <FieldRow label="Department" error={errors.departments}>
-            <AddAttendeesMultiSelect
-              label="Add Department"
-              value={departmentIds}
-              options={depOptions}
-              onChange={setDepartmentIds}
-              text="Select one or more Department"
-              placeholder="Select Department"
-            />
-          </FieldRow>
-
           <FieldRow
             label="Complaint Type"
             required
@@ -301,22 +285,62 @@ const ComplaintCreate = () => {
               </option>
             </select>
           </FieldRow>
-
+          {/* Complaint Details — dynamic list */}
           <FieldRow
             label="Complaint Details"
             required
             error={errors.complaint_details}
           >
-            <input
-              type="text"
-              name="complaint_details"
-              placeholder="Enter complaint details"
-              className={inputClass}
-              value={formData.complaint_details}
-              onChange={handleChange}
-            />
-          </FieldRow>
+            <div className="space-y-3">
+              {complaintDetailsList.map((detail, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <textarea
+                    placeholder={`Complaint detail ${index + 1}`}
+                    className={`${inputClass} min-h-[80px] resize-y`}
+                    value={detail}
+                    onChange={(e) =>
+                      handleComplaintDetailChange(index, e.target.value)
+                    }
+                  />
+                  {complaintDetailsList.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeComplaintDetail(index)}
+                      className="mt-1 flex size-8 shrink-0 items-center justify-center rounded-lg text-gray-400 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05] hover:text-red-400"
+                      aria-label="Remove this detail"
+                    >
+                      <svg
+                        className="size-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ))}
 
+              <button
+                type="button"
+                onClick={addComplaintDetail}
+                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/25 transition hover:bg-[#fab421]/10"
+              >
+                <svg
+                  className="size-3.5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                </svg>
+                Add Another Detail
+              </button>
+            </div>
+          </FieldRow>
           <FieldRow label="Priority" required error={errors.priority}>
             <select
               name="priority"
@@ -338,7 +362,16 @@ const ComplaintCreate = () => {
               </option>
             </select>
           </FieldRow>
-
+          <FieldRow label="Department" error={errors.departments}>
+            <AddAttendeesMultiSelect
+              label="Add Department"
+              value={departmentIds}
+              options={depOptions}
+              onChange={setDepartmentIds}
+              text="Select one or more Department"
+              placeholder="Select Department"
+            />
+          </FieldRow>
           <FieldRow label="Status" error={errors.status}>
             <select
               name="status"

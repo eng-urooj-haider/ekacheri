@@ -2,7 +2,24 @@ import { Link } from "react-router";
 import DataTable from "../Dashboard/DataTable.jsx";
 import { getEkachehries } from "../../api/EkacheriApi.js";
 import { useUser } from "../../context/UserContext.jsx";
+import {kachehriReopen} from '../../api/EkacheriApi.js'
+const isComplaintAllowed = (kachehriDate, kachehriTime) => {
+  const dateTimeString = `${kachehriDate} ${kachehriTime}`;
 
+  const kachehriDateTime = new Date(dateTimeString);
+
+  console.log("Date String:", dateTimeString);
+  console.log("Parsed Date:", kachehriDateTime);
+  console.log("Valid:", !isNaN(kachehriDateTime));
+
+  const expiryDateTime = new Date(kachehriDateTime.getTime());
+  expiryDateTime.setHours(expiryDateTime.getHours() + 48);
+
+  console.log("Expiry:", expiryDateTime);
+  console.log("Now:", new Date());
+
+  return new Date() <= expiryDateTime;
+};
 const getColumns = (user) => [
   {
     accessorKey: "id",
@@ -38,39 +55,56 @@ const getColumns = (user) => [
     header: "Actions",
     meta: { width: "20%" },
     enableSorting: false,
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Link
-          to={`/kachehries/${row.original.id}`}
-          className="rounded-lg px-2.5 py-1 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/25 transition hover:bg-[#fab421]/10"
-        >
-          View
-        </Link>
-        {user?.roleId == 3 && (
+    cell: ({ row }) => {
+      const complaintAllowed = isComplaintAllowed(
+        row.original.kachehri_date,
+        row.original.kachehri_time,
+      );
+      return (
+        <div className="flex items-center gap-2">
           <Link
-            to={`/kachehries/${row.original.id}/edit`}
+            to={`/kachehries/${row.original.id}`}
+            className="rounded-lg px-2.5 py-1 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/25 transition hover:bg-[#fab421]/10"
+          >
+            View
+          </Link>
+
+          {user?.roleId !=2 && (
+            <Link
+              to={`/kachehries/${row.original.id}/edit`}
+              className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
+            >
+              Edit
+            </Link>
+          )}
+
+          {complaintAllowed ? (
+            <Link
+              to={`/complaints/create/${row.original.uuid}`}
+              className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
+            >
+              Add Complaint
+            </Link>
+          ) : (
+             <Link
+             onClick={kachehriReopen(row.original.id)}
+              className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
+            >
+              Reopne Complaint <span>for 48 hrs</span>
+            </Link>
+          )}
+
+          <Link
+            to={`/complaints/all/${row.original.id}`}
             className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
           >
-            Edit
+            All Complaint
           </Link>
-        )}
-        <Link
-          to={`/complaints/create/${row.original.uuid}`}
-          className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
-        >
-          Add Complaint
-        </Link>
-        <Link
-          to={`/complaints/all/${row.original.id}`}
-          className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
-        >
-          All Complaint
-        </Link>
-      </div>
-    ),
+        </div>
+      );
+    },
   },
 ];
-
 const EkacheriIndex = () => {
   const { user } = useUser();
   const columns = getColumns(user); // NEW: build columns with access to `user`
@@ -85,7 +119,7 @@ const EkacheriIndex = () => {
           </p>
         </div>
 
-        {user?.roleId == 3 && (
+        {user?.roleId !== 2 && (
           <Link
             to="/kachehries/create"
             className="no-print rounded-lg bg-[#fab421] px-4 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-[#fab421]/90"

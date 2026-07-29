@@ -14,14 +14,46 @@ import LogoImage from "../components/common/LogoImage.jsx";
 import { useUser } from "../context/UserContext.jsx"; // FIXED: path depth
 
 const navItems = [
-  { icon: <Building2 size={18} strokeWidth={2} />, name: "Dashboard", path: "/" },
-  { icon: <Building2 size={18} strokeWidth={2} />, name: "City", path: "/cities" },
-  { icon: <MapPin size={18} strokeWidth={2} />, name: "Location", path: "/locations" },
-  { icon: <Landmark size={18} strokeWidth={2} />, name: "Department", path: "/departments" },
-  { icon: <Users size={18} strokeWidth={2} />, name: "Department Focal Person", path: "/dfps" },
-  { icon: <FileText size={18} strokeWidth={2} />, name: "E-kacheri", path: "/kachehries" },
-  { icon: <MessageSquareWarning size={18} strokeWidth={2} />, name: "E-kacheri Complaints", path: "/complaints" },
-  { icon: <ShieldCheck size={18} strokeWidth={2} />, name: "Admin Users", path: "/users" },
+  {
+    icon: <Building2 size={18} strokeWidth={2} />,
+    name: "Dashboard",
+    path: "/",
+  },
+  {
+    icon: <Building2 size={18} strokeWidth={2} />,
+    name: "City",
+    path: "/cities",
+  },
+  {
+    icon: <MapPin size={18} strokeWidth={2} />,
+    name: "Location",
+    path: "/locations",
+  },
+  {
+    icon: <Landmark size={18} strokeWidth={2} />,
+    name: "Department",
+    path: "/departments",
+  },
+  {
+    icon: <Users size={18} strokeWidth={2} />,
+    name: "Department Focal Person",
+    path: "/dfps",
+  },
+  {
+    icon: <FileText size={18} strokeWidth={2} />,
+    name: "E-kacheri",
+    path: "/kachehries",
+  },
+  {
+    icon: <MessageSquareWarning size={18} strokeWidth={2} />,
+    name: "E-kacheri Complaints",
+    path: "/complaints",
+  },
+  {
+    icon: <ShieldCheck size={18} strokeWidth={2} />,
+    name: "Admin Users",
+    path: "/users",
+  },
 ];
 
 // role_id 2 → limited sidebar (kachehries + complaints only)
@@ -83,7 +115,9 @@ const AppSidebar = () => {
               >
                 {nav.icon}
               </span>
-              {isWide && <span className="truncate tracking-wide">{nav.name}</span>}
+              {isWide && (
+                <span className="truncate tracking-wide">{nav.name}</span>
+              )}
               {active && isWide && (
                 <span className="ml-auto size-1.5 shrink-0 rounded-full bg-[#fab421] shadow-[0_0_8px_rgba(250,180,33,0.6)]" />
               )}

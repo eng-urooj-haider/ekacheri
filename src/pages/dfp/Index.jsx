@@ -4,7 +4,11 @@ import { getDFPs } from "../../api/DFPApi";
 const columns = [
   { accessorKey: "name", header: "Name", meta: { width: "18%" } },
   { accessorKey: "email", header: "Email", meta: { width: "20%" } },
-  { accessorKey: "executive_number", header: "Executive Number", meta: { width: "16%" } },
+  {
+    accessorKey: "executive_number",
+    header: "Executive Number",
+    meta: { width: "16%" },
+  },
   { accessorKey: "mobile", header: "Mobile", meta: { width: "14%" } },
   {
     id: "actions",
@@ -15,13 +19,13 @@ const columns = [
       <div className="flex items-center gap-2">
         <Link
           to={`/dfps/${row.original.id}`}
-          className="rounded-lg px-2.5 py-1 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/25 transition hover:bg-[#fab421]/10"
+          className="rounded-lg border border-[#fab421]/40 bg-[#fff8eb] px-2.5 py-1 text-xs font-medium text-[#fab421] transition hover:bg-[#fab421] hover:text-white"
         >
           View
         </Link>
         <Link
           to={`/dfps/${row.original.id}/edit`}
-          className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
+          className="rounded-lg border border-[#2F4F7F]/20 px-2.5 py-1 text-xs font-medium text-[#2F4F7F] transition hover:border-[#2F4F7F] hover:bg-[#2F4F7F] hover:text-white"
         >
           Edit
         </Link>

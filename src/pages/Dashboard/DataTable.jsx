@@ -18,7 +18,7 @@ const DataTable = ({
   pageSize = 10,
   searchPlaceholder = "Search…",
   showExportButtons,
-  id=null
+  id = null,
 }) => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -41,9 +41,9 @@ const DataTable = ({
     queryKey: [queryKey, pagination, debouncedSearch],
     queryFn: () => {
       const skipLoader = isSearchAction.current; // NEW: read the flag
-      isSearchAction.current = false;             // NEW: reset immediately so it doesn't leak into the next (e.g. pagination) fetch
+      isSearchAction.current = false; // NEW: reset immediately so it doesn't leak into the next (e.g. pagination) fetch
       return fetchData({
-        id:id,
+        id: id,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         search: debouncedSearch,
@@ -126,12 +126,19 @@ const DataTable = ({
   };
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl bg-[#0c0c0d] ring-1 ring-white/[0.07]">
+    <div className="relative w-full min-w-0 overflow-x-auto overflow-y-visible rounded-3xl bg-white border border-[#E6EDF7] shadow-lg shadow-[#2D6BA3]/5">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] px-4 py-3.5">
-        <div className="flex w-full min-w-0 max-w-sm flex-1 items-center gap-2.5 rounded-xl bg-white/[0.04] px-3.5 py-2.5 ring-1 ring-white/[0.07] transition-all duration-200 focus-within:bg-white/[0.06] focus-within:ring-[#fab421]/25 sm:w-auto sm:min-w-[240px]">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#EDF2F8] px-4 py-3.5">
+        <div
+          className="flex w-full min-w-0 max-w-sm flex-1 items-center gap-2.5 rounded-xl  px-3.5 py-2.5  transition-all duration-200 bg-[#F7FAFD]
+border border-[#E4ECF5]
+focus-within:bg-white
+focus-within:border-[#F5A623]
+focus-within:ring-4
+focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
+        >
           <svg
-            className="size-4 shrink-0 text-gray-500"
+            className="size-4 shrink-0 text-[#6B87B5]"
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +156,7 @@ const DataTable = ({
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full bg-transparent text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none"
+            className="w-full bg-transparent text-sm text-gray-700 placeholder:text-[#6B87B5] focus:outline-none"
           />
         </div>
         {showExportButtons && (
@@ -166,7 +173,7 @@ const DataTable = ({
             >
               Download PDF
             </button>
-            <span className="shrink-0 text-xs text-gray-500">
+            <span className="shrink-0 text-xs text-[#6B87B5]">
               {totalRows} {totalRows === 1 ? "result" : "results"}
             </span>
           </div>
@@ -194,8 +201,12 @@ const DataTable = ({
                     <th
                       key={header.id}
                       onClick={header.column.getToggleSortingHandler()}
-                      className={`min-w-0 truncate px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-500
-                        ${canSort ? "cursor-pointer select-none hover:text-gray-300" : ""}`}
+                      className={`min-w-0 truncate px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#2F4F7F]
+    ${
+      canSort
+        ? "cursor-pointer select-none transition-colors hover:text-[#FAB421]"
+        : ""
+    }`}
                     >
                       <span className="inline-flex items-center gap-1.5">
                         {flexRender(
@@ -206,14 +217,18 @@ const DataTable = ({
                           <span className="flex flex-col leading-none text-[8px]">
                             <span
                               className={
-                                sortDir === "asc" ? "text-[#fab421]" : "text-gray-600"
+                                sortDir === "asc"
+                                  ? "text-[#fab421]"
+                                  : "text-gray-600"
                               }
                             >
                               ▲
                             </span>
                             <span
                               className={
-                                sortDir === "desc" ? "text-[#fab421]" : "text-gray-600"
+                                sortDir === "desc"
+                                  ? "text-[#fab421]"
+                                  : "text-gray-600"
                               }
                             >
                               ▼
@@ -233,7 +248,7 @@ const DataTable = ({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-10 text-center text-sm text-gray-500"
+                  className="px-4 py-10 text-center text-sm text-[#6B87B5]"
                 >
                   No results found.
                 </td>
@@ -243,10 +258,13 @@ const DataTable = ({
             {rows.map((row) => (
               <tr
                 key={row.id}
-                className="border-b border-white/[0.04] text-gray-300 transition-colors duration-150 hover:bg-white/[0.03]"
+                className="border-b border-[#E8EEF8] transition-colors duration-150 hover:bg-[#F8FBFF]"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="min-w-0 max-w-0 truncate px-4 py-3">
+                  <td
+                    key={cell.id}
+                    className="px-4 py-3 text-sm font-medium text-[#2F4F7F]"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -258,8 +276,10 @@ const DataTable = ({
 
       {/* Pagination footer */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-3.5">
-        <span className="text-xs text-gray-500">
-          {totalRows === 0 ? "0 results" : `Showing ${from}–${to} of ${totalRows}`}
+        <span className="text-xs text-[#6B87B5]">
+          {totalRows === 0
+            ? "0 results"
+            : `Showing ${from}–${to} of ${totalRows}`}
           {isFetching && " · Updating…"}
         </span>
 

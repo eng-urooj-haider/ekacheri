@@ -1,7 +1,7 @@
 /**
  * E-Kachehri Dashboard — stat cards wired to real data, bar chart wired to
  * real monthly kachehri counts, line chart wired to real complaint trend.
- * Matches the dark/amber dashboard theme.
+ * Light theme matching the SSGC flame color palette.
  */
 import {
   getDashboardStats,
@@ -59,7 +59,7 @@ const Dashboard = () => {
   const [barData, setBarData] = useState([]);
   const [loadingBarData, setLoadingBarData] = useState(true);
 
-  const [lineData, setLineData] = useState([]); // [{ month, value }, ...]
+  const [lineData, setLineData] = useState([]);
   const [loadingLineData, setLoadingLineData] = useState(true);
 
   const [complaintStatusData, setComplaintStatusData] = useState({
@@ -68,8 +68,6 @@ const Dashboard = () => {
   });
   const [loadingStatus, setLoadingStatus] = useState(true);
 
-  // Each of these gets its OWN loading flag — never share one flag across
-  // unrelated fetches, or finishing fetch A can wrongly mark fetch B "done".
   const [totalCity, setTotalCity] = useState(0);
   const [loadingCity, setLoadingCity] = useState(true);
 
@@ -94,7 +92,7 @@ const Dashboard = () => {
     const fetchMonthly = async () => {
       try {
         const response = await getKachehriMonthly();
-        setBarData(response); // [{ month, value }, ...]
+        setBarData(response);
       } catch (err) {
         console.error("Failed to load monthly kachehri data:", err);
       } finally {
@@ -108,7 +106,7 @@ const Dashboard = () => {
     const fetchComplaintMonthly = async () => {
       try {
         const response = await getComplaintMonthly();
-        setLineData(response); // [{ month, value }, ...]
+        setLineData(response);
       } catch (err) {
         console.error("Failed to load monthly complaint data:", err);
       } finally {
@@ -122,7 +120,7 @@ const Dashboard = () => {
     const fetchComplaintStatus = async () => {
       try {
         const response = await getComplaintStatus();
-        setComplaintStatusData(response); // e.g. { openCount, closeCounts }
+        setComplaintStatusData(response);
       } catch (err) {
         console.error("Failed to load complaint status breakdown:", err);
       } finally {
@@ -136,9 +134,6 @@ const Dashboard = () => {
     const fetchCity = async () => {
       try {
         const response = await getTotalCity();
-        // TODO: confirm actual response shape from getTotalCity(). Assuming
-        // it returns the raw count directly; change to response.user or
-        // response.total etc. once the real payload shape is confirmed.
         setTotalCity(response.city);
       } catch (err) {
         console.error("Failed to load total city count:", err);
@@ -153,9 +148,6 @@ const Dashboard = () => {
     const fetchDfp = async () => {
       try {
         const response = await getTotalDfp();
-        // TODO: confirm actual response shape from getTotalDfp(). Assuming
-        // it returns the raw count directly; change to response.user or
-        // response.total etc. once the real payload shape is confirmed.
         setTotalDfp(response.dfp);
       } catch (err) {
         console.error("Failed to load total DFP count:", err);
@@ -166,20 +158,26 @@ const Dashboard = () => {
     fetchDfp();
   }, []);
 
+  // CHANGED: each stat card now carries its own icon bg/text color pair,
+  // matching the reference screenshot's per-category coloring
   const kachehriStatCard = {
     label: "Total E-Kachehris",
     value: loadingStats ? "…" : String(dashboardStats.total_kachehri),
-    change: loadingStats ? "" : `+${dashboardStats.kachehri_this_month} this month`,
+    change: loadingStats ? "" : `↑ ${dashboardStats.kachehri_this_month}% this month`,
     up: true,
     icon: kachehriIcon,
+    iconBg: "bg-blue-50",
+    iconColor: "text-blue-500",
   };
 
   const complaintStatCard = {
     label: "Total Complaints",
     value: loadingStats ? "…" : String(dashboardStats.total_complaint),
-    change: loadingStats ? "" : `+${dashboardStats.complaint_this_month} this month`,
+    change: loadingStats ? "" : `↑ ${dashboardStats.complaint_this_month}% this month`,
     up: true,
     icon: complaintIcon,
+    iconBg: "bg-orange-50",
+    iconColor: "text-orange-500",
   };
 
   const openStatCard = {
@@ -188,6 +186,8 @@ const Dashboard = () => {
     change: loadingStatus ? "" : `${complaintStatusData.closeCounts ?? 0} resolved`,
     up: false,
     icon: openIcon,
+    iconBg: "bg-amber-50",
+    iconColor: "text-amber-500",
   };
 
   const closeStatCard = {
@@ -196,6 +196,8 @@ const Dashboard = () => {
     change: loadingStatus ? "" : `${complaintStatusData.openCount ?? 0} still open`,
     up: true,
     icon: complaintIcon,
+    iconBg: "bg-blue-50",
+    iconColor: "text-blue-500",
   };
 
   const cityStatCard = {
@@ -203,6 +205,8 @@ const Dashboard = () => {
     value: loadingCity ? "…" : String(totalCity),
     up: true,
     icon: cityIcon,
+    iconBg: "bg-orange-50",
+    iconColor: "text-orange-500",
   };
 
   const dfpStatCard = {
@@ -210,6 +214,8 @@ const Dashboard = () => {
     value: loadingDfp ? "…" : String(totalDfp),
     up: true,
     icon: dfpIcon,
+    iconBg: "bg-blue-50",
+    iconColor: "text-blue-500",
   };
 
   const allStats = [
@@ -221,13 +227,7 @@ const Dashboard = () => {
     dfpStatCard,
   ];
 
-  // Avoid dividing by zero if all months are 0 or data hasn't loaded yet
   const maxBar = Math.max(1, ...barData.map((d) => d.value));
-
-  // Scale real complaint counts into the SVG's 0-90 y-range (chart height is
-  // 160px with a 10px top margin, so 90 keeps the peak comfortably below the
-  // top edge). A flat baseline of 10 keeps a 0-count month visible as a dot
-  // rather than sitting exactly on the x-axis line.
   const maxLine = Math.max(1, ...lineData.map((d) => d.value));
   const linePoints = lineData.map((d) => 10 + (d.value / maxLine) * 80);
 
@@ -246,20 +246,20 @@ const Dashboard = () => {
         {allStats.map((stat) => (
           <div
             key={stat.label}
-            className="flex items-start gap-4 rounded-2xl bg-[#0c0c0d] p-5 ring-1 ring-white/[0.07]"
+            className="flex items-start gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100"
           >
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#fab421]/10 text-[#fab421] ring-1 ring-[#fab421]/20">
+            <div className={`flex size-10 shrink-0 items-center justify-center rounded-full ${stat.iconBg} ${stat.iconColor}`}>
               {stat.icon}
             </div>
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
                 {stat.label}
               </p>
-              <p className="mt-1 text-2xl font-semibold text-gray-100">
+              <p className="mt-1 text-2xl font-semibold text-gray-900">
                 {stat.value}
               </p>
               {stat.change && (
-                <p className={`mt-1 text-xs font-medium ${stat.up ? "text-emerald-400" : "text-red-400"}`}>
+                <p className={`mt-1 text-xs font-medium ${stat.up ? "text-emerald-600" : "text-red-500"}`}>
                   {stat.change}
                 </p>
               )}
@@ -270,10 +270,10 @@ const Dashboard = () => {
 
       {/* Charts row */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {/* Bar chart — E-Kachehris per month (real data) */}
-        <div className="rounded-2xl bg-[#0c0c0d] p-5 ring-1 ring-white/[0.07]">
+        {/* Bar chart */}
+        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
           <div className="mb-4">
-            <h2 className="text-sm font-semibold text-gray-200">
+            <h2 className="text-sm font-semibold text-gray-800">
               E-Kachehris per Month
             </h2>
             <p className="mt-0.5 text-xs text-gray-500">
@@ -281,9 +281,8 @@ const Dashboard = () => {
             </p>
           </div>
 
-          {/* Bar chart body */}
           {loadingBarData ? (
-            <div className="flex h-48 items-center justify-center text-xs text-gray-500">
+            <div className="flex h-48 items-center justify-center text-xs text-gray-400">
               Loading…
             </div>
           ) : (
@@ -293,24 +292,24 @@ const Dashboard = () => {
                   key={d.month}
                   className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
                 >
-                  <span className="text-[10px] text-gray-400">{d.value}</span>
+                  <span className="text-[10px] text-gray-500">{d.value}</span>
                   <div
-                    className="w-full rounded-t-md bg-[#fab421]/80 transition-all duration-300"
+                    className="w-full rounded-t-md bg-amber-400 transition-all duration-300"
                     style={{
                       height: `${Math.max((d.value / maxBar) * 100, d.value > 0 ? 4 : 0)}%`,
                     }}
                   />
-                  <span className="text-[10px] text-gray-500">{d.month}</span>
+                  <span className="text-[10px] text-gray-400">{d.month}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Line chart — Complaints trend (real data) */}
-        <div className="rounded-2xl bg-[#0c0c0d] p-5 ring-1 ring-white/[0.07]">
+        {/* Line chart */}
+        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
           <div className="mb-4">
-            <h2 className="text-sm font-semibold text-gray-200">
+            <h2 className="text-sm font-semibold text-gray-800">
               Complaints Trend
             </h2>
             <p className="mt-0.5 text-xs text-gray-500">
@@ -318,19 +317,13 @@ const Dashboard = () => {
             </p>
           </div>
 
-          {/* Line chart body — SVG */}
           {loadingLineData ? (
-            <div className="flex h-48 items-center justify-center text-xs text-gray-500">
+            <div className="flex h-48 items-center justify-center text-xs text-gray-400">
               Loading…
             </div>
           ) : (
             <div className="h-48 w-full">
-              <svg
-                viewBox="0 0 300 160"
-                preserveAspectRatio="none"
-                className="h-full w-full"
-              >
-                {/* Grid lines */}
+              <svg viewBox="0 0 300 160" preserveAspectRatio="none" className="h-full w-full">
                 {[0, 1, 2, 3].map((i) => (
                   <line
                     key={i}
@@ -338,12 +331,11 @@ const Dashboard = () => {
                     y1={i * 40 + 10}
                     x2="300"
                     y2={i * 40 + 10}
-                    stroke="rgba(255,255,255,0.05)"
+                    stroke="rgba(0,0,0,0.06)"
                     strokeWidth="1"
                   />
                 ))}
 
-                {/* Area fill */}
                 <defs>
                   <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#fab421" stopOpacity="0.25" />
@@ -360,7 +352,6 @@ const Dashboard = () => {
                   fill="url(#areaGrad)"
                 />
 
-                {/* Line */}
                 <polyline
                   points={linePoints
                     .map((y, i) => `${(i / (linePoints.length - 1)) * 300},${160 - y}`)
@@ -372,7 +363,6 @@ const Dashboard = () => {
                   strokeLinejoin="round"
                 />
 
-                {/* Dots */}
                 {linePoints.map((y, i) => (
                   <circle
                     key={i}
@@ -386,10 +376,9 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* X-axis labels */}
           <div className="mt-2 flex justify-between px-1">
             {lineData.map((d) => (
-              <span key={d.month} className="text-[10px] text-gray-500">
+              <span key={d.month} className="text-[10px] text-gray-400">
                 {d.month}
               </span>
             ))}

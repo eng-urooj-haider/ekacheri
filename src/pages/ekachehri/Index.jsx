@@ -1,26 +1,39 @@
 import { Link } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast"; // ADJUST: match your actual toast library
 import DataTable from "../Dashboard/DataTable.jsx";
-import { getEkachehries } from "../../api/EkacheriApi.js";
+import { getEkachehries, kachehriComplainReopen } from "../../api/EkacheriApi.js";
 import { useUser } from "../../context/UserContext.jsx";
-import {kachehriReopen} from '../../api/EkacheriApi.js'
+import ActionDropdown from "../../components/common/ActionDropdown.jsx";
+import DropdownItem from "../../components/common/DropdownItem.jsx";
+import { Eye, Pencil, PlusCircle, RotateCcw, List } from "lucide-react";
+
 const isComplaintAllowed = (kachehriDate, kachehriTime) => {
   const dateTimeString = `${kachehriDate} ${kachehriTime}`;
-
   const kachehriDateTime = new Date(dateTimeString);
 
-  console.log("Date String:", dateTimeString);
-  console.log("Parsed Date:", kachehriDateTime);
-  console.log("Valid:", !isNaN(kachehriDateTime));
+  if (isNaN(kachehriDateTime.getTime())) return false; // NEW: guard invalid dates instead of silently continuing
 
   const expiryDateTime = new Date(kachehriDateTime.getTime());
   expiryDateTime.setHours(expiryDateTime.getHours() + 48);
 
-  console.log("Expiry:", expiryDateTime);
-  console.log("Now:", new Date());
+  return new Date() <= expiryDateTime;
+};
+
+const isReopenComplaintAllowed = (complaintWindowResetAt) => {
+  if (!complaintWindowResetAt) return false;
+
+  const reopenDateTime = new Date(complaintWindowResetAt);
+  if (isNaN(reopenDateTime.getTime())) return false;
+
+  const expiryDateTime = new Date(reopenDateTime);
+  expiryDateTime.setHours(expiryDateTime.getHours() + 48);
 
   return new Date() <= expiryDateTime;
 };
-const getColumns = (user) => [
+
+// CHANGED: now accepts handleReopenComplaint as a second parameter
+const getColumns = (user, handleReopenComplaint) => [
   {
     accessorKey: "id",
     header: "Kacheri Number",
@@ -60,54 +73,103 @@ const getColumns = (user) => [
         row.original.kachehri_date,
         row.original.kachehri_time,
       );
+      const reopenComplaintAllowed = isReopenComplaintAllowed(
+        row.original.complaint_window_reset_at,
+      );
+
+      // NEW: combined into a single flag — avoids rendering "Add Complaint" twice
+      const canAddComplaintAsDfp = complaintAllowed || reopenComplaintAllowed;
+
       return (
         <div className="flex items-center gap-2">
-          <Link
-            to={`/kachehries/${row.original.id}`}
-            className="rounded-lg px-2.5 py-1 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/25 transition hover:bg-[#fab421]/10"
-          >
-            View
-          </Link>
-
-          {user?.roleId !=2 && (
-            <Link
-              to={`/kachehries/${row.original.id}/edit`}
-              className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
+          <ActionDropdown>
+            <DropdownItem
+              as={Link}
+              to={`/kachehries/${row.original.id}`}
+              icon={<Eye size={16} className="text-blue-500" />}
             >
-              Edit
-            </Link>
-          )}
+              View
+            </DropdownItem>
 
-          {complaintAllowed ? (
-            <Link
-              to={`/complaints/create/${row.original.uuid}`}
-              className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
-            >
-              Add Complaint
-            </Link>
-          ) : (
-             <Link
-             onClick={kachehriReopen(row.original.id)}
-              className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
-            >
-              Reopne Complaint <span>for 48 hrs</span>
-            </Link>
-          )}
+            {user?.roleId !== 2 && (
+              <DropdownItem
+                as={Link}
+                to={`/kachehries/${row.original.id}/edit`}
+                icon={<Pencil size={16} className="text-amber-500" />}
+              >
+                Edit
+              </DropdownItem>
+            )}
+            {user?.roleId !== 2 && (
+              <DropdownItem
+                as={Link}
+                to={`/complaints/create/${row.original.uuid}`}
+                icon={<PlusCircle size={16} className="text-green-600" />}
+              >
+                Add Complaint
+              </DropdownItem>
+            )}
 
-          <Link
-            to={`/complaints/all/${row.original.id}`}
-            className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
-          >
-            All Complaint
-          </Link>
+            <div className="my-1 border-t border-gray-100" />
+
+            {/* CHANGED: single condition instead of two duplicate blocks */}
+            {user?.roleId === 2 && canAddComplaintAsDfp && (
+              <DropdownItem
+                as={Link}
+                to={`/complaints/create/${row.original.uuid}`}
+                icon={<PlusCircle size={16} className="text-green-600" />}
+              >
+                Add Complaint
+              </DropdownItem>
+            )}
+
+            {user?.roleId !== 2 &&
+              !complaintAllowed &&
+              !row.original.complaint_window_reset_at && (
+                <DropdownItem
+                  onClick={() => handleReopenComplaint(row.original.id)}
+                  icon={<RotateCcw size={16} className="text-orange-500" />}
+                >
+                  Reopen Complaint
+                </DropdownItem>
+              )}
+
+            <div className="my-1 border-t border-gray-100" />
+
+            <DropdownItem
+              as={Link}
+              to={`/complaints/all/${row.original.id}`}
+              icon={<List size={16} className="text-indigo-500" />}
+            >
+              All Complaints
+            </DropdownItem>
+          </ActionDropdown>
         </div>
       );
     },
   },
 ];
+
 const EkacheriIndex = () => {
+  const queryClient = useQueryClient();
   const { user } = useUser();
-  const columns = getColumns(user); // NEW: build columns with access to `user`
+
+  const handleReopenComplaint = async (id) => {
+    try {
+      const response = await kachehriComplainReopen(id);
+      toast.success(
+        response?.data?.message || "Complaint window reopened successfully.",
+      );
+      queryClient.invalidateQueries({ queryKey: ["ekachehries"] });
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to reopen complaint.",
+      );
+      console.error(error);
+    }
+  };
+
+  const columns = getColumns(user, handleReopenComplaint); // CHANGED: pass the handler through
 
   return (
     <div className="w-full min-w-0">
@@ -131,7 +193,7 @@ const EkacheriIndex = () => {
       <DataTable
         columns={columns}
         fetchData={getEkachehries}
-        queryKey="ekachehries" // CHANGED — see note below
+        queryKey="ekachehries"
         pageSize={10}
         searchPlaceholder="Search e-kachehries…"
         showExportButtons={false}

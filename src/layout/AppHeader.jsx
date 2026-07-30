@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
-// import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
 import LogoImage from "../components/common/LogoImage";
-import { getActiveAnnouncements } from "../api/AnnouncementApi.js"; // adjust path
+import { getActiveAnnouncements } from "../api/AnnouncementApi.js";
+import { Calendar, Bell } from "lucide-react"; // NEW
 
 const AppHeader = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -54,24 +54,28 @@ const AppHeader = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
   const hasAnnouncements = !loadingAnnouncements && announcements.length > 0;
+
+  // NEW: formatted "SSGC E-Kachehri (Day, Month DD, YYYY)" date string
+  const todayFormatted = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
-    <header className="no-print sticky top-0 z-99999 flex w-full min-w-0 max-w-full min-h-20 bg-[#0a0a0a] border-b border-white/[0.07]">
+    <header className="sticky top-0 z-50 flex min-h-20 w-full border-b border-gray-100 bg-white shadow-sm">
       <div className="flex w-full min-w-0 max-w-full min-h-20 items-stretch">
-        {/* Menu toggle — same row as announcement, flush left */}
+        {/* Menu toggle */}
         <button
-          className="z-99999 flex shrink-0 items-center justify-center px-5 text-gray-400 transition-all duration-200 hover:bg-white/[0.05] hover:text-[#fab421] border-r border-white/[0.07]"
+          className="z-99999 flex shrink-0 items-center justify-center px-5 transition-all duration-200 text-gray-400 hover:bg-gray-50 hover:text-blue-600"
           onClick={handleToggle}
           aria-label="Toggle Sidebar"
         >
           {isMobileOpen ? (
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -80,13 +84,7 @@ const AppHeader = () => {
               />
             </svg>
           ) : (
-            <svg
-              width="18"
-              height="14"
-              viewBox="0 0 16 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="18" height="14" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -97,24 +95,27 @@ const AppHeader = () => {
           )}
         </button>
 
-        {/* Announcement marquee — only rendered when there's real content */}
+        {/* Announcements tab — static label with amber underline, matches reference */}
+        <div className="hidden shrink-0 items-center gap-2 px-5 lg:flex">
+          <div className="flex items-center gap-2 border-b-2 border-amber-400 pb-1 pt-6">
+            <span className="relative flex size-2 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400/60" />
+              <span className="relative inline-flex size-2 rounded-full bg-amber-400" />
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-[0.12em] text-gray-700 whitespace-nowrap">
+              Announcements
+            </span>
+          </div>
+        </div>
+
+        {/* Announcement marquee — real content, scrolls if present */}
         {hasAnnouncements && (
-          <div className="relative flex min-w-0 flex-1 items-stretch overflow-hidden">
-            <div className="flex shrink-0 items-center gap-2 bg-[#fab421]/[0.1] px-5 py-3 ring-1 ring-[#fab421]/15">
-              <span className="relative flex size-2 shrink-0">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#fab421]/60" />
-                <span className="relative inline-flex size-2 rounded-full bg-[#fab421]" />
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[#fab421] whitespace-nowrap">
-                Announcements
-              </span>
-            </div>
-
+          <div className="relative hidden min-w-0 flex-1 items-stretch overflow-hidden lg:flex">
             <div className="group relative min-w-0 flex-1 overflow-hidden">
-              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-white to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-white to-transparent" />
 
-              <div className="marquee-track flex h-full items-center gap-12 whitespace-nowrap text-sm font-medium text-gray-400 group-hover:[animation-play-state:paused]">
+              <div className="marquee-track flex h-full items-center gap-12 whitespace-nowrap text-sm font-medium text-gray-600 group-hover:[animation-play-state:paused]">
                 <span className="px-4">{announcements}</span>
                 <span className="px-4" aria-hidden="true">
                   {announcements}
@@ -127,9 +128,7 @@ const AppHeader = () => {
           </div>
         )}
 
-        {/* When there are no announcements, this spacer keeps the header
-            layout (logo/menu positions) stable instead of collapsing. */}
-        {!hasAnnouncements && <div className="flex-1" />}
+        {!hasAnnouncements && <div className="hidden flex-1 lg:block" />}
 
         {/* Mobile logo */}
         <Link to="/" className="flex shrink-0 items-center px-4 lg:hidden">
@@ -139,15 +138,9 @@ const AppHeader = () => {
         {/* Mobile menu toggle */}
         <button
           onClick={toggleApplicationMenu}
-          className="z-99999 flex shrink-0 items-center justify-center px-5 text-gray-400 transition-colors duration-200 hover:bg-white/[0.05] hover:text-[#fab421] lg:hidden border-l border-white/[0.07]"
+          className="z-99999 flex shrink-0 items-center justify-center px-5 text-gray-400 transition-colors duration-200 hover:bg-gray-50 hover:text-blue-600 lg:hidden border-l border-gray-100"
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -157,15 +150,15 @@ const AppHeader = () => {
           </svg>
         </button>
 
-        {/* Desktop right side: search + user */}
-        <div className="hidden shrink-0 items-center gap-3 border-l border-white/[0.07] px-5 lg:flex">
+        {/* Desktop right side: user dropdown */}
+        <div className="hidden shrink-0 items-center gap-3 border-l border-gray-100 px-5 lg:flex">
           <UserDropdown />
         </div>
       </div>
 
-      {/* Mobile dropdown panel for user/search if needed */}
+      {/* Mobile dropdown panel */}
       {isApplicationMenuOpen && (
-        <div className="absolute left-0 top-full flex w-full items-center justify-end gap-4 border-b border-white/[0.07] bg-[#0a0a0a] px-4 py-3 lg:hidden">
+        <div className="absolute left-0 top-full flex w-full items-center justify-end gap-4 border-b border-gray-100 bg-white shadow-md px-4 py-3 lg:hidden">
           <UserDropdown />
         </div>
       )}

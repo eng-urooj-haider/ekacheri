@@ -11,8 +11,8 @@ import {
 } from "lucide-react";
 import { useSidebar } from "../context/SidebarContext";
 import LogoImage from "../components/common/LogoImage.jsx";
-import { useUser } from "../context/UserContext.jsx"; // FIXED: path depth
-
+import { useUser } from "../context/UserContext.jsx";
+import FlameWatermark from "../components/common/FlameWatermark.jsx";
 const navItems = [
   {
     icon: <Building2 size={18} strokeWidth={2} />,
@@ -56,7 +56,6 @@ const navItems = [
   },
 ];
 
-// role_id 2 → limited sidebar (kachehries + complaints only)
 const ROLE_2_ALLOWED_PATHS = ["/kachehries", "/complaints"];
 
 const AppSidebar = () => {
@@ -66,7 +65,7 @@ const AppSidebar = () => {
   const isWide = isExpanded || isHovered || isMobileOpen;
   const isActive = (path) => location.pathname === path;
 
-  const { user, logout } = useUser(); // FIXED: single top-level call
+  const { user, logout } = useUser();
 
   const visibleNavItems =
     user && user.roleId == 2
@@ -75,7 +74,7 @@ const AppSidebar = () => {
 
   const handleLogout = async () => {
     try {
-      await logout(); // FIXED: no more nested useUser() call
+      await logout();
       localStorage.clear();
       sessionStorage.clear();
       navigate("/login");
@@ -95,8 +94,8 @@ const AppSidebar = () => {
               className={`group relative flex items-center w-full gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-300 ease-out
                 ${
                   active
-                    ? "bg-gradient-to-r from-[#fab421]/[0.13] via-white/[0.05] to-transparent text-white"
-                    : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-200"
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
                 }
                 ${!isWide ? "lg:justify-center lg:px-0 lg:py-3" : ""}`}
             >
@@ -130,9 +129,9 @@ const AppSidebar = () => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-50 mt-20 flex h-screen flex-col text-white transition-all duration-300 ease-in-out
-        bg-[radial-gradient(ellipse_120%_60%_at_50%_-10%,rgba(250,180,33,0.07),transparent_60%),linear-gradient(180deg,#0c0c0d_0%,#080808_100%)]
-        border-r border-white/[0.07] shadow-[6px_0_40px_rgba(0,0,0,0.55)]
+      className={`fixed top-0 left-0 z-50 mt-20 flex h-screen flex-col text-gray-800 transition-all duration-300 ease-in-out
+        bg-white
+        border-r border-gray-200 shadow-sm
         lg:mt-0
         ${
           isExpanded || isMobileOpen
@@ -198,6 +197,26 @@ const AppSidebar = () => {
           {renderMenuItems(visibleNavItems)}
         </nav>
       </div>
+
+      {/* NEW: Watermark */}
+      {isWide && (
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-72 overflow-hidden">
+          <div className="absolute bottom-0 left-0 w-full">
+            <img
+              src="/images/fw.png"
+              className="
+        absolute
+        bottom-0
+        left-0
+        w-full
+        scale-110
+        opacity-50
+        object-cover
+    "
+            />
+          </div>
+        </div>
+      )}
 
       <div className="px-3.5 pb-4">
         <button

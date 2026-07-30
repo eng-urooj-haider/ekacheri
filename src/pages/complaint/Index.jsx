@@ -24,11 +24,11 @@ const columns = [
     header: "Complaint Type",
     meta: { width: "20%" },
   },
-  {
-    accessorKey: "complaint_details",
-    header: "Complaint Detail",
-    meta: { width: "20%" },
-  },
+  // {
+  //   accessorKey: "complaint_details",
+  //   header: "Complaint Detail",
+  //   meta: { width: "20%" },
+  // },
   { accessorKey: "status", header: "Status", meta: { width: "20%" } },
   { accessorKey: "priority", header: "Priority", meta: { width: "20%" } },
   { accessorKey: "closure_date_formatted", header: "Closure Date", meta: { width: "20%" } },
@@ -45,15 +45,15 @@ const columns = [
     enableSorting: false,
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
-        <Link
-          to={`/complaints/${row.original.id}`}
-          className="rounded-lg px-2.5 py-1 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/25 transition hover:bg-[#fab421]/10"
+         <Link
+           to={`/complaints/${row.original.id}`}
+          className="rounded-lg border border-[#fab421]/40 bg-[#fff8eb] px-2.5 py-1 text-xs font-medium text-[#fab421] transition hover:bg-[#fab421] hover:text-white"
         >
           View
         </Link>
         <Link
           to={`/complaints/${row.original.id}/edit`}
-          className="rounded-lg px-2.5 py-1 text-xs font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
+          className="rounded-lg border border-[#2F4F7F]/20 px-2.5 py-1 text-xs font-medium text-[#2F4F7F] transition hover:border-[#2F4F7F] hover:bg-[#2F4F7F] hover:text-white"
         >
           Edit
         </Link>

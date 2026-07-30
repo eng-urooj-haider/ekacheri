@@ -1,5 +1,4 @@
 import api from "./axios.js";
-
 // const get
 const getLatestId = () => {
   return api.get("/latest_kacheries");
@@ -32,7 +31,7 @@ const checkEkachehriExists = async (uuid) => {
   const response = await api.get(`/complaints/fetchuuid/${uuid}`);
   return response.data;
 };
-const kachehriReopen = async (id) => {
+const kachehriComplainReopen = async (id) => {
   const response = await api.get(`/complaints/reopen/${id}`);
   return response.data;
 };
@@ -43,5 +42,5 @@ export {
   updateEkachehri,
   getLatestId,
   checkEkachehriExists,
-  kachehriReopen,
+  kachehriComplainReopen,
 };

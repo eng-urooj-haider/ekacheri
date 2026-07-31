@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import LogoImage from "../../components/common/LogoImage.jsx";
 import { useUser } from "../../context/UserContext.jsx";
+import { ensureCsrfCookie } from "../../api/AuthApi.js";
 
 const inputClass =
   "w-full rounded-xl bg-white px-3.5 py-2.5 text-sm text-gray-900 ring-1 ring-gray-200 transition-all duration-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#F5821F]/40";
@@ -17,6 +18,13 @@ const SignIn = () => {
 
   const navigate = useNavigate();
   const { login, isLoggingIn } = useUser(); // CHANGED
+
+  // Pre-fetch the CSRF cookie as soon as this page loads, so it's already
+  // in place by the time the person submits — the login request itself
+  // then skips the extra round-trip.
+  useEffect(() => {
+    ensureCsrfCookie();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

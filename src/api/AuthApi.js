@@ -1,7 +1,16 @@
+// AuthApi.js
 import api from "./axios.js";
 
-const login = async (credentials) => {
+let csrfReady = false;
+
+const ensureCsrfCookie = async () => {
+  if (csrfReady) return;
   await api.get("/sanctum/csrf-cookie");
+  csrfReady = true;
+};
+
+const login = async (credentials) => {
+  await ensureCsrfCookie(); // skips the network call after the first time
   const response = await api.post("/login", credentials);
   return response.data;
 };
@@ -16,4 +25,4 @@ const getUser = async () => {
   return response.data.user;
 };
 
-export { login, logout, getUser };
+export { login, logout, getUser, ensureCsrfCookie };

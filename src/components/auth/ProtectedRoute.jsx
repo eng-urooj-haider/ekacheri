@@ -18,8 +18,6 @@ const AuthLoadingScreen = () => (
 
 const ProtectedRoute = () => {
   const { user, isLoading } = useUser();
-  console.log('auth user' , user);
-
   if (isLoading) {
     return <AuthLoadingScreen />;
   }

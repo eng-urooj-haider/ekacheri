@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"; // NEW: useRef added
+import { useState, useEffect, useRef } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -25,11 +25,11 @@ const DataTable = ({
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize });
 
-  const isSearchAction = useRef(false); // NEW: tracks whether the NEXT fetch was caused by search
+  const isSearchAction = useRef(false);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      isSearchAction.current = true; // NEW: mark this upcoming fetch as search-triggered
+      isSearchAction.current = true;
       setDebouncedSearch(globalFilter);
       setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     }, 400);
@@ -40,14 +40,14 @@ const DataTable = ({
   const { data: apiData, isFetching } = useQuery({
     queryKey: [queryKey, pagination, debouncedSearch],
     queryFn: () => {
-      const skipLoader = isSearchAction.current; // NEW: read the flag
-      isSearchAction.current = false; // NEW: reset immediately so it doesn't leak into the next (e.g. pagination) fetch
+      const skipLoader = isSearchAction.current;
+      isSearchAction.current = false;
       return fetchData({
         id: id,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         search: debouncedSearch,
-        skipLoader, // NEW
+        skipLoader,
       });
     },
     placeholderData: keepPreviousData,
@@ -76,8 +76,6 @@ const DataTable = ({
   const pageCount = apiData?.last_page ?? 1;
   const from = apiData?.from ?? 0;
   const to = apiData?.to ?? 0;
-
-  // ...rest of the component (export functions, JSX) stays exactly the same
 
   const handleExportExcel = () => {
     const exportRows = table.getFilteredRowModel().rows;
@@ -119,26 +117,26 @@ const DataTable = ({
       body: tableData,
       startY: 22,
       styles: { fontSize: 9 },
-      headStyles: { fillColor: [250, 180, 33] },
+      headStyles: { fillColor: [245, 130, 31] },
     });
 
     doc.save("ekachehri-report.pdf");
   };
 
   return (
-    <div className="relative w-full min-w-0 overflow-x-auto overflow-y-visible rounded-3xl bg-white border border-[#E6EDF7] shadow-lg shadow-[#2D6BA3]/5">
+    <div className="relative w-full min-w-0 overflow-x-auto overflow-y-visible rounded-3xl bg-white shadow-sm ring-1 ring-gray-100">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#EDF2F8] px-4 py-3.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-4 py-3.5">
         <div
-          className="flex w-full min-w-0 max-w-sm flex-1 items-center gap-2.5 rounded-xl  px-3.5 py-2.5  transition-all duration-200 bg-[#F7FAFD]
-border border-[#E4ECF5]
+          className="flex w-full min-w-0 max-w-sm flex-1 items-center gap-2.5 rounded-xl px-3.5 py-2.5 transition-all duration-200 bg-gray-50
+border border-gray-200
 focus-within:bg-white
-focus-within:border-[#F5A623]
+focus-within:border-[#F5821F]
 focus-within:ring-4
-focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
+focus-within:ring-[#F5821F]/15 sm:w-auto sm:min-w-[240px]"
         >
           <svg
-            className="size-4 shrink-0 text-[#6B87B5]"
+            className="size-4 shrink-0 text-gray-400"
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +154,7 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full bg-transparent text-sm text-gray-700 placeholder:text-[#6B87B5] focus:outline-none"
+            className="w-full bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
           />
         </div>
         {showExportButtons && (
@@ -169,11 +167,11 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
             </button>
             <button
               onClick={handleExportPdf}
-              className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-gray-200 ring-1 ring-white/[0.1] transition hover:bg-white/[0.1]"
+              className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-200 transition hover:bg-gray-50"
             >
               Download PDF
             </button>
-            <span className="shrink-0 text-xs text-[#6B87B5]">
+            <span className="shrink-0 text-xs text-gray-500">
               {totalRows} {totalRows === 1 ? "result" : "results"}
             </span>
           </div>
@@ -193,7 +191,7 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
           </colgroup>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-white/[0.06]">
+              <tr key={headerGroup.id} className="border-b border-gray-100 bg-gray-50/60">
                 {headerGroup.headers.map((header) => {
                   const sortDir = header.column.getIsSorted();
                   const canSort = header.column.getCanSort();
@@ -201,10 +199,10 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
                     <th
                       key={header.id}
                       onClick={header.column.getToggleSortingHandler()}
-                      className={`min-w-0 truncate px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#2F4F7F]
+                      className={`min-w-0 truncate px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-500
     ${
       canSort
-        ? "cursor-pointer select-none transition-colors hover:text-[#FAB421]"
+        ? "cursor-pointer select-none transition-colors hover:text-[#F5821F]"
         : ""
     }`}
                     >
@@ -218,8 +216,8 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
                             <span
                               className={
                                 sortDir === "asc"
-                                  ? "text-[#fab421]"
-                                  : "text-gray-600"
+                                  ? "text-[#F5821F]"
+                                  : "text-gray-300"
                               }
                             >
                               ▲
@@ -227,8 +225,8 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
                             <span
                               className={
                                 sortDir === "desc"
-                                  ? "text-[#fab421]"
-                                  : "text-gray-600"
+                                  ? "text-[#F5821F]"
+                                  : "text-gray-300"
                               }
                             >
                               ▼
@@ -248,7 +246,7 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-10 text-center text-sm text-[#6B87B5]"
+                  className="px-4 py-10 text-center text-sm text-gray-500"
                 >
                   No results found.
                 </td>
@@ -258,12 +256,12 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
             {rows.map((row) => (
               <tr
                 key={row.id}
-                className="border-b border-[#E8EEF8] transition-colors duration-150 hover:bg-[#F8FBFF]"
+                className="border-b border-gray-100 transition-colors duration-150 hover:bg-gray-50"
               >
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="px-4 py-3 text-sm font-medium text-[#2F4F7F]"
+                    className="px-4 py-3 text-sm font-medium text-gray-700"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
@@ -275,8 +273,8 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
       </div>
 
       {/* Pagination footer */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-3.5">
-        <span className="text-xs text-[#6B87B5]">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-4 py-3.5">
+        <span className="text-xs text-gray-500">
           {totalRows === 0
             ? "0 results"
             : `Showing ${from}–${to} of ${totalRows}`}
@@ -287,7 +285,7 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
           <button
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
-            className="flex size-8 items-center justify-center rounded-lg text-gray-400 ring-1 ring-white/[0.07] transition-colors duration-150 hover:bg-white/[0.05] hover:text-[#fab421] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+            className="flex size-8 items-center justify-center rounded-lg text-gray-400 ring-1 ring-gray-200 transition-colors duration-150 hover:bg-gray-50 hover:text-[#F5821F] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
             aria-label="First page"
           >
             «
@@ -295,21 +293,21 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
           <button
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="flex size-8 items-center justify-center rounded-lg text-gray-400 ring-1 ring-white/[0.07] transition-colors duration-150 hover:bg-white/[0.05] hover:text-[#fab421] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+            className="flex size-8 items-center justify-center rounded-lg text-gray-400 ring-1 ring-gray-200 transition-colors duration-150 hover:bg-gray-50 hover:text-[#F5821F] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
             aria-label="Previous page"
           >
             ‹
           </button>
 
-          <span className="px-2 text-xs text-gray-400 whitespace-nowrap">
-            Page <span className="text-gray-200">{pageIndex + 1}</span> of{" "}
-            <span className="text-gray-200">{pageCount || 1}</span>
+          <span className="px-2 text-xs text-gray-500 whitespace-nowrap">
+            Page <span className="font-semibold text-gray-800">{pageIndex + 1}</span> of{" "}
+            <span className="font-semibold text-gray-800">{pageCount || 1}</span>
           </span>
 
           <button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="flex size-8 items-center justify-center rounded-lg text-gray-400 ring-1 ring-white/[0.07] transition-colors duration-150 hover:bg-white/[0.05] hover:text-[#fab421] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+            className="flex size-8 items-center justify-center rounded-lg text-gray-400 ring-1 ring-gray-200 transition-colors duration-150 hover:bg-gray-50 hover:text-[#F5821F] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
             aria-label="Next page"
           >
             ›
@@ -317,7 +315,7 @@ focus-within:ring-[#F5A623]/15 sm:w-auto sm:min-w-[240px]"
           <button
             onClick={() => table.setPageIndex(pageCount - 1)}
             disabled={!table.getCanNextPage()}
-            className="flex size-8 items-center justify-center rounded-lg text-gray-400 ring-1 ring-white/[0.07] transition-colors duration-150 hover:bg-white/[0.05] hover:text-[#fab421] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+            className="flex size-8 items-center justify-center rounded-lg text-gray-400 ring-1 ring-gray-200 transition-colors duration-150 hover:bg-gray-50 hover:text-[#F5821F] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
             aria-label="Last page"
           >
             »

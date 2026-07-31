@@ -12,7 +12,6 @@ import {
 import { useSidebar } from "../context/SidebarContext";
 import LogoImage from "../components/common/LogoImage.jsx";
 import { useUser } from "../context/UserContext.jsx";
-import FlameWatermark from "../components/common/FlameWatermark.jsx";
 const navItems = [
   {
     icon: <Building2 size={18} strokeWidth={2} />,
@@ -91,24 +90,24 @@ const AppSidebar = () => {
           <li key={nav.name}>
             <Link
               to={nav.path}
-              className={`group relative flex items-center w-full gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-300 ease-out
+              className={`group relative flex items-center w-full gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-out
                 ${
                   active
-                    ? "bg-blue-50 text-blue-600"
+                    ? "bg-[#F5821F]/[0.10] text-[#D9631A] font-semibold ring-1 ring-[#F5821F]/15"
                     : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
                 }
                 ${!isWide ? "lg:justify-center lg:px-0 lg:py-3" : ""}`}
             >
               <span
-                className={`absolute -left-3.5 top-1/2 -translate-y-1/2 rounded-full bg-[#fab421] transition-all duration-300 ease-out
-                  ${active ? "h-5 w-[3px] opacity-100 shadow-[0_0_10px_2px_rgba(250,180,33,0.5)]" : "h-0 w-[3px] opacity-0"}`}
+                className={`absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full bg-[#F5821F] transition-all duration-200 ease-out
+                  ${active ? "h-6 w-1 opacity-100" : "h-0 w-1 opacity-0"}`}
               />
               <span
-                className={`relative flex shrink-0 items-center justify-center rounded-lg transition-all duration-300
+                className={`relative flex shrink-0 items-center justify-center rounded-lg transition-all duration-200
                   ${
                     active
-                      ? "size-8 bg-[#fab421]/[0.12] text-[#fab421] ring-1 ring-[#fab421]/20"
-                      : "size-8 text-gray-500 group-hover:text-gray-200 group-hover:bg-white/[0.04]"
+                      ? "size-8 bg-white text-[#F5821F] shadow-sm ring-1 ring-[#F5821F]/20"
+                      : "size-8 text-gray-500 group-hover:text-gray-700 group-hover:bg-white"
                   }
                   [&_svg]:size-[18px]`}
               >
@@ -118,7 +117,7 @@ const AppSidebar = () => {
                 <span className="truncate tracking-wide">{nav.name}</span>
               )}
               {active && isWide && (
-                <span className="ml-auto size-1.5 shrink-0 rounded-full bg-[#fab421] shadow-[0_0_8px_rgba(250,180,33,0.6)]" />
+                <span className="ml-auto size-1.5 shrink-0 rounded-full bg-[#F5821F]" />
               )}
             </Link>
           </li>
@@ -145,10 +144,8 @@ const AppSidebar = () => {
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-
       <div
-        className={`flex shrink-0 items-center border-b border-white/[0.06] px-4 py-5
+        className={`flex shrink-0 items-center border-b border-gray-100 px-4 py-5
           ${!isWide ? "lg:justify-center lg:px-0" : "justify-start"}`}
       >
         <Link to="/" className="flex items-center gap-3 min-w-0">
@@ -171,17 +168,17 @@ const AppSidebar = () => {
       <div className="flex flex-1 flex-col overflow-y-auto px-3.5 py-6 no-scrollbar">
         <nav className="px-1">
           <h2
-            className={`mb-4 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-gray-500
+            className={`mb-4 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-gray-400
               ${!isWide ? "lg:justify-center" : "justify-start px-2"}`}
           >
             {isWide ? (
               <>
                 <span>Navigation</span>
-                <span className="h-px flex-1 bg-white/[0.07]" />
+                <span className="h-px flex-1 bg-gray-100" />
               </>
             ) : (
               <svg
-                className="size-5 text-gray-600"
+                className="size-5 text-gray-400"
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg"
@@ -198,30 +195,22 @@ const AppSidebar = () => {
         </nav>
       </div>
 
-      {/* NEW: Watermark */}
+      {/* Watermark — kept subtle, doesn't compete with nav */}
       {isWide && (
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-72 overflow-hidden">
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-56 overflow-hidden">
           <div className="absolute bottom-0 left-0 w-full">
             <img
               src="/images/fw.png"
-              className="
-        absolute
-        bottom-0
-        left-0
-        w-full
-        scale-110
-        opacity-50
-        object-cover
-    "
+              className="absolute bottom-0 left-0 w-full scale-110 opacity-70 object-cover"
             />
           </div>
         </div>
       )}
 
-      <div className="px-3.5 pb-4">
+      <div className="relative px-3.5 pb-4">
         <button
           onClick={handleLogout}
-          className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 transition-all duration-300 hover:bg-red-500/10 hover:text-red-300"
+          className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
         >
           <span className="flex size-8 items-center justify-center rounded-lg">
             <LogOut size={18} />

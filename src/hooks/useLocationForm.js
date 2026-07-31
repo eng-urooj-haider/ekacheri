@@ -39,7 +39,7 @@ const useLocationForm = (id) => {
     const fetchLocation = async () => {
       try {
         const response = await getLocation(id);
-        setLocation(response.data.data);
+        setLocation(response.data);
       } catch (err) {
         console.log(err);
       }

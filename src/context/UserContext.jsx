@@ -20,8 +20,11 @@ export const UserProvider = ({ children }) => {
 
   const loginMutation = useMutation({
     mutationFn: loginApi,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    onSuccess: (data) => {
+      // data.user must exist in the /login response for this to work —
+      // if your backend only returns a message, add 'user' => auth()->user()
+      // to the Laravel login response.
+      queryClient.setQueryData(["authUser"], data.user);
     },
   });
 

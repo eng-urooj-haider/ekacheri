@@ -4,7 +4,7 @@ import { useSidebar } from "../context/SidebarContext";
 import UserDropdown from "../components/header/UserDropdown";
 import LogoImage from "../components/common/LogoImage";
 import { getActiveAnnouncements } from "../api/AnnouncementApi.js";
-import { Calendar, Bell } from "lucide-react"; // NEW
+import { Calendar, Bell } from "lucide-react";
 
 const AppHeader = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -17,7 +17,6 @@ const AppHeader = () => {
     const fetchAnnouncements = async () => {
       try {
         const response = await getActiveAnnouncements();
-        console.log(response);
         setAnnouncements(response.ekachehri);
       } catch (err) {
         console.error("Failed to load announcements:", err);
@@ -57,20 +56,12 @@ const AppHeader = () => {
 
   const hasAnnouncements = !loadingAnnouncements && announcements.length > 0;
 
-  // NEW: formatted "SSGC E-Kachehri (Day, Month DD, YYYY)" date string
-  const todayFormatted = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
   return (
     <header className="sticky top-0 z-50 flex min-h-20 w-full border-b border-gray-100 bg-white shadow-sm">
       <div className="flex w-full min-w-0 max-w-full min-h-20 items-stretch">
         {/* Menu toggle */}
         <button
-          className="z-99999 flex shrink-0 items-center justify-center px-5 transition-all duration-200 text-gray-400 hover:bg-gray-50 hover:text-blue-600"
+          className="z-99999 flex shrink-0 items-center justify-center px-5 transition-all duration-200 text-gray-400 hover:bg-gray-50 hover:text-[#F5821F]"
           onClick={handleToggle}
           aria-label="Toggle Sidebar"
         >
@@ -95,27 +86,27 @@ const AppHeader = () => {
           )}
         </button>
 
-        {/* Announcements tab — static label with amber underline, matches reference */}
-        <div className="hidden shrink-0 items-center gap-2 px-5 lg:flex">
-          <div className="flex items-center gap-2 border-b-2 border-amber-400 pb-1 pt-6">
+        {/* Announcements tab — fixed width, clearly divided from the marquee */}
+        <div className="hidden shrink-0 items-center gap-2 border-r border-gray-100 px-5 lg:flex">
+          <div className="flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 ring-1 ring-amber-100">
             <span className="relative flex size-2 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400/60" />
-              <span className="relative inline-flex size-2 rounded-full bg-amber-400" />
+              <span className="relative inline-flex size-2 rounded-full bg-amber-500" />
             </span>
-            <span className="text-xs font-semibold uppercase tracking-[0.12em] text-gray-700 whitespace-nowrap">
+            <span className="text-xs font-semibold uppercase tracking-[0.12em] text-amber-700 whitespace-nowrap">
               Announcements
             </span>
           </div>
         </div>
 
-        {/* Announcement marquee — real content, scrolls if present */}
+        {/* Announcement marquee — wider fade mask so text doesn't look clipped */}
         {hasAnnouncements && (
           <div className="relative hidden min-w-0 flex-1 items-stretch overflow-hidden lg:flex">
             <div className="group relative min-w-0 flex-1 overflow-hidden">
-              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-white to-transparent" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-white to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-white via-white/80 to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-white via-white/80 to-transparent" />
 
-              <div className="marquee-track flex h-full items-center gap-12 whitespace-nowrap text-sm font-medium text-gray-600 group-hover:[animation-play-state:paused]">
+              <div className="marquee-track flex h-full items-center gap-16 whitespace-nowrap text-sm font-medium text-gray-600 group-hover:[animation-play-state:paused]">
                 <span className="px-4">{announcements}</span>
                 <span className="px-4" aria-hidden="true">
                   {announcements}
@@ -138,7 +129,7 @@ const AppHeader = () => {
         {/* Mobile menu toggle */}
         <button
           onClick={toggleApplicationMenu}
-          className="z-99999 flex shrink-0 items-center justify-center px-5 text-gray-400 transition-colors duration-200 hover:bg-gray-50 hover:text-blue-600 lg:hidden border-l border-gray-100"
+          className="z-99999 flex shrink-0 items-center justify-center px-5 text-gray-400 transition-colors duration-200 hover:bg-gray-50 hover:text-[#F5821F] lg:hidden border-l border-gray-100"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -170,7 +161,7 @@ const AppHeader = () => {
         }
         .marquee-track {
           width: max-content;
-          animation: marquee-scroll 8s linear infinite;
+          animation: marquee-scroll 22s linear infinite;
         }
         @media (prefers-reduced-motion: reduce) {
           .marquee-track { animation: none; }

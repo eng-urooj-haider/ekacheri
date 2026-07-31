@@ -1,17 +1,9 @@
 /**
- * E-Kachehri Dashboard — stat cards wired to real data, bar chart wired to
- * real monthly kachehri counts, line chart wired to real complaint trend.
- * Light theme matching the SSGC flame color palette.
+ * E-Kachehri Dashboard — now backed by a single React Query call
+ * (getDashboardOverview) instead of 6 separate useEffect fetches,
+ * with skeleton loaders instead of "…" / "Loading…" text.
  */
-import {
-  getDashboardStats,
-  getKachehriMonthly,
-  getComplaintMonthly,
-  getComplaintStatus,
-  getTotalCity,
-  getTotalDfp,
-} from "../../api/DashboardApi.js";
-import { useEffect, useState } from "react";
+import { useDashboardOverview } from "../../hooks/useDashboardOverview.js";
 
 const kachehriIcon = (
   <svg className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -47,124 +39,57 @@ const dfpIcon = (
   </svg>
 );
 
+// Skeleton for a single stat card
+const StatCardSkeleton = () => (
+  <div className="flex items-start gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+    <div className="size-12 shrink-0 animate-pulse rounded-full bg-gray-200" />
+    <div className="min-w-0 flex-1 space-y-2">
+      <div className="h-3 w-24 animate-pulse rounded bg-gray-200" />
+      <div className="h-8 w-16 animate-pulse rounded bg-gray-200" />
+      <div className="h-3 w-28 animate-pulse rounded bg-gray-200" />
+    </div>
+  </div>
+);
+
+// Skeleton for the bar/line chart panels
+const ChartSkeleton = () => (
+  <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+    <div className="mb-4 space-y-2">
+      <div className="h-4 w-40 animate-pulse rounded bg-gray-200" />
+      <div className="h-3 w-56 animate-pulse rounded bg-gray-200" />
+    </div>
+    <div className="flex h-48 items-end gap-2 px-1">
+      {[40, 65, 30, 80, 55, 70].map((h, i) => (
+        <div
+          key={i}
+          className="w-full animate-pulse rounded-t-md bg-gray-200"
+          style={{ height: `${h}%` }}
+        />
+      ))}
+    </div>
+  </div>
+);
+
 const Dashboard = () => {
-  const [dashboardStats, setDashboardStats] = useState({
+  const { data, isLoading, isError, error, refetch, isFetching } = useDashboardOverview();
+
+  const stats = data?.stats ?? {
     total_kachehri: 0,
     kachehri_this_month: 0,
     total_complaint: 0,
     complaint_this_month: 0,
-  });
-  const [loadingStats, setLoadingStats] = useState(true);
+  };
+  const barData = data?.kachehriMonthly ?? [];
+  const lineData = data?.complaintMonthly ?? [];
+  const complaintStatusData = data?.complaintStatus ?? { openCount: 0, closeCounts: 0 };
+  const totalCity = data?.city ?? 0;
+  const totalDfp = data?.dfp ?? 0;
 
-  const [barData, setBarData] = useState([]);
-  const [loadingBarData, setLoadingBarData] = useState(true);
-
-  const [lineData, setLineData] = useState([]);
-  const [loadingLineData, setLoadingLineData] = useState(true);
-
-  const [complaintStatusData, setComplaintStatusData] = useState({
-    openCount: 0,
-    closeCounts: 0,
-  });
-  const [loadingStatus, setLoadingStatus] = useState(true);
-
-  const [totalCity, setTotalCity] = useState(0);
-  const [loadingCity, setLoadingCity] = useState(true);
-
-  const [totalDfp, setTotalDfp] = useState(0);
-  const [loadingDfp, setLoadingDfp] = useState(true);
-
-  useEffect(() => {
-    const fetchDashboardStats = async () => {
-      try {
-        const response = await getDashboardStats();
-        setDashboardStats(response);
-      } catch (err) {
-        console.error("Failed to load dashboard stats:", err);
-      } finally {
-        setLoadingStats(false);
-      }
-    };
-    fetchDashboardStats();
-  }, []);
-
-  useEffect(() => {
-    const fetchMonthly = async () => {
-      try {
-        const response = await getKachehriMonthly();
-        setBarData(response);
-      } catch (err) {
-        console.error("Failed to load monthly kachehri data:", err);
-      } finally {
-        setLoadingBarData(false);
-      }
-    };
-    fetchMonthly();
-  }, []);
-
-  useEffect(() => {
-    const fetchComplaintMonthly = async () => {
-      try {
-        const response = await getComplaintMonthly();
-        setLineData(response);
-      } catch (err) {
-        console.error("Failed to load monthly complaint data:", err);
-      } finally {
-        setLoadingLineData(false);
-      }
-    };
-    fetchComplaintMonthly();
-  }, []);
-
-  useEffect(() => {
-    const fetchComplaintStatus = async () => {
-      try {
-        const response = await getComplaintStatus();
-        setComplaintStatusData(response);
-      } catch (err) {
-        console.error("Failed to load complaint status breakdown:", err);
-      } finally {
-        setLoadingStatus(false);
-      }
-    };
-    fetchComplaintStatus();
-  }, []);
-
-  useEffect(() => {
-    const fetchCity = async () => {
-      try {
-        const response = await getTotalCity();
-        setTotalCity(response.city);
-      } catch (err) {
-        console.error("Failed to load total city count:", err);
-      } finally {
-        setLoadingCity(false);
-      }
-    };
-    fetchCity();
-  }, []);
-
-  useEffect(() => {
-    const fetchDfp = async () => {
-      try {
-        const response = await getTotalDfp();
-        setTotalDfp(response.dfp);
-      } catch (err) {
-        console.error("Failed to load total DFP count:", err);
-      } finally {
-        setLoadingDfp(false);
-      }
-    };
-    fetchDfp();
-  }, []);
-
-  // CHANGED: each stat card now carries its own icon bg/text color pair,
-  // matching the reference screenshot's per-category coloring
   const kachehriStatCard = {
     label: "Total E-Kachehris",
-    value: loadingStats ? "…" : String(dashboardStats.total_kachehri),
-    change: loadingStats ? "" : `↑ ${dashboardStats.kachehri_this_month}% this month`,
-    up: true,
+    value: String(stats.total_kachehri),
+    change: `↑ ${stats.kachehri_this_month} kachehries created this month`,
+    changeUp: true,
     icon: kachehriIcon,
     iconBg: "bg-blue-50",
     iconColor: "text-blue-500",
@@ -172,9 +97,9 @@ const Dashboard = () => {
 
   const complaintStatCard = {
     label: "Total Complaints",
-    value: loadingStats ? "…" : String(dashboardStats.total_complaint),
-    change: loadingStats ? "" : `↑ ${dashboardStats.complaint_this_month}% this month`,
-    up: true,
+    value: String(stats.total_complaint),
+    change: `↑ ${stats.complaint_this_month} complaints created this month`,
+    changeUp: true,
     icon: complaintIcon,
     iconBg: "bg-orange-50",
     iconColor: "text-orange-500",
@@ -182,27 +107,26 @@ const Dashboard = () => {
 
   const openStatCard = {
     label: "Complaints Open",
-    value: loadingStatus ? "…" : String(complaintStatusData.openCount ?? 0),
-    change: loadingStatus ? "" : `${complaintStatusData.closeCounts ?? 0} resolved`,
-    up: false,
+    value: String(complaintStatusData.openCount ?? 0),
+    change: `${complaintStatusData.closeCounts ?? 0} complaints resolved`,
+    changeUp: true, // green — resolved is good news
     icon: openIcon,
-    iconBg: "bg-amber-50",
-    iconColor: "text-amber-500",
+    iconBg: "bg-red-50",
+    iconColor: "text-red-500",
   };
 
   const closeStatCard = {
     label: "Complaints Closed",
-    value: loadingStatus ? "…" : String(complaintStatusData.closeCounts ?? 0),
-    change: loadingStatus ? "" : `${complaintStatusData.openCount ?? 0} still open`,
-    up: true,
+    value: String(complaintStatusData.closeCounts ?? 0),
+    change: `${complaintStatusData.openCount ?? 0} still open`,
+    changeUp: false, // red — the only warning line
     icon: complaintIcon,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-500",
+    iconBg: "bg-emerald-50",
+    iconColor: "text-emerald-600",
   };
-
   const cityStatCard = {
     label: "City",
-    value: loadingCity ? "…" : String(totalCity),
+    value: String(totalCity),
     up: true,
     icon: cityIcon,
     iconBg: "bg-orange-50",
@@ -211,7 +135,7 @@ const Dashboard = () => {
 
   const dfpStatCard = {
     label: "Department Focal Persons",
-    value: loadingDfp ? "…" : String(totalDfp),
+    value: String(totalDfp),
     up: true,
     icon: dfpIcon,
     iconBg: "bg-blue-50",
@@ -231,159 +155,184 @@ const Dashboard = () => {
   const maxLine = Math.max(1, ...lineData.map((d) => d.value));
   const linePoints = lineData.map((d) => 10 + (d.value / maxLine) * 80);
 
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
+        </div>
+        <div className="rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-gray-100">
+          <p className="text-sm text-red-600">
+            Couldn't load dashboard data{error?.message ? `: ${error.message}` : "."}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="mt-3 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div>
-        <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Overview of E-Kachehri sessions, complaints, and activity.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Overview of E-Kachehri sessions, complaints, and activity.
+          </p>
+        </div>
+        {isFetching && !isLoading && (
+          <span className="text-xs text-gray-400">Refreshing…</span>
+        )}
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {allStats.map((stat) => (
-          <div
-            key={stat.label}
-            className="flex items-start gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100"
-          >
-            <div className={`flex size-10 shrink-0 items-center justify-center rounded-full ${stat.iconBg} ${stat.iconColor}`}>
-              {stat.icon}
-            </div>
-            <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500">
-                {stat.label}
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-gray-900">
-                {stat.value}
-              </p>
-              {stat.change && (
-                <p className={`mt-1 text-xs font-medium ${stat.up ? "text-emerald-600" : "text-red-500"}`}>
-                  {stat.change}
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, i) => <StatCardSkeleton key={i} />)
+          : allStats.map((stat) => (
+            <div
+              key={stat.label}
+              className="flex items-start gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100"
+            >
+              <div className={`flex size-12 shrink-0 items-center justify-center rounded-full ${stat.iconBg} ${stat.iconColor}`}>
+                {stat.icon}
+              </div>
+              <div className="min-w-0">
+                <p className="text-lg font-semibold uppercase tracking-[0.08em] text-gray-500">
+                  {stat.label}
                 </p>
-              )}
+                <p className="mt-1 text-4xl font-bold text-gray-900">
+                  {stat.value}
+                </p>
+                {stat.change && (
+                  <p className={`mt-1.5 text-lg font-semibold ${stat.changeUp ? "text-emerald-700" : "text-red-600"}`}>
+                    {stat.change}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
 
       {/* Charts row */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {/* Bar chart */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <div className="mb-4">
-            <h2 className="text-sm font-semibold text-gray-800">
-              E-Kachehris per Month
-            </h2>
-            <p className="mt-0.5 text-xs text-gray-500">
-              Total sessions held each month in {new Date().getFullYear()}
-            </p>
-          </div>
+        {isLoading ? (
+          <>
+            <ChartSkeleton />
+            <ChartSkeleton />
+          </>
+        ) : (
+          <>
+            {/* Bar chart */}
+            <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-gray-800">
+                  E-Kachehris per Month
+                </h2>
+                <p className="mt-0.5 text-lg text-gray-500">
+                  Total sessions held each month in {new Date().getFullYear()}
+                </p>
+              </div>
 
-          {loadingBarData ? (
-            <div className="flex h-48 items-center justify-center text-xs text-gray-400">
-              Loading…
-            </div>
-          ) : (
-            <div className="flex items-end gap-2 h-48 px-1">
-              {barData.map((d) => (
-                <div
-                  key={d.month}
-                  className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
-                >
-                  <span className="text-[10px] text-gray-500">{d.value}</span>
+              <div className="flex items-end gap-2 h-48 px-1">
+                {barData.map((d) => (
                   <div
-                    className="w-full rounded-t-md bg-amber-400 transition-all duration-300"
-                    style={{
-                      height: `${Math.max((d.value / maxBar) * 100, d.value > 0 ? 4 : 0)}%`,
-                    }}
-                  />
-                  <span className="text-[10px] text-gray-400">{d.month}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Line chart */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <div className="mb-4">
-            <h2 className="text-sm font-semibold text-gray-800">
-              Complaints Trend
-            </h2>
-            <p className="mt-0.5 text-xs text-gray-500">
-              Monthly complaint volume over the year
-            </p>
-          </div>
-
-          {loadingLineData ? (
-            <div className="flex h-48 items-center justify-center text-xs text-gray-400">
-              Loading…
-            </div>
-          ) : (
-            <div className="h-48 w-full">
-              <svg viewBox="0 0 300 160" preserveAspectRatio="none" className="h-full w-full">
-                {[0, 1, 2, 3].map((i) => (
-                  <line
-                    key={i}
-                    x1="0"
-                    y1={i * 40 + 10}
-                    x2="300"
-                    y2={i * 40 + 10}
-                    stroke="rgba(0,0,0,0.06)"
-                    strokeWidth="1"
-                  />
+                    key={d.month}
+                    className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
+                  >
+                    <span className="text-lg text-gray-500">{d.value}</span>
+                    <div
+                      className="w-full rounded-t-md bg-amber-400 transition-all duration-300"
+                      style={{
+                        height: `${Math.max((d.value / maxBar) * 100, d.value > 0 ? 4 : 0)}%`,
+                      }}
+                    />
+                    <span className="text-lg text-gray-400">{d.month}</span>
+                  </div>
                 ))}
-
-                <defs>
-                  <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#fab421" stopOpacity="0.25" />
-                    <stop offset="100%" stopColor="#fab421" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-
-                <polygon
-                  points={[
-                    ...linePoints.map((y, i) => `${(i / (linePoints.length - 1)) * 300},${160 - y}`),
-                    "300,160",
-                    "0,160",
-                  ].join(" ")}
-                  fill="url(#areaGrad)"
-                />
-
-                <polyline
-                  points={linePoints
-                    .map((y, i) => `${(i / (linePoints.length - 1)) * 300},${160 - y}`)
-                    .join(" ")}
-                  fill="none"
-                  stroke="#fab421"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-
-                {linePoints.map((y, i) => (
-                  <circle
-                    key={i}
-                    cx={(i / (linePoints.length - 1)) * 300}
-                    cy={160 - y}
-                    r="3"
-                    fill="#fab421"
-                  />
-                ))}
-              </svg>
+              </div>
             </div>
-          )}
 
-          <div className="mt-2 flex justify-between px-1">
-            {lineData.map((d) => (
-              <span key={d.month} className="text-[10px] text-gray-400">
-                {d.month}
-              </span>
-            ))}
-          </div>
-        </div>
+            {/* Line chart */}
+            <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Complaints Trend
+                </h2>
+                <p className="mt-0.5 text-lg text-gray-500">
+                  Monthly complaint volume over the year
+                </p>
+              </div>
+
+              <div className="h-48 w-full">
+                <svg viewBox="0 0 300 160" preserveAspectRatio="none" className="h-full w-full">
+                  {[0, 1, 2, 3].map((i) => (
+                    <line
+                      key={i}
+                      x1="0"
+                      y1={i * 40 + 10}
+                      x2="300"
+                      y2={i * 40 + 10}
+                      stroke="rgba(0,0,0,0.06)"
+                      strokeWidth="1"
+                    />
+                  ))}
+
+                  <defs>
+                    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#fab421" stopOpacity="0.25" />
+                      <stop offset="100%" stopColor="#fab421" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+
+                  <polygon
+                    points={[
+                      ...linePoints.map((y, i) => `${(i / (linePoints.length - 1)) * 300},${160 - y}`),
+                      "300,160",
+                      "0,160",
+                    ].join(" ")}
+                    fill="url(#areaGrad)"
+                  />
+
+                  <polyline
+                    points={linePoints
+                      .map((y, i) => `${(i / (linePoints.length - 1)) * 300},${160 - y}`)
+                      .join(" ")}
+                    fill="none"
+                    stroke="#fab421"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  {linePoints.map((y, i) => (
+                    <circle
+                      key={i}
+                      cx={(i / (linePoints.length - 1)) * 300}
+                      cy={160 - y}
+                      r="3"
+                      fill="#fab421"
+                    />
+                  ))}
+                </svg>
+              </div>
+
+              <div className="mt-2 flex justify-between px-1">
+                {lineData.map((d) => (
+                  <span key={d.month} className="text-lg text-gray-400">
+                    {d.month}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

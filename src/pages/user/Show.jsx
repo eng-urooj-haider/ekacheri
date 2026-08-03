@@ -29,7 +29,7 @@ const Show = () => {
   if (!dfp) {
     return (
       <div className="mx-auto w-full max-w-2xl min-w-0">
-        Focal person not found.
+       Admin User.
       </div>
     );
   }
@@ -39,7 +39,7 @@ const Show = () => {
       {/* Breadcrumb */}
       <div className="mb-3 flex items-center gap-1.5 text-xs text-gray-500">
         <Link to="/focal-persons" className="transition hover:text-gray-300">
-          Focal Persons
+          Admin User
         </Link>
         <span className="text-gray-600">/</span>
         <span className="text-gray-400">{dfp.name}</span>
@@ -71,17 +71,10 @@ const Show = () => {
           <div>
             <h1 className="text-xl font-semibold text-gray-900">{dfp.name}</h1>
             <p className="mt-0.5 text-sm text-gray-500">
-              Department Focal Person details
+               Admin User
             </p>
           </div>
         </div>
-
-        <Link
-          to={`/focal-persons/${id}/edit`}
-          className="shrink-0 rounded-lg px-4 py-2 text-sm font-medium text-gray-300 ring-1 ring-white/[0.08] transition hover:bg-white/[0.05]"
-        >
-          Edit
-        </Link>
       </div>
 
       {/* Details card */}
@@ -149,16 +142,6 @@ const Show = () => {
             </dd>
           </div>
         </dl>
-      </div>
-
-      {/* Back link */}
-      <div className="mt-5">
-        <Link
-          to="/dfps"
-          className="text-sm text-gray-400 transition hover:text-gray-200"
-        >
-          ← Back to all focal persons
-        </Link>
       </div>
     </div>
   );

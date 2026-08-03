@@ -8,7 +8,7 @@ const AuthLoadingScreen = () => (
       <div className="absolute inset-0 animate-spin rounded-full border-[3px] border-transparent border-t-[#F5821F]" />
     </div>
     <div className="text-center">
-      <p className="text-sm font-medium text-gray-700">
+      <p className="text-sm font-medium text-gray-300">
         Checking your session…
       </p>
       <p className="mt-1 text-xs text-gray-500">

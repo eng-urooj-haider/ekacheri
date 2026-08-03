@@ -2,21 +2,10 @@ import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import { getLocation } from "../../api/LocationApi";
 import { useParams } from "react-router";
-
+import useLocationForm from "../../hooks/useLocationForm";
 const ShowLocation = () => {
   const { id } = useParams();
-  const [location, setLocation] = useState([]);
-
-  useEffect(() => {
-    const getAllLocation = async () => {
-      const response = await getLocation(id);
-      console.log("response", response.data.data);
-      setLocation(response.data.data); // <-- unwrap here, not the whole response
-    };
-    getAllLocation();
-  }, [id]);
-
-
+  const { location } = useLocationForm(id)
   return (
     <div className="mx-auto w-full max-w-2xl min-w-0">
       {/* Breadcrumb */}
@@ -105,11 +94,10 @@ const ShowLocation = () => {
             </dt>
             <dd className="col-span-2">
               <span
-                className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                  location.status
+                className={`rounded-full px-2.5 py-1 text-xs font-medium ${location.status
                     ? "bg-emerald-400/10 text-emerald-400"
                     : "bg-red-400/10 text-red-400"
-                }`}
+                  }`}
               >
                 {location.status ? "Active" : "Inactive"}
               </span>

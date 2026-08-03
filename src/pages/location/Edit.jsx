@@ -1,7 +1,7 @@
 import LocationForm from "./LocationForm";
 import useLocationForm from "../../hooks/useLocationForm";
 import { useParams } from "react-router";
-const AddLocation = () => {
+const EditLocation = () => {
   const { id } = useParams();
   const { cities, handleChange, isActive, toggleButton, errors, handleSubmit ,location} =
     useLocationForm(id);
@@ -20,4 +20,4 @@ const AddLocation = () => {
   );
 };
 
-export default AddLocation;
+export default EditLocation;

@@ -42,7 +42,9 @@ const AllComplaint = lazy(() => import("./pages/complaint/AllComplaint"));
 
 const UserIndex = lazy(() => import("./pages/user/Index"));
 const UserCreate = lazy(() => import("./pages/user/Create"));
-const UserEdit = lazy(() => import("./pages/user/Create"));
+const UserEdit = lazy(() => import("./pages/user/Edit"));
+const UserShow = lazy(() => import("./pages/user/Show"));
+
 // const UserShow = lazy(() => import("./pages/user/Create"));
 import GuestRoute from "./components/auth/GuestRoute.jsx";
 export default function App() {
@@ -112,6 +114,7 @@ export default function App() {
                 <Route index element={<UserIndex />} />
                 <Route path="create" element={<UserCreate />} />
                 <Route path=":id/edit" element={<UserEdit />} />
+                <Route path=":id" element={<UserShow />} />
               </Route>
             </Route>
           </Route>

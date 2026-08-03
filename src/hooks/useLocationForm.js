@@ -3,9 +3,11 @@ import { getCities } from "../api/CityApi.js";
 import { getLocation } from "../api/LocationApi.js";
 import { save, update } from "../api/LocationApi.js";
 import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+
 const useLocationForm = (id) => {
   const navigate = useNavigate();
-  const [cities, setCities] = useState([]);
+  // const [cities, setCities] = useState([]);
   const [location, setLocation] = useState({
     city_id: "",
     location: "",
@@ -16,29 +18,19 @@ const useLocationForm = (id) => {
     setLocation((prev) => ({ ...prev, status: prev.status === 1 ? 0 : 1 }));
   };
   const isActive = location.status === 1;
-  useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await getCities();
-
-        const filteredCities = response.data.filter(
-          (city) => city.status === 1,
-        );
-
-        setCities(filteredCities);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchCities();
-  }, []);
-
+ const { data: cities = [] } = useQuery({
+    queryKey: ["cities"],
+    queryFn: getCities,
+    staleTime: 60 * 1000, // fresh for 1 min — no refetch on quick revisits
+    retry: 1,
+    select: (response) => response.data.filter((city) => city.status === 1),
+  });
   useEffect(() => {
     if (!id) return; // guard: don't fetch on Add
     const fetchLocation = async () => {
       try {
         const response = await getLocation(id);
+        console.log(response)
         setLocation(response.data);
       } catch (err) {
         console.log(err);

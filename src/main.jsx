@@ -7,12 +7,15 @@ import { UserProvider } from "./context/UserContext";
 import App from "./App";
 import { LoadingProvider } from "./context/LoadingContext";
 import AxiosInterceptor from "./api/AxiosInterceptor.js";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(
   <LoadingProvider>
     <AxiosInterceptor>
       <QueryClientProvider client={queryClient}>
         <UserProvider>
+      <ReactQueryDevtools initialIsOpen={true} />
           <App />
         </UserProvider>
       </QueryClientProvider>

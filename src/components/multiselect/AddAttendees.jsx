@@ -23,17 +23,6 @@ import { useState, useRef, useEffect } from "react";
  *    inside another layout's own label/row wrapper (e.g. a shared FieldRow),
  *    so you don't end up with two mismatched labels stacked on top of each other.
  */
-
-const ATTENDEE_OPTIONS = [
-  { id: "anwar", label: "Mr. Anwar Baloch — DGM" },
-  { id: "afeef", label: "Mr. Afeef Ahmed — General Manager" },
-  { id: "sana", label: "Ms. Sana Tariq — Deputy Manager" },
-  { id: "hamza", label: "Mr. Hamza Sheikh — Assistant Manager" },
-  { id: "rabia", label: "Ms. Rabia Idrees — Coordinator" },
-  { id: "imran", label: "Mr. Imran Qureshi — Manager Operations" },
-  { id: "nadia", label: "Ms. Nadia Farooq — HR Lead" },
-];
-
 const AddAttendeesMultiSelect = ({
   label = "Add Attendees",
   showLabel = true,
@@ -42,7 +31,7 @@ const AddAttendeesMultiSelect = ({
   value, // optional: array of selected ids, for controlled usage
   defaultValue = [], // initial selection when uncontrolled
   onChange, // optional: (selectedIds, selectedOptions) => void
-  placeholder = "Select attendee…",
+  placeholder = "Select one or more....",
   disabled = false,
   className = "",
   text = "Select one or more Attendee"
@@ -143,21 +132,21 @@ const AddAttendeesMultiSelect = ({
           setIsOpen(true);
           inputRef.current?.focus();
         }}
-        className={`flex w-full flex-wrap items-center gap-2 rounded-xl bg-white/[0.04] px-3 py-2 ring-1 transition-all duration-200
+        className={`flex w-full flex-wrap items-center gap-2 rounded-xl border bg-gray-50 px-3 py-2 transition-all duration-200
           ${disabled ? "cursor-not-allowed opacity-50" : "cursor-text"}
-          ${isOpen ? "ring-[#fab421]/40 bg-white/[0.06]" : "ring-white/[0.07]"}`}
+          ${isOpen ? "border-[#F5821F]/50 bg-white ring-2 ring-[#F5821F]/15" : "border-gray-200 hover:border-gray-300"}`}
       >
         {selectedOptions.map((opt) => (
           <span
             key={opt.id}
-            className="flex items-center gap-1.5 rounded-lg bg-[#fab421]/15 px-2.5 py-1 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/30"
+            className="flex items-center gap-1.5 rounded-lg bg-[#F5821F]/10 px-2.5 py-1 text-xs font-medium text-[#F5821F] ring-1 ring-[#F5821F]/25"
           >
             {opt.label}
             <button
               type="button"
               onClick={(e) => removeOption(opt.id, e)}
               disabled={disabled}
-              className="text-[#fab421]/70 transition-colors hover:text-[#fab421]"
+              className="text-[#F5821F]/70 transition-colors hover:text-[#F5821F]"
               aria-label={`Remove ${opt.label}`}
             >
               ×
@@ -178,14 +167,14 @@ const AddAttendeesMultiSelect = ({
           onFocus={() => !disabled && setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={selectedOptions.length === 0 ? placeholder : ""}
-          className="min-w-[120px] flex-1 bg-transparent py-1 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none disabled:cursor-not-allowed"
+          className="min-w-[120px] flex-1 bg-transparent py-1 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:cursor-not-allowed"
         />
       </div>
 
       {/* Dropdown panel */}
       {isOpen && !disabled && (
         <div className="relative">
-          <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl bg-[#151516] ring-1 ring-white/[0.1] shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
+          <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl bg-white ring-1 ring-gray-200 shadow-lg">
             <ul className="max-h-56 overflow-y-auto py-1">
               {filteredOptions.length === 0 && (
                 <li className="px-3.5 py-3 text-sm text-gray-500">No attendees found.</li>
@@ -202,15 +191,15 @@ const AddAttendeesMultiSelect = ({
                     onClick={() => toggleOption(opt.id)}
                     onMouseEnter={() => setHighlightIndex(index)}
                     className={`flex cursor-pointer items-center gap-2.5 px-3.5 py-2.5 text-sm transition-colors duration-100
-                      ${highlighted ? "bg-white/[0.06]" : ""}
-                      ${checked ? "text-gray-100" : "text-gray-300"}`}
+                      ${highlighted ? "bg-gray-50" : ""}
+                      ${checked ? "text-gray-900" : "text-gray-700"}`}
                   >
                     <span
                       className={`flex size-4 shrink-0 items-center justify-center rounded-md ring-1 transition-colors
-                        ${checked ? "bg-[#fab421] ring-[#fab421]" : "ring-white/[0.18]"}`}
+                        ${checked ? "bg-[#F5821F] ring-[#F5821F]" : "ring-gray-300"}`}
                     >
                       {checked && (
-                        <svg className="size-3 text-black" viewBox="0 0 16 16" fill="none">
+                        <svg className="size-3 text-white" viewBox="0 0 16 16" fill="none">
                           <path
                             d="M3.5 8.5 6 11l6.5-6.5"
                             stroke="currentColor"

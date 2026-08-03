@@ -33,7 +33,7 @@ const DepartmentList = () => {
     <div className="w-full min-w-0">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Cities</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Departments</h1>
           <p className="mt-1 text-sm text-gray-500">
             View and manage all Departments.
           </p>

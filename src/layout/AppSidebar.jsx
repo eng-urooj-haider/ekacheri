@@ -8,13 +8,14 @@ import {
   ShieldCheck,
   LogOut,
   Landmark,
+  LayoutDashboard
 } from "lucide-react";
 import { useSidebar } from "../context/SidebarContext";
 import LogoImage from "../components/common/LogoImage.jsx";
 import { useUser } from "../context/UserContext.jsx";
 const navItems = [
   {
-    icon: <Building2 size={18} strokeWidth={2} />,
+    icon: <LayoutDashboard size={18} strokeWidth={2} />,
     name: "Dashboard",
     path: "/",
   },

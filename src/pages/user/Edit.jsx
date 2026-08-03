@@ -3,7 +3,9 @@ import { useParams } from "react-router";
 
 const EditUser = () => {
   return (
-    <UserForm 
+    <UserForm
+      heading="Edit User"
+      btnText="Update User"
     />
   );
 };

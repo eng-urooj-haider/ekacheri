@@ -115,18 +115,18 @@ const AddDeptSelect = ({
           setIsOpen(true);
           inputRef.current?.focus();
         }}
-        className={`flex w-full items-center gap-2 rounded-xl bg-white/[0.04] px-3 py-2 ring-1 transition-all duration-200
+        className={`flex w-full items-center gap-2 rounded-xl border bg-gray-50 px-3 py-2 transition-all duration-200
           ${disabled ? "cursor-not-allowed opacity-50" : "cursor-text"}
-          ${isOpen ? "ring-[#fab421]/40 bg-white/[0.06]" : "ring-white/[0.07]"}`}
+          ${isOpen ? "border-[#F5821F]/50 bg-white ring-2 ring-[#F5821F]/15" : "border-gray-200 hover:border-gray-300"}`}
       >
         {selectedOption && !isOpen && (
-          <span className="flex items-center gap-1.5 rounded-lg bg-[#fab421]/15 px-2.5 py-1 text-xs font-medium text-[#fab421] ring-1 ring-[#fab421]/30">
+          <span className="flex items-center gap-1.5 rounded-lg bg-[#F5821F]/10 px-2.5 py-1 text-xs font-medium text-[#F5821F] ring-1 ring-[#F5821F]/25">
             {selectedOption.label}
             <button
               type="button"
               onClick={clearSelection}
               disabled={disabled}
-              className="text-[#fab421]/70 transition-colors hover:text-[#fab421]"
+              className="text-[#F5821F]/70 transition-colors hover:text-[#F5821F]"
               aria-label={`Remove ${selectedOption.label}`}
             >
               ×
@@ -147,14 +147,14 @@ const AddDeptSelect = ({
           onFocus={() => !disabled && setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={selectedOption && !isOpen ? "" : placeholder}
-          className="min-w-[120px] flex-1 bg-transparent py-1 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none disabled:cursor-not-allowed"
+          className="min-w-[120px] flex-1 bg-transparent py-1 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:cursor-not-allowed"
         />
       </div>
 
       {/* Dropdown panel */}
       {isOpen && !disabled && (
         <div className="relative">
-          <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl bg-[#151516] ring-1 ring-white/[0.1] shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
+          <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl bg-white ring-1 ring-gray-200 shadow-lg">
             <ul className="max-h-56 overflow-y-auto py-1">
               {filteredOptions.length === 0 && (
                 <li className="px-3.5 py-3 text-sm text-gray-500">No attendees found.</li>
@@ -171,8 +171,8 @@ const AddDeptSelect = ({
                     onClick={() => selectOption(opt.id)}
                     onMouseEnter={() => setHighlightIndex(index)}
                     className={`cursor-pointer px-3.5 py-2.5 text-sm transition-colors duration-100
-                      ${highlighted ? "bg-white/[0.06]" : ""}
-                      ${selected ? "bg-[#fab421]/10 font-medium text-[#fab421]" : "text-gray-300"}`}
+                      ${highlighted ? "bg-gray-50" : ""}
+                      ${selected ? "bg-[#F5821F]/10 font-medium text-[#F5821F]" : "text-gray-700"}`}
                   >
                     {opt.label}
                   </li>
